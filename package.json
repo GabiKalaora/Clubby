@@ -16,5 +16,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "react-native-worklets": "0.8.3"
   }
 }

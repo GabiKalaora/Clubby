@@ -115,7 +115,7 @@ RLS policies are fully tested in `supabase/tests/rls.test.sql`.
 - Local dev code: OTP = **000000**
 
 ### ✅ Slice 2 — Business Owner Portal / פורטל בעלי עסקים
-**URL:** http://localhost:5173
+**URL:** http://localhost:5174
 
 - Email + password auth (sign-in or auto sign-up on first visit)
 - Business registration form: name, category, description, address, phone
@@ -126,11 +126,17 @@ RLS policies are fully tested in `supabase/tests/rls.test.sql`.
 
 **Verified:** "Java House" created in DB with `qr_code_token=ghJd1JPLrquJ`, QR encodes `clubby://enroll?token=ghJd1JPLrquJ` ✓
 
-### 🔄 Slice 3 — QR Enrollment / רישום דרך QR *(next)*
-- Camera view using `react-native-vision-camera`
-- QR detection → parse `clubby://enroll?token=...` → POST to Edge Function `enroll-member`
-- Edge Function: upsert membership + optional welcome benefit
-- Requires dev build (not Expo Go)
+### ✅ Slice 3 — QR Enrollment / רישום דרך QR
+- `enroll-member` Edge Function: validates JWT, looks up business by `qr_code_token`, upserts membership, issues welcome benefit if an active promotion exists
+- Deterministic UUID (SHA-1 via Web Crypto) ensures exactly-once benefit even on QR retry
+- `increment_redemption_count` RPC (migration 002) tracks promotion usage
+- `scan.tsx`: `expo-camera` QR scanner on native (dev build); manual token entry fallback on web
+- Confirmation card: business logo, "You're in!" checkmark, welcome gift details, "View my wallet" CTA
+- Idempotency verified: scanning the same QR twice produces exactly 1 membership row and 1 benefit row
+
+פונקציית `enroll-member` Edge Function מאמתת JWT, מאתרת עסק לפי `qr_code_token`, יוצרת חברות ומנפיקה הטבת ברוכים הבאים אם קיים מבצע פעיל. UUID דטרמיניסטי מבטיח הטבה אחת גם בניסיון חוזר. מסך הסריקה כולל מצלמת QR בבנייה ייעודית ו-fallback להזנת טוקן ידנית.
+
+**Verified:** Enrollment flow tested end-to-end — membership created, welcome benefit issued, confirmation card renders correctly ✓
 
 ### ⏳ Slice 4 — Wallet Screen / מסך הארנק
 - Benefit list with tabs: All / Balance / Credits / Discounts
@@ -163,5 +169,5 @@ RLS policies are fully tested in `supabase/tests/rls.test.sql`.
 - Mobile OTP code (local): **000000**
 - Portal auth: email + password (auto sign-up on first visit)
 - Supabase Studio: http://127.0.0.1:54323
-- Portal: http://localhost:5173
+- Portal: http://localhost:5174
 - Mobile Metro bundler: http://localhost:8081

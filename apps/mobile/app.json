@@ -42,6 +42,12 @@
         {
           "color": "#2ecc71"
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Clubby to access your camera to scan QR codes."
+        }
       ]
     ],
     "experiments": {
