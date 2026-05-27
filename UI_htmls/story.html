@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Story Page</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
+        }
+        .mobile-frame {
+            position: relative;
+            width: 375px;
+            height: 812px;
+            margin: 20px auto;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 0 0 10px #333, 0 0 0 11px #000;
+        }
+        .status-bar {
+            height: 44px;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+        }
+        .story-container {
+            position: relative;
+            height: calc(100% - 44px);
+            overflow: hidden;
+        }
+        .story {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .story.active {
+            opacity: 1;
+        }
+        .story-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .story-header, .story-footer {
+            position: absolute;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            color: white;
+        }
+        .story-header {
+            top: 0;
+            display: flex;
+            align-items: center;
+        }
+        .story-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: contain;
+            background-color: #fff;
+            padding: 2px;
+        }
+        .story-footer {
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+        }
+        .story-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .progress-bar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .progress-segment {
+            height: 2px;
+            background-color: rgba(255,255,255,0.5);
+            flex-grow: 1;
+            margin: 0 2px;
+        }
+        .progress-segment.active {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-frame">
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </span>
+        </div>
+        <div class="story-container">
+            <div class="progress-bar">
+                <div class="progress-segment active"></div>
+                <div class="progress-segment"></div>
+                <div class="progress-segment"></div>
+            </div>
+            <div class="story active">
+                <img src="https://images.unsplash.com/photo-1525845859779-54d477ff291f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1287&q=80" alt="Zara Product" class="story-image">
+                <div class="story-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Zara_Logo.svg/320px-Zara_Logo.svg.png" alt="Zara Logo" class="story-logo">
+                    <span>Zara Official</span>
+                </div>
+                <div class="story-footer">
+                    <a href="https://www.zara.com" class="story-link">https://www.zara.com</a>
+                </div>
+            </div>
+            <div class="story">
+                <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1337&q=80" alt="Starbucks Coffee" class="story-image">
+                <div class="story-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/d/d3/Starbucks_Corporation_Logo_2011.svg/320px-Starbucks_Corporation_Logo_2011.svg.png" alt="Starbucks Logo" class="story-logo">
+                    <span>Starbucks</span>
+                </div>
+                <div class="story-footer">
+                    <a href="https://www.starbucks.com" class="story-link">https://www.starbucks.com</a>
+                </div>
+            </div>
+            <div class="story">
+                <img src="https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="KFC Chicken" class="story-image">
+                <div class="story-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/KFC_logo.svg/320px-KFC_logo.svg.png" alt="KFC Logo" class="story-logo">
+                    <span>KFC</span>
+                </div>
+                <div class="story-footer">
+                    <a href="https://www.kfc.com" class="story-link">https://www.kfc.com</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script>
+        const stories = document.querySelectorAll('.story');
+        const progressSegments = document.querySelectorAll('.progress-segment');
+        let currentStory = 0;
+
+        function showNextStory() {
+            stories[currentStory].classList.remove('active');
+            progressSegments[currentStory].classList.remove('active');
+            currentStory = (currentStory + 1) % stories.length;
+            stories[currentStory].classList.add('active');
+            progressSegments[currentStory].classList.add('active');
+        }
+
+        setInterval(showNextStory, 4000);
+    </script>
+</body>
+</html>

@@ -39,9 +39,20 @@ function AuthGuard() {
 }
 
 export default function RootLayout() {
+  const router = useRouter()
+
   useEffect(() => {
     if (Platform.OS !== 'web') registerPushToken()
   }, [])
+
+  useEffect(() => {
+    if (Platform.OS === 'web') return
+    // Navigate to wallet when user taps a push notification
+    const sub = Notifications.addNotificationResponseReceivedListener(() => {
+      router.push('/(tabs)/wallet')
+    })
+    return () => sub.remove()
+  }, [router])
 
   return (
     <QueryClientProvider client={queryClient}>

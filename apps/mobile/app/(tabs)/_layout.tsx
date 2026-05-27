@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router'
-import { TouchableOpacity, View } from 'react-native'
+import { View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 
 export default function TabsLayout() {
@@ -21,17 +21,39 @@ export default function TabsLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="scan"
         options={{
-          title: 'Scan',
-          tabBarIcon: ({ color }) => (
-            <View className="bg-brand rounded-full w-14 h-14 items-center justify-center -mt-6 shadow-md shadow-brand/50">
-              <Ionicons name="qr-code-outline" size={28} color="white" />
+          title: '',
+          tabBarLabel: () => null,
+          tabBarItemStyle: { maxWidth: 60 },
+          tabBarIcon: () => (
+            <View className="w-12 h-12 rounded-2xl bg-brand items-center justify-center shadow-sm">
+              <Ionicons name="qr-code-outline" size={22} color="white" />
             </View>
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="manual"
+        options={{
+          title: '',
+          tabBarLabel: () => null,
+          tabBarItemStyle: { maxWidth: 60 },
+          tabBarIcon: ({ focused }) => (
+            <View
+              className={`w-12 h-12 rounded-2xl items-center justify-center border-2 ${
+                focused ? 'bg-brand border-brand' : 'bg-white border-brand'
+              }`}
+            >
+              <Ionicons name="ticket-outline" size={22} color="#2ecc71" />
+            </View>
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="discover"
         options={{

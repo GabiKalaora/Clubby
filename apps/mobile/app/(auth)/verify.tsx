@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { supabase } from '../../lib/supabase'
+import { consumePendingToken } from '../enroll'
 
 export default function Verify() {
-  const { phone } = useLocalSearchParams<{ phone: string }>()
+  const params = useLocalSearchParams<{ phone: string }>()
+  const phone = Array.isArray(params.phone) ? params.phone[0] : params.phone
   const router = useRouter()
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
@@ -20,7 +22,11 @@ export default function Verify() {
     if (error) {
       Alert.alert('Invalid code', error.message)
     } else if (data.session) {
-      // New users need to complete profile; existing users go straight to wallet
+      const pendingToken = consumePendingToken()
+      if (pendingToken) {
+        router.replace({ pathname: '/enroll', params: { token: pendingToken } } as never)
+        return
+      }
       const { data: profile } = await supabase
         .from('profiles')
         .select('display_name')

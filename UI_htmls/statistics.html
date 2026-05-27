@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Statistics Dashboard</title>
+    
+    <!-- Required Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: #f8f9fb;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: white;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .logo {
+            height: 40px;
+            margin-bottom: 40px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            color: #64748b;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            width: 20px;
+        }
+
+        .nav-item.active {
+            color: #4ade80;
+            background: #f0fdf4;
+        }
+
+        .logout-btn {
+            background: #4ade80;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: auto;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .welcome-text {
+            color: #94a3b8;
+            font-size: 20px;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 32px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .notification-btn {
+            background: #4ade80;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+        }
+
+        /* Table Styles */
+        .users-table {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .table-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        th {
+            color: #64748b;
+            font-weight: 500;
+            background: #f8fafc;
+        }
+
+        td {
+            color: #1e293b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .btn-view { background: #60a5fa; }
+        .btn-edit { background: #4ade80; }
+        .btn-delete { background: #ef4444; }
+
+        /* Map Section */
+        .map-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .map-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+
+        #map {
+            height: 400px;
+            border-radius: 8px;
+        }
+
+        /* Analytics Section */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .legend-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .period-select {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            color: #64748b;
+            margin-left: 16px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div>
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjQwIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIyMCIgZmlsbD0iIzRhZGU4MCIvPjwvc3ZnPg==" alt="Logo" class="logo">
+            <nav>
+                <a href="home.html" class="nav-item active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-grid"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Dashboard
+                </a>
+                <a href="statistics.html" class="nav-item" style="background-color: rgb(243, 244, 246);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    Statistics
+                </a>
+                <a href="ad.html" class="nav-item" style="background-color: transparent;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    Publish Advertisement
+                </a>
+                <a href="pricing.html" class="nav-item" style="background-color: transparent;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Pricing
+                </a>
+                <a href="payment.html" class="nav-item" style="background-color: rgb(243, 244, 246);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-credit-card"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                    Payment
+                </a>
+                <a href="statistics.html" class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+                    Premium Statistics
+                </a>
+            </nav>
+        </div>
+        <button class="logout-btn">
+            <i data-feather="log-out"></i>
+            Logout
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="welcome-text">Welcome, Zara</div>
+            <div class="search-container">
+                <input type="text" placeholder="Search" class="search-input">
+            </div>
+            <div class="user-menu">
+                <button class="notification-btn">
+                    <i data-feather="bell"></i>
+                </button>
+                <div class="user-avatar"></div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="users-table">
+            <div class="table-header">
+                <h1 class="table-title">User Statistics</h1>
+                <input type="text" placeholder="Search" class="search-input">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Phone No.</th>
+                        <th>Date of Birth</th>
+                        <th>Total Purchases</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Jacob Jones</td>
+                        <td>22</td>
+                        <td>(205) 555-0100</td>
+                        <td>July 14, 2015</td>
+                        <td>1</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view"><i data-feather="eye" color="white"></i></button>
+                                <button class="action-btn btn-edit"><i data-feather="edit-2" color="white"></i></button>
+                                <button class="action-btn btn-delete"><i data-feather="trash" color="white"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Additional rows... -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-section">
+            <h2 class="map-title">Customers who are currently close to the store</h2>
+            <div id="map"></div>
+        </div>
+
+        <!-- Analytics Grid -->
+        <div class="analytics-grid">
+            <!-- Line Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">User Analytics</div>
+                    <div class="legend-container">
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #4ade80;"></span>
+                            <span>50+</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #60a5fa;"></span>
+                            <span>35+</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #ef4444;"></span>
+                            <span>20+</span>
+                        </div>
+                        <select class="period-select">
+                            <option>Monthly</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Doughnut Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Users by Gender</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Feather Icons
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace();
+
+            // Initialize map
+            const map = L.map('map').setView([40.7128, -74.0060], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add sample markers
+            const markers = [
+                { lat: 40.7128, lng: -74.0060 },
+                { lat: 40.7150, lng: -74.0047 },
+                { lat: 40.7110, lng: -74.0080 }
+            ];
+
+            markers.forEach(pos => {
+                L.marker([pos.lat, pos.lng]).addTo(map);
+            });
+
+            // Line Chart
+            const lineCtx = document.getElementById('lineChart');
+            new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [
+                        {
+                            label: '50+',
+                            data: [20, 25, 28, 35, 30, 40, 35],
+                            borderColor: '#4ade80',
+                            backgroundColor: '#4ade80',
+                            tension: 0.4,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        },
+                        {
+                            label: '35+',
+                            data: [40, 45, 52, 48, 55, 50, 45],
+                            borderColor: '#60a5fa',
+                            backgroundColor: '#60a5fa',
+                            tension: 0.4,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        },
+                        {
+                            label: '20+',
+                            data: [60, 55, 65, 60, 70, 65, 75],
+                            borderColor: '#ef4444',
+                            backgroundColor: '#ef4444',
+                            tension: 0.4,
+                            pointRadius: 0,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20,
+                                color: '#64748b',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: '#e2e8f0',
+                                drawBorder: false
+                            },
+                            border: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#64748b',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            border: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Doughnut Chart
+            const doughnutCtx = document.getElementById('doughnutChart');
+            new Chart(doughnutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Male', 'Female'],
+                    datasets: [{
+                        data: [60, 40],
+                        backgroundColor: ['#60a5fa', '#4ade80'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                color: '#64748b',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Add user data
+            const userData = [
+                { name: "Jacob Jones", age: 22, phone: "(205) 555-0100", dob: "July 14, 2015", purchases: 1 },
+                { name: "Jane Cooper", age: 40, phone: "(702) 555-0122", dob: "April 28, 2016", purchases: 5 },
+                { name: "Leslie Alexander", age: 43, phone: "(229) 555-0109", dob: "May 12, 2019", purchases: 3 },
+                { name: "Courtney Henry", age: 20, phone: "(480) 555-0103", dob: "November 16, 2014", purchases: 4 },
+                { name: "Devon Lane", age: 10, phone: "(603) 555-0123", dob: "October 24, 2018", purchases: 9 },
+                { name: "Eleanor Pena", age: 29, phone: "(201) 555-0124", dob: "March 6, 2018", purchases: 1 },
+                { name: "Arlene McCoy", age: 21, phone: "(217) 555-0113", dob: "May 31, 2015", purchases: 2 }
+            ];
+
+            // Populate table
+            function populateTable(users) {
+                const tbody = document.querySelector('tbody');
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.name}</td>
+                        <td>${user.age}</td>
+                        <td>${user.phone}</td>
+                        <td>${user.dob}</td>
+                        <td>${user.purchases}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view"><i data-feather="eye" color="white"></i></button>
+                                <button class="action-btn btn-edit"><i data-feather="edit-2" color="white"></i></button>
+                                <button class="action-btn btn-delete"><i data-feather="trash" color="white"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                feather.replace();
+            }
+
+            // Initial table population
+            populateTable(userData);
+
+            // Search functionality
+            document.querySelectorAll('.search-input').forEach(input => {
+                input.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const filteredUsers = userData.filter(user => 
+                        user.name.toLowerCase().includes(searchTerm) ||
+                        user.phone.includes(searchTerm) ||
+                        user.dob.toLowerCase().includes(searchTerm)
+                    );
+                    populateTable(filteredUsers);
+                });
+            });
+
+            // Add hover effects
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('mouseover', function() {
+                    this.style.opacity = '0.9';
+                });
+                
+                btn.addEventListener('mouseout', function() {
+                    this.style.opacity = '1';
+                });
+            });
+
+            // Add hover effects to nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('mouseover', function() {
+                    if (!this.classList.contains('active')) {
+                        this.style.backgroundColor = '#f3f4f6';
+                    }
+                });
+                
+                item.addEventListener('mouseout', function() {
+                    if (!this.classList.contains('active')) {
+                        this.style.backgroundColor = 'transparent';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

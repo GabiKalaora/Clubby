@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, Linking } from 'react-native'
 import { useRouter } from 'expo-router'
 import { supabase } from '../../lib/supabase'
+
+const PORTAL_URL = process.env.EXPO_PUBLIC_PORTAL_URL ?? 'http://localhost:5174'
 
 export default function SignIn() {
   const router = useRouter()
@@ -46,6 +48,13 @@ export default function SignIn() {
           {loading ? 'Sending...' : 'Continue'}
         </Text>
       </TouchableOpacity>
+
+      <View className="mt-10 items-center">
+        <Text className="text-gray-400 text-sm mb-1">Own a business?</Text>
+        <TouchableOpacity onPress={() => Linking.openURL(PORTAL_URL)}>
+          <Text className="text-brand font-semibold text-sm">Go to Business Portal →</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   )
 }

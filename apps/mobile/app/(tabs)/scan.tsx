@@ -1,11 +1,12 @@
 import { useState, useCallback, useRef } from 'react'
 import {
   View, Text, TextInput, TouchableOpacity,
-  ActivityIndicator, Image, Platform, Alert, ScrollView,
+  ActivityIndicator, Image, Platform, ScrollView,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import { supabase } from '../../lib/supabase'
+import { WebQRCamera } from '../../components/WebQRCamera'
 
 type Business = {
   id: string
@@ -110,31 +111,49 @@ export default function Scan() {
     )
   }
 
-  // ── Web fallback (no camera) ──────────────────────────────────────────────
+  // ── Web: camera + manual fallback ────────────────────────────────────────────
   if (Platform.OS === 'web') {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900 items-center justify-center px-8">
-        <Text className="text-white text-2xl font-bold mb-2">Enroll</Text>
-        <Text className="text-gray-400 text-center mb-8">
-          Enter the QR token from the business portal
-        </Text>
-        <TextInput
-          className="w-full bg-gray-800 text-white rounded-xl px-4 py-3 mb-4 text-center"
-          placeholder="Paste token here"
-          placeholderTextColor="#6b7280"
-          value={manualToken}
-          onChangeText={setManualToken}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        {error && <Text className="text-red-400 mb-4 text-center">{error}</Text>}
-        <TouchableOpacity
-          className="bg-brand rounded-full px-8 py-4 w-full items-center"
-          onPress={() => enroll(manualToken)}
-          disabled={!manualToken.trim()}
-        >
-          <Text className="text-white font-bold text-base">Enroll</Text>
-        </TouchableOpacity>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#111827' }}>
+        {/* Camera view takes most of the screen */}
+        <View style={{ flex: 1 }}>
+          <WebQRCamera onScan={(token) => { scannedRef.current = true; enroll(token) }} />
+        </View>
+
+        {/* Manual entry strip at bottom */}
+        <View style={{ padding: 16, backgroundColor: '#111827' }}>
+          <Text style={{ color: '#6b7280', textAlign: 'center', fontSize: 12, marginBottom: 8 }}>
+            — or enter token manually —
+          </Text>
+          <TextInput
+            style={{
+              backgroundColor: '#1f2937', color: 'white', borderRadius: 12,
+              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8,
+              fontSize: 14, textAlign: 'center',
+            }}
+            placeholder="Paste token here"
+            placeholderTextColor="#6b7280"
+            value={manualToken}
+            onChangeText={setManualToken}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          {error && (
+            <Text style={{ color: '#f87171', textAlign: 'center', fontSize: 13, marginBottom: 8 }}>
+              {error}
+            </Text>
+          )}
+          <TouchableOpacity
+            style={{
+              backgroundColor: manualToken.trim() ? '#2ecc71' : '#374151',
+              borderRadius: 12, paddingVertical: 12, alignItems: 'center',
+            }}
+            onPress={() => enroll(manualToken)}
+            disabled={!manualToken.trim()}
+          >
+            <Text style={{ color: 'white', fontWeight: '600', fontSize: 14 }}>Enroll with token</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     )
   }

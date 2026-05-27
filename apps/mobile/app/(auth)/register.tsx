@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import { supabase } from '../../lib/supabase'
+import { consumePendingToken } from '../enroll'
 
 export default function Register() {
   const router = useRouter()
@@ -29,6 +30,11 @@ export default function Register() {
     if (error) {
       Alert.alert('Error', error.message)
     } else {
+      const pendingToken = consumePendingToken()
+      if (pendingToken) {
+        router.replace({ pathname: '/enroll', params: { token: pendingToken } } as never)
+        return
+      }
       router.replace('/(tabs)/wallet')
     }
   }

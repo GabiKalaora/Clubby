@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f8f8f8;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #2ecc71;
+            background: white;
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            background: #27ae60;
+        }
+
+        .signin-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .signin-link a {
+            color: #2ecc71;
+            text-decoration: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create an Account</h1>
+        <p>Register as a new member</p>
+        
+        <form>
+            <div class="input-group">
+                <input type="text" placeholder="First Name" required>
+            </div>
+            
+            <div class="input-group">
+                <input type="text" placeholder="Last Name" required>
+            </div>
+            
+            <div class="input-group">
+                <input type="tel" placeholder="Phone Number" required>
+            </div>
+            
+            <div class="input-group password-field">
+                <input type="password" placeholder="Password" required>
+                <span class="eye-icon">👁️</span>
+            </div>
+            
+            <div class="input-group password-field">
+                <input type="password" placeholder="Confirm Password" required>
+                <span class="eye-icon">👁️</span>
+            </div>
+            
+            <button type="submit" onclick="window.location.href='homepage.html'">SIGN UP</button>
+        </form>
+        
+        <div class="signin-link">
+            already have an account? <a href="signin-page.html">sign in</a>
+        </div>
+    </div>
+</body>
+</html>
