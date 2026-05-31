@@ -53,7 +53,7 @@ serve(async (req) => {
       })
     }
 
-    const { token } = await req.json()
+    const { token, ref } = await req.json()
     if (!token) {
       return new Response(JSON.stringify({ error: 'token is required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -83,10 +83,26 @@ serve(async (req) => {
 
     const alreadyMember = !!existing
 
+    // Rate limit: max 5 new enrollments per user per minute
+    if (!alreadyMember) {
+      const rateCutoff = new Date(Date.now() - 60_000).toISOString()
+      const { count } = await adminClient
+        .from('memberships')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('joined_at', rateCutoff)
+
+      if ((count ?? 0) >= 5) {
+        return new Response(JSON.stringify({ error: 'Too many enrollments. Please wait a moment.' }), {
+          status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+    }
+
     const { error: memberError } = await adminClient
       .from('memberships')
       .upsert(
-        { user_id: user.id, business_id: business.id, active: true },
+        { user_id: user.id, business_id: business.id, active: true, ...(ref && !alreadyMember ? { referred_by: ref } : {}) },
         { onConflict: 'user_id,business_id', ignoreDuplicates: false },
       )
 
@@ -173,6 +189,33 @@ serve(async (req) => {
         if (!benefitError) welcomeBenefit = inserted
 
         await adminClient.rpc('increment_redemption_count', { promo_id: promo.id })
+      }
+    }
+
+    // ── Referral reward ───────────────────────────────────────────────────────
+    // Issue a benefit to the referrer when a new member joins via their link
+    if (ref && !alreadyMember && ref !== user.id) {
+      const { data: referrerMembership } = await adminClient
+        .from('memberships')
+        .select('id')
+        .eq('user_id', ref)
+        .eq('business_id', business.id)
+        .maybeSingle()
+
+      if (referrerMembership) {
+        const referralBenefitId = await deterministicUuid(ref + user.id + business.id + 'referral')
+        await adminClient.from('benefits').upsert({
+          id: referralBenefitId,
+          user_id: ref,
+          business_id: business.id,
+          type: 'discount',
+          title: `🎉 Referral reward — friend joined ${business.name}!`,
+          discount_percent: 10,
+          source: 'referral',
+          verified: true,
+          redeemed: false,
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        }, { onConflict: 'id', ignoreDuplicates: true })
       }
     }
 

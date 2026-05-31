@@ -1,13 +1,20 @@
 import { useState } from 'react'
 import {
   View, Text, TouchableOpacity, TextInput,
-  ActivityIndicator, Alert,
+  ActivityIndicator, Alert, Switch, ScrollView,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
-import { useProfile, useUpdateProfile } from '../hooks/useProfile'
+import { useProfile, useUpdateProfile, type NotificationPrefs } from '../hooks/useProfile'
+
+const NOTIF_TYPES: { key: keyof NotificationPrefs; label: string; description: string }[] = [
+  { key: 'expiry_reminder', label: 'Expiry reminders', description: 'When a benefit is about to expire' },
+  { key: 'birthday',        label: 'Birthday rewards',  description: 'Special offer on your birthday' },
+  { key: 're_engagement',   label: 'We miss you',       description: 'When you haven\'t visited in a while' },
+  { key: 'direct_message',  label: 'Business messages', description: 'Promotions sent by businesses' },
+]
 
 function useCurrentUser() {
   return useQuery({
@@ -55,8 +62,21 @@ export default function ProfileScreen() {
     )
   }
 
+  const [dobError, setDobError] = useState('')
+
   function saveDob() {
     if (!user?.id) return
+    if (dobInput) {
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dobInput)
+      if (!match) { setDobError('Use format YYYY-MM-DD'); return }
+      const [, y, m, d] = match.map(Number)
+      const date = new Date(y, m - 1, d)
+      const now = new Date()
+      if (date > now) { setDobError('Date cannot be in the future'); return }
+      if (y < 1900) { setDobError('Enter a valid year'); return }
+      if (date.getMonth() !== m - 1) { setDobError('Invalid date'); return }
+    }
+    setDobError('')
     updateProfile(
       { userId: user.id, date_of_birth: dobInput || null },
       { onSuccess: () => setEditingDob(false) },
@@ -94,7 +114,7 @@ export default function ProfileScreen() {
           <ActivityIndicator color="#2ecc71" />
         </View>
       ) : (
-        <View className="flex-1 px-5">
+        <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
           {/* Avatar + name */}
           <View className="items-center py-8">
             <Initials name={profile?.display_name ?? null} phone={profile?.phone ?? user?.phone ?? null} />
@@ -151,7 +171,7 @@ export default function ProfileScreen() {
                   <TextInput
                     className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm text-gray-900 bg-gray-50 w-36"
                     value={dobInput}
-                    onChangeText={setDobInput}
+                    onChangeText={text => { setDobInput(text); setDobError('') }}
                     placeholder="YYYY-MM-DD"
                     keyboardType="numbers-and-punctuation"
                     autoFocus
@@ -161,7 +181,7 @@ export default function ProfileScreen() {
                   <TouchableOpacity className="bg-brand rounded-xl px-3 py-1.5" onPress={saveDob} disabled={saving}>
                     <Text className="text-white text-xs font-semibold">{saving ? '…' : 'Save'}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => setEditingDob(false)}>
+                  <TouchableOpacity onPress={() => { setEditingDob(false); setDobError('') }}>
                     <Text className="text-gray-400 text-sm">✕</Text>
                   </TouchableOpacity>
                 </View>
@@ -177,6 +197,42 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
               )}
             </View>
+            {!!dobError && (
+              <Text className="text-red-500 text-xs px-5 pb-3">{dobError}</Text>
+            )}
+          </View>
+
+          {/* Notification preferences */}
+          <View className="bg-white rounded-2xl shadow-sm overflow-hidden mb-4">
+            <View className="px-5 pt-4 pb-2">
+              <Text className="text-sm font-semibold text-gray-900">Notification Preferences</Text>
+              <Text className="text-xs text-gray-400 mt-0.5">Choose which push notifications you receive</Text>
+            </View>
+            {NOTIF_TYPES.map(({ key, label, description }, i) => {
+              const prefs = profile?.notification_prefs ?? {}
+              const enabled = prefs[key] !== false
+              return (
+                <View
+                  key={key}
+                  className={`flex-row items-center justify-between px-5 py-3.5 ${i < NOTIF_TYPES.length - 1 ? 'border-b border-gray-100' : ''}`}
+                >
+                  <View className="flex-1 mr-3">
+                    <Text className="text-sm font-medium text-gray-900">{label}</Text>
+                    <Text className="text-xs text-gray-400 mt-0.5">{description}</Text>
+                  </View>
+                  <Switch
+                    value={enabled}
+                    onValueChange={(val) => {
+                      if (!user?.id) return
+                      const updated: NotificationPrefs = { ...(profile?.notification_prefs ?? {}), [key]: val }
+                      updateProfile({ userId: user.id, notification_prefs: updated })
+                    }}
+                    trackColor={{ false: '#e5e7eb', true: '#2ecc71' }}
+                    thumbColor="white"
+                  />
+                </View>
+              )
+            })}
           </View>
 
           {/* Sign out */}
@@ -186,7 +242,7 @@ export default function ProfileScreen() {
           >
             <Text className="text-red-500 font-semibold">Sign out</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
       )}
     </SafeAreaView>
   )

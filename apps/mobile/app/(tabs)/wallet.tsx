@@ -122,13 +122,20 @@ export default function Wallet() {
       )}
 
       {/* Balance card */}
-      <View className="mx-4 mb-4 bg-brand rounded-2xl p-5 shadow-sm shadow-brand/30">
+      <TouchableOpacity
+        className="mx-4 mb-4 bg-brand rounded-2xl p-5 shadow-sm shadow-brand/30"
+        onPress={() => router.push('/history' as never)}
+        activeOpacity={0.85}
+      >
         <Text className="text-white/80 text-sm mb-1">Total balance</Text>
         <Text className="text-white text-4xl font-bold">{totalBalance(benefits)}</Text>
-        <Text className="text-white/70 text-xs mt-1">
-          {activeCredits.length} active credit{activeCredits.length !== 1 ? 's' : ''}
-        </Text>
-      </View>
+        <View className="flex-row justify-between items-center mt-1">
+          <Text className="text-white/70 text-xs">
+            {activeCredits.length} active credit{activeCredits.length !== 1 ? 's' : ''}
+          </Text>
+          <Text className="text-white/60 text-xs">View history →</Text>
+        </View>
+      </TouchableOpacity>
 
       {/* My Clubs */}
       {memberships.length > 0 && (

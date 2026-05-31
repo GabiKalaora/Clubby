@@ -54,6 +54,23 @@ export function useBenefits(userId: string | undefined) {
   })
 }
 
+export function useAllBenefits(userId: string | undefined) {
+  return useQuery({
+    queryKey: ['benefits-all', userId],
+    queryFn: async (): Promise<Benefit[]> => {
+      const { data, error } = await supabase
+        .from('benefits')
+        .select('*, businesses(name, logo_url)')
+        .eq('user_id', userId!)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return (data ?? []) as Benefit[]
+    },
+    enabled: !!userId,
+    staleTime: 30_000,
+  })
+}
+
 export function useRedeemBenefit() {
   const queryClient = useQueryClient()
 

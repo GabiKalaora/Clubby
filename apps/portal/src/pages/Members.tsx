@@ -9,6 +9,15 @@ type Member = {
   joined_at: string
 }
 
+type Cohort = 'all' | 'new' | 'active' | 'lapsed'
+
+const COHORT_LABELS: Record<Cohort, string> = {
+  all:    'All members',
+  new:    'New (joined ≤7 days)',
+  active: 'Active (benefit in last 30 days)',
+  lapsed: 'Lapsed (no activity 30+ days)',
+}
+
 type MemberBenefit = {
   id: string
   title: string
@@ -37,6 +46,7 @@ export function Members({ business }: Props) {
   const [loading, setLoading] = useState(true)
   const [showNotify, setShowNotify] = useState(false)
   const [message, setMessage] = useState('')
+  const [cohort, setCohort] = useState<Cohort>('all')
   const [sending, setSending] = useState(false)
   const [notifyResult, setNotifyResult] = useState<string | null>(null)
 
@@ -96,7 +106,7 @@ export function Members({ business }: Props) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${session.access_token}`,
       },
-      body: JSON.stringify({ business_id: business.id, message: message.trim() }),
+      body: JSON.stringify({ business_id: business.id, message: message.trim(), cohort }),
     })
 
     setSending(false)
@@ -110,6 +120,25 @@ export function Members({ business }: Props) {
     }
   }
 
+  function downloadCsv() {
+    const header = 'Name,Phone,Joined'
+    const rows = members.map(m =>
+      [
+        `"${(m.display_name ?? '').replace(/"/g, '""')}"`,
+        `"${(m.phone ?? '').replace(/"/g, '""')}"`,
+        new Date(m.joined_at).toLocaleDateString(),
+      ].join(',')
+    )
+    const csv = [header, ...rows].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${business.name.replace(/\s+/g, '_')}_members.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="page-content">
       <div className="page-header">
@@ -118,16 +147,27 @@ export function Members({ business }: Props) {
           <p className="page-subtitle">{business.name} · {members.length} member{members.length !== 1 ? 's' : ''}</p>
         </div>
         {members.length > 0 && (
-          <button className="btn-primary btn-sm" onClick={() => { setShowNotify(true); setNotifyResult(null) }}>
-            📣 Notify all
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="btn-secondary btn-sm" onClick={downloadCsv}>
+              ⬇️ Export CSV
+            </button>
+            <button className="btn-primary btn-sm" onClick={() => { setShowNotify(true); setNotifyResult(null) }}>
+              📣 Notify all
+            </button>
+          </div>
         )}
       </div>
 
       {showNotify && (
         <div className="card form-card" style={{ marginBottom: 24 }}>
-          <h3 style={{ marginBottom: 12 }}>Send message to all members</h3>
+          <h3 style={{ marginBottom: 12 }}>Send message to members</h3>
           <form onSubmit={handleNotify}>
+            <label>Audience</label>
+            <select value={cohort} onChange={e => setCohort(e.target.value as Cohort)} style={{ marginBottom: 12 }}>
+              {(Object.keys(COHORT_LABELS) as Cohort[]).map(c => (
+                <option key={c} value={c}>{COHORT_LABELS[c]}</option>
+              ))}
+            </select>
             <label>Message *</label>
             <textarea
               placeholder="e.g. This weekend only — 20% off everything!"
@@ -139,7 +179,7 @@ export function Members({ business }: Props) {
             />
             <div className="form-row" style={{ marginTop: 12 }}>
               <button type="submit" className="btn-primary" style={{ flex: 1 }} disabled={sending || !message.trim()}>
-                {sending ? 'Sending…' : `Send to ${members.length} member${members.length !== 1 ? 's' : ''}`}
+                {sending ? 'Sending…' : `Send to ${cohort === 'all' ? `${members.length} member${members.length !== 1 ? 's' : ''}` : COHORT_LABELS[cohort]}`}
               </button>
               <button type="button" className="btn-secondary" style={{ flex: 1 }}
                 onClick={() => setShowNotify(false)}>

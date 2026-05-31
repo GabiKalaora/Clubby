@@ -8,7 +8,6 @@ import { Members } from './pages/Members'
 import { QRPage } from './pages/QRPage'
 import { Stories } from './pages/Stories'
 import { StampCards } from './pages/StampCards'
-import { VerifyRedemption } from './pages/VerifyRedemption'
 import { Settings } from './pages/Settings'
 
 export type DayHours = { open: string; close: string }
@@ -28,7 +27,7 @@ export type Business = {
   opening_hours: OpeningHours | null
 }
 
-export type View = 'dashboard' | 'promotions' | 'members' | 'qr' | 'stories' | 'stamp_cards' | 'verify' | 'settings'
+export type View = 'dashboard' | 'promotions' | 'members' | 'qr' | 'stories' | 'stamp_cards' | 'settings'
 
 interface Props {
   userId: string
@@ -109,8 +108,7 @@ export function Portal({ userId, email }: Props) {
         {selected && view === 'promotions'  && <Promotions  business={selected} />}
         {selected && view === 'members'     && <Members     business={selected} />}
         {selected && view === 'stories'     && <Stories     business={selected} />}
-        {selected && view === 'stamp_cards' && <StampCards       business={selected} />}
-        {selected && view === 'verify'      && <VerifyRedemption  business={selected} />}
+        {selected && view === 'stamp_cards' && <StampCards  business={selected} />}
         {selected && view === 'settings'    && <Settings    business={selected} onUpdated={handleBusinessUpdated} />}
         {selected && view === 'qr'          && <QRPage      business={selected} />}
         {!selected && (

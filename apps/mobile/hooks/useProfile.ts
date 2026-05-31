@@ -1,6 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 
+export type NotificationPrefs = {
+  expiry_reminder?: boolean
+  birthday?: boolean
+  re_engagement?: boolean
+  direct_message?: boolean
+}
+
 export type Profile = {
   id: string
   display_name: string | null
@@ -8,6 +15,7 @@ export type Profile = {
   avatar_url: string | null
   expo_push_token: string | null
   date_of_birth: string | null
+  notification_prefs: NotificationPrefs | null
 }
 
 export function useProfile(userId: string | undefined) {
@@ -19,7 +27,7 @@ export function useProfile(userId: string | undefined) {
       const { data, error } = await supabase
         .from('profiles')
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .select('id, display_name, phone, avatar_url, expo_push_token, date_of_birth' as any)
+        .select('id, display_name, phone, avatar_url, expo_push_token, date_of_birth, notification_prefs' as any)
         .eq('id', userId!)
         .single()
       if (error) throw error
@@ -31,10 +39,18 @@ export function useProfile(userId: string | undefined) {
 export function useUpdateProfile() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ userId, display_name, date_of_birth }: { userId: string; display_name?: string; date_of_birth?: string | null }) => {
+    mutationFn: async ({
+      userId, display_name, date_of_birth, notification_prefs,
+    }: {
+      userId: string
+      display_name?: string
+      date_of_birth?: string | null
+      notification_prefs?: NotificationPrefs
+    }) => {
       const patch: Record<string, unknown> = {}
       if (display_name !== undefined) patch.display_name = display_name.trim() || null
       if (date_of_birth !== undefined) patch.date_of_birth = date_of_birth || null
+      if (notification_prefs !== undefined) patch.notification_prefs = notification_prefs
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await supabase.from('profiles').update(patch as any).eq('id', userId)
       if (error) throw error

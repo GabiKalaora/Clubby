@@ -47,9 +47,13 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (Platform.OS === 'web') return
-    // Navigate to wallet when user taps a push notification
-    const sub = Notifications.addNotificationResponseReceivedListener(() => {
-      router.push('/(tabs)/wallet')
+    const sub = Notifications.addNotificationResponseReceivedListener(response => {
+      const data = response.notification.request.content.data as Record<string, string> | undefined
+      if (data?.benefitId) {
+        router.push({ pathname: '/redeem/[id]', params: { id: data.benefitId } } as never)
+      } else {
+        router.push('/(tabs)/wallet')
+      }
     })
     return () => sub.remove()
   }, [router])

@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
 
   const { data: profiles, error: profileErr } = await admin
     .from('profiles')
-    .select('id, display_name, expo_push_token, date_of_birth')
+    .select('id, display_name, expo_push_token, date_of_birth, notification_prefs')
     .not('date_of_birth', 'is', null)
 
   if (profileErr) {
@@ -89,8 +89,11 @@ Deno.serve(async (req) => {
       logEntries.push({ user_id: profile.id, benefit_id: newBenefit.id, type: 'birthday', message: msg })
 
       if (profile.expo_push_token) {
-        messages.push({ to: profile.expo_push_token, title: '🎂 Happy Birthday!', body: msg, sound: 'default' })
-        totalPushes++
+        const prefs = (profile.notification_prefs ?? {}) as Record<string, boolean>
+        if (prefs['birthday'] !== false) {
+          messages.push({ to: profile.expo_push_token, title: '🎂 Happy Birthday!', body: msg, sound: 'default', data: { benefitId: newBenefit.id } })
+          totalPushes++
+        }
       }
     }
   }

@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
       user_id,
       business_id,
       businesses ( name ),
-      profiles!user_id ( id, display_name, expo_push_token )
+      profiles!user_id ( id, display_name, expo_push_token, notification_prefs )
     `)
     .eq('active', true)
 
@@ -37,6 +37,8 @@ Deno.serve(async (req) => {
   for (const m of memberships ?? []) {
     const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles
     if (!profile?.expo_push_token) continue
+    const prefs = (profile.notification_prefs ?? {}) as Record<string, boolean>
+    if (prefs['re_engagement'] === false) continue
 
     // Check last benefit activity at this business
     const { data: recentBenefit } = await admin
@@ -54,7 +56,7 @@ Deno.serve(async (req) => {
       .from('notification_log')
       .select('id')
       .eq('user_id', m.user_id)
-      .eq('type', 're_engage')
+      .eq('type', 're_engagement')
       .gte('sent_at', cutoff)
       .maybeSingle()
 
@@ -74,7 +76,7 @@ Deno.serve(async (req) => {
     logEntries.push({
       user_id: profile.id,
       benefit_id: null,
-      type: 're_engage',
+      type: 're_engagement',
       message: body,
     })
   }

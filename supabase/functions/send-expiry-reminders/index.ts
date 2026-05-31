@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
       discount_percent,
       amount_cents,
       businesses ( name ),
-      profiles!user_id ( id, expo_push_token )
+      profiles!user_id ( id, expo_push_token, notification_prefs )
     `)
     .eq('redeemed', false)
     .not('expires_at', 'is', null)
@@ -57,6 +57,8 @@ Deno.serve(async (req) => {
     const profile = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles
     const token = profile?.expo_push_token
     if (!token) continue
+    const prefs = (profile?.notification_prefs ?? {}) as Record<string, boolean>
+    if (prefs['expiry_reminder'] === false) continue
 
     const businessName = Array.isArray(b.businesses)
       ? b.businesses[0]?.name

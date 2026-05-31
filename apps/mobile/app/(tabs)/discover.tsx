@@ -12,6 +12,22 @@ import { useMemberships } from '../../hooks/useMemberships'
 
 type Category = 'all' | 'food' | 'clothing' | 'shoes' | 'health' | 'tech' | 'service'
 
+const DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const
+
+function isOpenNow(opening_hours: Business['opening_hours']): boolean {
+  if (!opening_hours) return false
+  const now = new Date()
+  const day = DAYS[now.getDay()]
+  const dayHours = opening_hours[day]
+  if (!dayHours) return false
+  const [openH, openM] = dayHours.open.split(':').map(Number)
+  const [closeH, closeM] = dayHours.close.split(':').map(Number)
+  const nowMins = now.getHours() * 60 + now.getMinutes()
+  const openMins = openH * 60 + openM
+  const closeMins = closeH * 60 + closeM
+  return nowMins >= openMins && nowMins < closeMins
+}
+
 const CATEGORIES: { key: Category; label: string; emoji: string }[] = [
   { key: 'all', label: 'All', emoji: '🌐' },
   { key: 'food', label: 'Food', emoji: '🍔' },
@@ -118,6 +134,7 @@ export default function Discover() {
   const [activeCategory, setActiveCategory] = useState<Category>('all')
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [openNow, setOpenNow] = useState(false)
   const [enrollingId, setEnrollingId] = useState<string | null>(null)
   const [enrolledIds, setEnrolledIds] = useState<Set<string>>(new Set())
 
@@ -129,6 +146,10 @@ export default function Discover() {
   )
   const { mutate: enroll } = useEnrollBusiness()
   const { data: memberships = [] } = useMemberships(user?.id)
+
+  const displayedBusinesses = openNow
+    ? businesses.filter(b => isOpenNow(b.opening_hours))
+    : businesses
 
   // Pre-populate enrolledIds from existing memberships
   useEffect(() => {
@@ -194,7 +215,7 @@ export default function Discover() {
         keyExtractor={(item) => item.key}
         showsHorizontalScrollIndicator={false}
         style={{ flexGrow: 0 }}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 12, gap: 8, alignItems: 'flex-start' }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 8, gap: 8, alignItems: 'flex-start' }}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => setActiveCategory(item.key)}
@@ -212,6 +233,21 @@ export default function Discover() {
         )}
       />
 
+      {/* Open Now toggle */}
+      <View className="px-4 pb-3 flex-row">
+        <TouchableOpacity
+          onPress={() => setOpenNow(v => !v)}
+          className={`flex-row items-center rounded-full px-3.5 py-2 ${
+            openNow ? 'bg-green-500' : 'bg-white border border-gray-200'
+          }`}
+        >
+          <Text className="text-sm mr-1">🟢</Text>
+          <Text className={`text-xs font-semibold ${openNow ? 'text-white' : 'text-gray-600'}`}>
+            Open Now
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Business list */}
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
@@ -219,7 +255,7 @@ export default function Discover() {
         </View>
       ) : (
         <FlatList
-          data={businesses}
+          data={displayedBusinesses}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <BusinessCard
@@ -237,6 +273,8 @@ export default function Discover() {
               <Text className="text-gray-500 text-center text-base">
                 {search
                   ? `No businesses matching "${search}"`
+                  : openNow
+                  ? 'No businesses open right now'
                   : activeCategory === 'all'
                   ? 'No businesses yet'
                   : `No ${activeCategory} businesses yet`}

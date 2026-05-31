@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Share } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
@@ -50,6 +50,15 @@ export default function StoreProfile() {
       { token: business.qr_code_token, userJwt: session.access_token },
       { onSuccess: () => refetchMember() },
     )
+  }
+
+  function handleInvite() {
+    if (!user || !business) return
+    const url = `clubby://enroll?token=${business.qr_code_token}&ref=${user.id}`
+    Share.share({
+      message: `Join ${business.name} on Clubby and get a welcome reward! ${url}`,
+      title: `Join ${business.name}`,
+    })
   }
 
   if (isLoading) {
@@ -116,18 +125,28 @@ export default function StoreProfile() {
               )}
             </View>
 
-            <TouchableOpacity
-              className={`rounded-full px-5 py-2.5 ${isMember ? 'bg-gray-100' : 'bg-brand'}`}
-              onPress={isMember ? undefined : handleJoin}
-              disabled={enrolling || isMember}
-            >
-              {enrolling
-                ? <ActivityIndicator size="small" color="white" />
-                : <Text className={`font-bold text-sm ${isMember ? 'text-gray-500' : 'text-white'}`}>
-                    {isMember ? '✓ Joined' : 'Join Club'}
-                  </Text>
-              }
-            </TouchableOpacity>
+            <View className="items-end gap-y-2">
+              <TouchableOpacity
+                className={`rounded-full px-5 py-2.5 ${isMember ? 'bg-gray-100' : 'bg-brand'}`}
+                onPress={isMember ? undefined : handleJoin}
+                disabled={enrolling || isMember}
+              >
+                {enrolling
+                  ? <ActivityIndicator size="small" color="white" />
+                  : <Text className={`font-bold text-sm ${isMember ? 'text-gray-500' : 'text-white'}`}>
+                      {isMember ? '✓ Joined' : 'Join Club'}
+                    </Text>
+                }
+              </TouchableOpacity>
+              {isMember && (
+                <TouchableOpacity
+                  className="rounded-full px-4 py-1.5 bg-brand/10 border border-brand/20"
+                  onPress={handleInvite}
+                >
+                  <Text className="text-brand text-xs font-semibold">👥 Invite friends</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
 
           {/* Address */}
