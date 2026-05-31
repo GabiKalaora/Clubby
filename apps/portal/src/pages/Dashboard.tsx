@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import type { Business } from '../Portal'
+import {
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, CartesianGrid,
+} from 'recharts'
 
 interface Stats {
   member_count: number
@@ -9,21 +13,34 @@ interface Stats {
   redeemed_benefits: number
 }
 
+interface GrowthPoint { day: string; new_members: number }
+interface TrendPoint  { day: string; redeemed: number }
+
 interface Props { business: Business }
 
+function shortDate(iso: string) {
+  const d = new Date(iso)
+  return `${d.getMonth() + 1}/${d.getDate()}`
+}
+
 export function Dashboard({ business }: Props) {
-  const [stats, setStats] = useState<Stats | null>(null)
+  const [stats, setStats]   = useState<Stats | null>(null)
+  const [growth, setGrowth] = useState<GrowthPoint[]>([])
+  const [trend, setTrend]   = useState<TrendPoint[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setLoading(true)
-    supabase
-      .rpc('get_business_stats', { p_business_id: business.id })
-      .single()
-      .then(({ data }) => {
-        setStats(data as Stats ?? null)
-        setLoading(false)
-      })
+    Promise.all([
+      supabase.rpc('get_business_stats', { p_business_id: business.id }).single(),
+      supabase.rpc('get_member_growth',    { p_business_id: business.id }),
+      supabase.rpc('get_redemption_trend', { p_business_id: business.id }),
+    ]).then(([statsRes, growthRes, trendRes]) => {
+      setStats((statsRes.data as Stats) ?? null)
+      setGrowth(((growthRes.data ?? []) as GrowthPoint[]).map(p => ({ ...p, day: shortDate(p.day) })))
+      setTrend(((trendRes.data ?? []) as TrendPoint[]).map(p => ({ ...p, day: shortDate(p.day) })))
+      setLoading(false)
+    })
   }, [business.id])
 
   const redemptionRate = stats && stats.total_benefits > 0
@@ -38,25 +55,66 @@ export function Dashboard({ business }: Props) {
       {loading ? (
         <div className="spinner" />
       ) : (
-        <div className="stats-grid">
-          <StatCard icon="👥" label="Total Members"      value={stats?.member_count ?? 0}      color="green" />
-          <StatCard icon="🎁" label="Active Promotions"  value={stats?.active_promotions ?? 0} color="blue"  />
-          <StatCard icon="🏷️" label="Benefits Issued"    value={stats?.total_benefits ?? 0}    color="amber" />
-          <StatCard icon="✅" label="Redemption Rate"    value={`${redemptionRate}%`}           color="teal"  />
-        </div>
-      )}
+        <>
+          {/* Stat cards */}
+          <div className="stats-grid">
+            <StatCard icon="👥" label="Total Members"      value={stats?.member_count ?? 0}      color="green" />
+            <StatCard icon="🎁" label="Active Promotions"  value={stats?.active_promotions ?? 0} color="blue"  />
+            <StatCard icon="🏷️" label="Benefits Issued"    value={stats?.total_benefits ?? 0}    color="amber" />
+            <StatCard icon="✅" label="Redemption Rate"    value={`${redemptionRate}%`}           color="teal"  />
+          </div>
 
-      {!loading && stats && (
-        <div className="dashboard-tip card" style={{ marginTop: 24 }}>
-          <p className="hint">
-            {stats.member_count === 0
-              ? '👋 No members yet. Share your QR code to get your first members!'
-              : stats.active_promotions === 0
-              ? '💡 Add a promotion — members who scan your QR will receive a welcome benefit.'
-              : `🎉 Great! ${stats.member_count} member${stats.member_count !== 1 ? 's' : ''} in your club.`
-            }
-          </p>
-        </div>
+          {/* Charts */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 24 }}>
+            <div className="chart-card">
+              <p className="chart-title">New Members — last 30 days</p>
+              <ResponsiveContainer width="100%" height={180}>
+                <LineChart data={growth} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={6} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                  <Tooltip
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+                    formatter={(v: number) => [v, 'New members']}
+                  />
+                  <Line
+                    type="monotone" dataKey="new_members" stroke="#2ecc71"
+                    strokeWidth={2} dot={false} activeDot={{ r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="chart-card">
+              <p className="chart-title">Daily Redemptions — last 30 days</p>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={trend} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={6} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                  <Tooltip
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+                    formatter={(v: number) => [v, 'Redemptions']}
+                  />
+                  <Bar dataKey="redeemed" fill="#6366f1" radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {stats && (
+            <div className="dashboard-tip card" style={{ marginTop: 20 }}>
+              <p className="hint">
+                {stats.member_count === 0
+                  ? '👋 No members yet. Share your QR code to get your first members!'
+                  : stats.active_promotions === 0
+                  ? '💡 Add a promotion — members who scan your QR will receive a welcome benefit.'
+                  : `🎉 Great! ${stats.member_count} member${stats.member_count !== 1 ? 's' : ''} in your club.`
+                }
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

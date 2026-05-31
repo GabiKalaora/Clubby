@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { useRouter } from 'expo-router'
 import type { Benefit } from '../hooks/useBenefits'
 
 type Props = {
@@ -27,8 +27,8 @@ function valueLabel(benefit: Benefit): string {
   return benefit.free_item_description ?? benefit.title
 }
 
-export default function BenefitCard({ benefit, onRedeem }: Props) {
-  const [confirming, setConfirming] = useState(false)
+export default function BenefitCard({ benefit }: Props) {
+  const router = useRouter()
   const badge = expiryBadge(benefit.expires_at)
   const businessName = benefit.businesses?.name ?? 'Unknown'
   const logoUrl = benefit.businesses?.logo_url
@@ -69,39 +69,16 @@ export default function BenefitCard({ benefit, onRedeem }: Props) {
           <View className="bg-brand/10 rounded-xl px-2.5 py-1 mb-2">
             <Text className="text-brand font-bold text-sm">{valueLabel(benefit)}</Text>
           </View>
-          {!confirming && !isExpired && (
+          {!isExpired && (
             <TouchableOpacity
               className="bg-brand rounded-full px-3 py-1.5"
-              onPress={() => setConfirming(true)}
+              onPress={() => router.push({ pathname: '/redeem/[id]', params: { id: benefit.id } } as never)}
             >
               <Text className="text-white text-xs font-semibold">Use</Text>
             </TouchableOpacity>
           )}
         </View>
       </View>
-
-      {/* Inline confirmation strip */}
-      {confirming && (
-        <View className="mt-3 pt-3 border-t border-gray-100 flex-row items-center justify-between">
-          <Text className="text-gray-600 text-xs flex-1 mr-3">
-            Redeem at {businessName}?
-          </Text>
-          <View className="flex-row gap-x-2">
-            <TouchableOpacity
-              className="bg-gray-100 rounded-full px-3 py-1.5"
-              onPress={() => setConfirming(false)}
-            >
-              <Text className="text-gray-600 text-xs font-semibold">Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="bg-red-400 rounded-full px-3 py-1.5"
-              onPress={() => { setConfirming(false); onRedeem(benefit.id) }}
-            >
-              <Text className="text-white text-xs font-semibold">Confirm</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
     </View>
   )
 }

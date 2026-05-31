@@ -39,6 +39,8 @@ export default function ProfileScreen() {
 
   const [editing, setEditing] = useState(false)
   const [nameInput, setNameInput] = useState('')
+  const [dobInput, setDobInput] = useState('')
+  const [editingDob, setEditingDob] = useState(false)
 
   function startEdit() {
     setNameInput(profile?.display_name ?? '')
@@ -50,6 +52,14 @@ export default function ProfileScreen() {
     updateProfile(
       { userId: user.id, display_name: nameInput },
       { onSuccess: () => setEditing(false) },
+    )
+  }
+
+  function saveDob() {
+    if (!user?.id) return
+    updateProfile(
+      { userId: user.id, date_of_birth: dobInput || null },
+      { onSuccess: () => setEditingDob(false) },
     )
   }
 
@@ -130,6 +140,43 @@ export default function ProfileScreen() {
           <View className="bg-white rounded-2xl shadow-sm overflow-hidden mb-4">
             <InfoRow label="Phone" value={profile?.phone ?? user?.phone ?? '—'} />
             <InfoRow label="Email" value={user?.email ?? '—'} last />
+          </View>
+
+          {/* Birthday */}
+          <View className="bg-white rounded-2xl shadow-sm overflow-hidden mb-4">
+            <View className="flex-row justify-between items-center px-5 py-4">
+              <Text className="text-gray-500 text-sm">Date of birth</Text>
+              {editingDob ? (
+                <View className="flex-row items-center gap-x-2">
+                  <TextInput
+                    className="border border-gray-300 rounded-xl px-3 py-1.5 text-sm text-gray-900 bg-gray-50 w-36"
+                    value={dobInput}
+                    onChangeText={setDobInput}
+                    placeholder="YYYY-MM-DD"
+                    keyboardType="numbers-and-punctuation"
+                    autoFocus
+                    returnKeyType="done"
+                    onSubmitEditing={saveDob}
+                  />
+                  <TouchableOpacity className="bg-brand rounded-xl px-3 py-1.5" onPress={saveDob} disabled={saving}>
+                    <Text className="text-white text-xs font-semibold">{saving ? '…' : 'Save'}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setEditingDob(false)}>
+                    <Text className="text-gray-400 text-sm">✕</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  className="flex-row items-center gap-x-1"
+                  onPress={() => { setDobInput(profile?.date_of_birth ?? ''); setEditingDob(true) }}
+                >
+                  <Text className="text-gray-900 text-sm font-medium">
+                    {profile?.date_of_birth ?? 'Not set'}
+                  </Text>
+                  <Text className="text-gray-400 text-xs">✎</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
 
           {/* Sign out */}

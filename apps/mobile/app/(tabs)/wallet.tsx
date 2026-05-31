@@ -11,6 +11,7 @@ import { useBenefits, useRedeemBenefit, type Benefit } from '../../hooks/useBene
 import { useMemberships } from '../../hooks/useMemberships'
 import { useUnreadCount } from '../../hooks/useNotifications'
 import { useActiveStories } from '../../hooks/useStories'
+import { useStampCards, type StampCard } from '../../hooks/useStampCards'
 import BenefitCard from '../../components/BenefitCard'
 
 type Tab = 'all' | 'credit' | 'discount' | 'free_item'
@@ -46,10 +47,11 @@ export default function Wallet() {
 
   const { data: user } = useCurrentUser()
   const { data: benefits = [], isLoading, refetch, isRefetching } = useBenefits(user?.id)
-  const { mutate: redeem } = useRedeemBenefit()
   const { data: unreadCount = 0 } = useUnreadCount(user?.id)
   const { data: stories = [] } = useActiveStories(user?.id)
   const { data: memberships = [] } = useMemberships(user?.id)
+  const membershipBusinessIds = memberships.map((m) => m.business_id)
+  const { data: stampCards = [] } = useStampCards(membershipBusinessIds, user?.id)
 
   const filtered = activeTab === 'all'
     ? benefits
@@ -169,6 +171,24 @@ export default function Wallet() {
         </View>
       )}
 
+      {/* Stamp cards */}
+      {stampCards.length > 0 && (
+        <View className="mb-4">
+          <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 mb-2">
+            Stamp Cards
+          </Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}
+          >
+            {stampCards.map((card) => (
+              <StampCardWidget key={card.id} card={card} />
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
       {/* Filter tabs */}
       <View className="flex-row px-4 mb-2 gap-x-2">
         {TABS.map((tab) => (
@@ -208,10 +228,7 @@ export default function Wallet() {
           data={filtered}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <BenefitCard
-              benefit={item}
-              onRedeem={(id) => redeem({ benefitId: id, userId: user!.id })}
-            />
+            <BenefitCard benefit={item} onRedeem={() => {}} />
           )}
           refreshControl={
             <RefreshControl
@@ -235,5 +252,36 @@ export default function Wallet() {
       )}
 
     </SafeAreaView>
+  )
+}
+
+function StampCardWidget({ card }: { card: StampCard }) {
+  const dots = Array.from({ length: card.required_stamps }, (_, i) => i < card.current_stamps)
+  const cols = Math.min(card.required_stamps, 5)
+
+  return (
+    <View className="bg-white rounded-2xl px-4 py-3 shadow-sm border border-gray-100"
+      style={{ minWidth: 160, maxWidth: 200 }}>
+      <Text className="text-[12px] font-bold text-gray-800 mb-2" numberOfLines={1}>{card.name}</Text>
+      {/* Dot grid */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginBottom: 8, maxWidth: cols * 18 }}>
+        {dots.map((filled, i) => (
+          <View key={i} style={{
+            width: 14, height: 14, borderRadius: 7,
+            backgroundColor: filled ? '#2ecc71' : '#e5e7eb',
+          }} />
+        ))}
+      </View>
+      <Text className="text-[11px] text-gray-500">
+        {card.completed
+          ? '✅ Reward earned!'
+          : `${card.current_stamps} / ${card.required_stamps} stamps`}
+      </Text>
+      {!card.completed && (
+        <Text className="text-[10px] text-brand mt-0.5" numberOfLines={1}>
+          🎁 {card.reward_title}
+        </Text>
+      )}
+    </View>
   )
 }

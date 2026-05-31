@@ -12,12 +12,14 @@ interface Props {
 }
 
 const NAV: { key: View; label: string; icon: string }[] = [
-  { key: 'dashboard',  label: 'Dashboard',   icon: '📊' },
-  { key: 'promotions', label: 'Promotions',  icon: '🎁' },
-  { key: 'members',    label: 'Members',     icon: '👥' },
-  { key: 'stories',    label: 'Stories',     icon: '📖' },
-  { key: 'settings',   label: 'Settings',    icon: '⚙️' },
-  { key: 'qr',         label: 'QR Code',     icon: '📱' },
+  { key: 'dashboard',   label: 'Dashboard',         icon: '📊' },
+  { key: 'promotions',  label: 'Promotions',         icon: '🎁' },
+  { key: 'members',     label: 'Members',            icon: '👥' },
+  { key: 'stamp_cards', label: 'Stamp Cards',        icon: '🥇' },
+  { key: 'verify',      label: 'Verify Redemption',  icon: '✅' },
+  { key: 'stories',     label: 'Stories',            icon: '📖' },
+  { key: 'settings',    label: 'Settings',           icon: '⚙️' },
+  { key: 'qr',          label: 'QR Code',            icon: '📱' },
 ]
 
 export function Sidebar({ view, onNavigate, businesses, selected, onSelectBusiness, email, onAddBusiness, onSignOut }: Props) {

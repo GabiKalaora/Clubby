@@ -1,10 +1,36 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import type { Business } from '../Portal'
+import type { Business, OpeningHours, DayHours } from '../Portal'
 
 interface Props {
   business: Business
   onUpdated: (updated: Business) => void
+}
+
+const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const
+type Day = typeof DAYS[number]
+const DAY_LABELS: Record<Day, string> = {
+  mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday',
+  fri: 'Friday', sat: 'Saturday', sun: 'Sunday',
+}
+
+type HoursForm = Record<Day, { enabled: boolean; open: string; close: string }>
+
+function buildHoursForm(oh: OpeningHours | null): HoursForm {
+  return Object.fromEntries(DAYS.map(d => [
+    d,
+    oh?.[d]
+      ? { enabled: true, open: oh[d]!.open, close: oh[d]!.close }
+      : { enabled: false, open: '09:00', close: '18:00' },
+  ])) as HoursForm
+}
+
+function formToOpeningHours(form: HoursForm): OpeningHours {
+  const result: OpeningHours = {}
+  for (const d of DAYS) {
+    if (form[d].enabled) result[d] = { open: form[d].open, close: form[d].close } as DayHours
+  }
+  return result
 }
 
 export function Settings({ business, onUpdated }: Props) {
@@ -16,6 +42,7 @@ export function Settings({ business, onUpdated }: Props) {
   const [webhookUrl, setWebhookUrl] = useState(business.webhook_url ?? '')
   const [webhookSecret, setWebhookSecret] = useState(business.webhook_secret ?? '')
   const [showSecret, setShowSecret] = useState(false)
+  const [hours, setHours] = useState<HoursForm>(() => buildHoursForm(business.opening_hours))
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -29,9 +56,14 @@ export function Settings({ business, onUpdated }: Props) {
     setPhone(business.phone ?? '')
     setWebhookUrl(business.webhook_url ?? '')
     setWebhookSecret(business.webhook_secret ?? '')
+    setHours(buildHoursForm(business.opening_hours))
     setMessage('')
     setError('')
   }, [business.id])
+
+  function setHoursField(day: Day, field: 'enabled' | 'open' | 'close', value: string | boolean) {
+    setHours(prev => ({ ...prev, [day]: { ...prev[day], [field]: value } }))
+  }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -72,6 +104,8 @@ export function Settings({ business, onUpdated }: Props) {
     setError('')
     setMessage('')
 
+    const opening_hours = formToOpeningHours(hours)
+
     const { error: updateError } = await supabase
       .from('businesses')
       .update({
@@ -82,6 +116,7 @@ export function Settings({ business, onUpdated }: Props) {
         logo_url: logoUrl.trim() || null,
         webhook_url: webhookUrl.trim() || null,
         webhook_secret: webhookSecret.trim() || null,
+        opening_hours: Object.keys(opening_hours).length > 0 ? opening_hours : null,
       })
       .eq('id', business.id)
 
@@ -98,6 +133,7 @@ export function Settings({ business, onUpdated }: Props) {
         logo_url: logoUrl.trim() || null,
         webhook_url: webhookUrl.trim() || null,
         webhook_secret: webhookSecret.trim() || null,
+        opening_hours: Object.keys(opening_hours).length > 0 ? opening_hours : null,
       }
       onUpdated(updated)
       setMessage('Changes saved!')
@@ -185,6 +221,58 @@ export function Settings({ business, onUpdated }: Props) {
           onChange={e => setPhone(e.target.value)}
           placeholder="+1 555 000 0000"
         />
+      </div>
+
+      {/* Opening hours section */}
+      <div className="settings-section">
+        <h3 className="settings-section-title">Opening Hours</h3>
+        <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>
+          Toggle days on/off and set your opening and closing times.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {DAYS.map(day => (
+            <div key={day} style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '10px 14px', borderRadius: 10,
+              background: hours[day].enabled ? '#f0fdf4' : '#f9fafb',
+              border: `1.5px solid ${hours[day].enabled ? '#86efac' : '#e5e7eb'}`,
+            }}>
+              {/* Toggle */}
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', margin: 0, width: 'auto', flexShrink: 0 }}>
+                <input
+                  type="checkbox"
+                  checked={hours[day].enabled}
+                  onChange={e => setHoursField(day, 'enabled', e.target.checked)}
+                  style={{ width: 'auto', margin: 0, cursor: 'pointer', accentColor: '#2ecc71' }}
+                />
+              </label>
+              {/* Day name */}
+              <span style={{ width: 90, fontSize: 13, fontWeight: hours[day].enabled ? 600 : 400, color: hours[day].enabled ? '#1a1a2e' : '#9ca3af', flexShrink: 0 }}>
+                {DAY_LABELS[day]}
+              </span>
+              {/* Time inputs */}
+              {hours[day].enabled ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+                  <input
+                    type="time"
+                    value={hours[day].open}
+                    onChange={e => setHoursField(day, 'open', e.target.value)}
+                    style={{ width: 110, padding: '6px 10px', fontSize: 13 }}
+                  />
+                  <span style={{ color: '#9ca3af', fontSize: 13 }}>to</span>
+                  <input
+                    type="time"
+                    value={hours[day].close}
+                    onChange={e => setHoursField(day, 'close', e.target.value)}
+                    style={{ width: 110, padding: '6px 10px', fontSize: 13 }}
+                  />
+                </div>
+              ) : (
+                <span style={{ fontSize: 13, color: '#9ca3af' }}>Closed</span>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Webhook integration section */}

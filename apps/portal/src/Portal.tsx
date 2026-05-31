@@ -7,7 +7,12 @@ import { Promotions } from './pages/Promotions'
 import { Members } from './pages/Members'
 import { QRPage } from './pages/QRPage'
 import { Stories } from './pages/Stories'
+import { StampCards } from './pages/StampCards'
+import { VerifyRedemption } from './pages/VerifyRedemption'
 import { Settings } from './pages/Settings'
+
+export type DayHours = { open: string; close: string }
+export type OpeningHours = Partial<Record<'mon'|'tue'|'wed'|'thu'|'fri'|'sat'|'sun', DayHours>>
 
 export type Business = {
   id: string
@@ -20,9 +25,10 @@ export type Business = {
   qr_code_token: string
   webhook_url: string | null
   webhook_secret: string | null
+  opening_hours: OpeningHours | null
 }
 
-export type View = 'dashboard' | 'promotions' | 'members' | 'qr' | 'stories' | 'settings'
+export type View = 'dashboard' | 'promotions' | 'members' | 'qr' | 'stories' | 'stamp_cards' | 'verify' | 'settings'
 
 interface Props {
   userId: string
@@ -39,7 +45,7 @@ export function Portal({ userId, email }: Props) {
   useEffect(() => {
     supabase
       .from('businesses')
-      .select('id, name, category, description, address, phone, logo_url, qr_code_token, webhook_url, webhook_secret')
+      .select('id, name, category, description, address, phone, logo_url, qr_code_token, webhook_url, webhook_secret, opening_hours')
       .eq('owner_id', userId)
       .order('created_at', { ascending: true })
       .then(({ data }) => {
@@ -103,6 +109,8 @@ export function Portal({ userId, email }: Props) {
         {selected && view === 'promotions'  && <Promotions  business={selected} />}
         {selected && view === 'members'     && <Members     business={selected} />}
         {selected && view === 'stories'     && <Stories     business={selected} />}
+        {selected && view === 'stamp_cards' && <StampCards       business={selected} />}
+        {selected && view === 'verify'      && <VerifyRedemption  business={selected} />}
         {selected && view === 'settings'    && <Settings    business={selected} onUpdated={handleBusinessUpdated} />}
         {selected && view === 'qr'          && <QRPage      business={selected} />}
         {!selected && (
