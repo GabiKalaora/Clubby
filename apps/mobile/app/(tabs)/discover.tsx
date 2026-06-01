@@ -237,12 +237,18 @@ export default function Discover() {
       <View className="px-4 pb-3 flex-row">
         <TouchableOpacity
           onPress={() => setOpenNow(v => !v)}
-          className={`flex-row items-center rounded-full px-3.5 py-2 ${
-            openNow ? 'bg-green-500' : 'bg-white border border-gray-200'
+          className={`flex-row items-center rounded-full px-3.5 py-2 border ${
+            openNow
+              ? 'bg-brand border-brand'
+              : 'bg-white border-gray-200'
           }`}
         >
-          <Text className="text-sm mr-1">🟢</Text>
-          <Text className={`text-xs font-semibold ${openNow ? 'text-white' : 'text-gray-600'}`}>
+          <View style={{
+            width: 8, height: 8, borderRadius: 4,
+            backgroundColor: openNow ? 'white' : '#22c55e',
+            marginRight: 6,
+          }} />
+          <Text className={`text-xs font-semibold ${openNow ? 'text-white' : 'text-gray-700'}`}>
             Open Now
           </Text>
         </TouchableOpacity>

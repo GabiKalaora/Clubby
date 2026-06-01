@@ -58,10 +58,10 @@ export function Dashboard({ business }: Props) {
         <>
           {/* Stat cards */}
           <div className="stats-grid">
-            <StatCard icon="👥" label="Total Members"      value={stats?.member_count ?? 0}      color="green" />
-            <StatCard icon="🎁" label="Active Promotions"  value={stats?.active_promotions ?? 0} color="blue"  />
-            <StatCard icon="🏷️" label="Benefits Issued"    value={stats?.total_benefits ?? 0}    color="amber" />
-            <StatCard icon="✅" label="Redemption Rate"    value={`${redemptionRate}%`}           color="teal"  />
+            <StatCard icon="👥" label="Total Members"     value={stats?.member_count ?? 0}      accent="#2ecc71" />
+            <StatCard icon="🎁" label="Active Promotions" value={stats?.active_promotions ?? 0} accent="#6366f1" />
+            <StatCard icon="🏷️" label="Benefits Issued"   value={stats?.total_benefits ?? 0}    accent="#f59e0b" />
+            <StatCard icon="📈" label="Redemption Rate"   value={`${redemptionRate}%`}           accent="#10b981" />
           </div>
 
           {/* Charts */}
@@ -120,14 +120,20 @@ export function Dashboard({ business }: Props) {
   )
 }
 
-function StatCard({ icon, label, value, color }: {
-  icon: string; label: string; value: number | string; color: string
+function StatCard({ icon, label, value, accent }: {
+  icon: string; label: string; value: number | string; accent: string
 }) {
   return (
-    <div className={`stat-card stat-${color}`}>
-      <span className="stat-icon">{icon}</span>
+    <div className="stat-card" style={{ borderTop: `3px solid ${accent}` }}>
+      <span className="stat-icon" style={{
+        background: `${accent}18`,
+        borderRadius: 10,
+        width: 40, height: 40,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 20,
+      }}>{icon}</span>
       <div>
-        <p className="stat-value">{value}</p>
+        <p className="stat-value" style={{ color: accent }}>{value}</p>
         <p className="stat-label">{label}</p>
       </div>
     </div>

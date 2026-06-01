@@ -27,8 +27,17 @@ export default function SignIn() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-white justify-center px-6"
     >
-      <Text className="text-3xl font-bold text-gray-800 mb-2">Welcome to Clubby</Text>
-      <Text className="text-gray-500 mb-8">Enter your phone number to get started</Text>
+      {/* Logo mark */}
+      <View className="items-center mb-10">
+        <View className="w-20 h-20 rounded-3xl bg-brand items-center justify-center mb-4 shadow-sm shadow-brand/30">
+          <Text style={{ fontSize: 40 }}>🏪</Text>
+        </View>
+        <Text className="text-3xl font-bold text-gray-900">Clubby</Text>
+        <Text className="text-gray-400 text-sm mt-1">Your loyalty wallet</Text>
+      </View>
+
+      <Text className="text-xl font-bold text-gray-800 mb-1">Welcome</Text>
+      <Text className="text-gray-500 mb-6">Enter your phone number to get started</Text>
 
       <TextInput
         className="border border-gray-200 rounded-xl px-4 py-4 text-base mb-4 bg-gray-50"

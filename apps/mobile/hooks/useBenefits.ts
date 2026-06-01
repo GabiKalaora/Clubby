@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
 
@@ -46,6 +47,26 @@ async function fetchBenefits(userId: string): Promise<Benefit[]> {
 }
 
 export function useBenefits(userId: string | undefined) {
+  const qc = useQueryClient()
+
+  // Realtime sync: any INSERT or UPDATE on this user's benefits invalidates both caches
+  useEffect(() => {
+    if (!userId) return
+    const channel = supabase
+      .channel(`benefits:${userId}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'benefits',
+        filter: `user_id=eq.${userId}`,
+      }, () => {
+        qc.invalidateQueries({ queryKey: ['benefits', userId] })
+        qc.invalidateQueries({ queryKey: ['benefits-all', userId] })
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [userId, qc])
+
   return useQuery({
     queryKey: ['benefits', userId],
     queryFn: () => fetchBenefits(userId!),

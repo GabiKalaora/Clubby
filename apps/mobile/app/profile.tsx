@@ -191,7 +191,9 @@ export default function ProfileScreen() {
                   onPress={() => { setDobInput(profile?.date_of_birth ?? ''); setEditingDob(true) }}
                 >
                   <Text className="text-gray-900 text-sm font-medium">
-                    {profile?.date_of_birth ?? 'Not set'}
+                    {profile?.date_of_birth
+                      ? new Date(profile.date_of_birth + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                      : 'Not set'}
                   </Text>
                   <Text className="text-gray-400 text-xs">✎</Text>
                 </TouchableOpacity>

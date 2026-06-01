@@ -285,9 +285,14 @@ function StampCardWidget({ card }: { card: StampCard }) {
           : `${card.current_stamps} / ${card.required_stamps} stamps`}
       </Text>
       {!card.completed && (
-        <Text className="text-[10px] text-brand mt-0.5" numberOfLines={1}>
-          🎁 {card.reward_title}
-        </Text>
+        <>
+          <Text className="text-[10px] text-brand mt-0.5" numberOfLines={1}>
+            🎁 {card.reward_title}
+          </Text>
+          <Text className="text-[10px] text-gray-400 mt-0.5" numberOfLines={1}>
+            {card.required_stamps - card.current_stamps} more to earn!
+          </Text>
+        </>
       )}
     </View>
   )

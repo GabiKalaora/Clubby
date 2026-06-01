@@ -86,6 +86,18 @@ export function Members({ business }: Props) {
     return sum
   }, 0)
 
+  const [redeemingId, setRedeemingId] = useState<string | null>(null)
+
+  async function markRedeemed(benefitId: string) {
+    setRedeemingId(benefitId)
+    await supabase
+      .from('benefits')
+      .update({ redeemed: true, redeemed_at: new Date().toISOString() })
+      .eq('id', benefitId)
+    setMemberBenefits(prev => prev.map(b => b.id === benefitId ? { ...b, redeemed: true, redeemed_at: new Date().toISOString() } : b))
+    setRedeemingId(null)
+  }
+
   async function handleNotify(e: React.FormEvent) {
     e.preventDefault()
     if (!message.trim()) return
@@ -152,7 +164,7 @@ export function Members({ business }: Props) {
               ⬇️ Export CSV
             </button>
             <button className="btn-primary btn-sm" onClick={() => { setShowNotify(true); setNotifyResult(null) }}>
-              📣 Notify all
+              📣 Notify members
             </button>
           </div>
         )}
@@ -254,6 +266,7 @@ export function Members({ business }: Props) {
                       <th>Value</th>
                       <th>Issued</th>
                       <th>Status</th>
+                      <th style={{ width: 100 }}></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -267,6 +280,18 @@ export function Members({ business }: Props) {
                           {b.redeemed
                             ? <span className="badge badge-gray">Used</span>
                             : <span className="badge badge-green">Active</span>}
+                        </td>
+                        <td>
+                          {!b.redeemed && (
+                            <button
+                              className="btn-link"
+                              style={{ fontSize: 12, color: '#2ecc71', fontWeight: 600 }}
+                              disabled={redeemingId === b.id}
+                              onClick={() => markRedeemed(b.id)}
+                            >
+                              {redeemingId === b.id ? '…' : '✓ Redeem'}
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -300,7 +325,7 @@ export function Members({ business }: Props) {
               {members.map((m, i) => (
                 <tr key={m.user_id} style={{ cursor: 'pointer' }} onClick={() => openMember(m)}>
                   <td className="text-muted">{i + 1}</td>
-                  <td>{m.display_name ?? <span className="text-muted">—</span>}</td>
+                  <td>{m.display_name ?? <span className="text-muted">Guest member</span>}</td>
                   <td>{m.phone ?? <span className="text-muted">—</span>}</td>
                   <td className="text-muted">{new Date(m.joined_at).toLocaleDateString()}</td>
                   <td>

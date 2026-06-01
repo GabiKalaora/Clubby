@@ -13,10 +13,22 @@ import {
 
 type Tab = 'all' | 'unread'
 
-const TYPE_ICON: Record<NotificationItem['type'], string> = {
+type NotifType = NotificationItem['type'] | 'birthday' | 're_engagement'
+
+const TYPE_ICON: Record<string, string> = {
   expiry_reminder: '⏰',
   new_promotion:   '🎁',
   direct_message:  '📣',
+  birthday:        '🎂',
+  re_engagement:   '👋',
+}
+
+const TYPE_BG: Record<string, string> = {
+  expiry_reminder: '#fff7ed',
+  new_promotion:   '#f0fdf4',
+  direct_message:  '#eff6ff',
+  birthday:        '#fdf4ff',
+  re_engagement:   '#f0fdf4',
 }
 
 function timeLabel(iso: string): string {
@@ -147,8 +159,9 @@ export default function Notifications() {
                 }}
                 activeOpacity={n.benefit_id ? 0.7 : 1}
               >
-                <View className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center">
-                  <Text className="text-base">{TYPE_ICON[n.type]}</Text>
+                <View className="w-10 h-10 rounded-full items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: TYPE_BG[n.type] ?? '#f3f4f6' }}>
+                  <Text className="text-lg">{TYPE_ICON[n.type] ?? '🔔'}</Text>
                 </View>
                 <View className="flex-1">
                   <Text className={`text-sm leading-5 ${isUnread ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>

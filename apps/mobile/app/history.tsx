@@ -20,7 +20,7 @@ function useCurrentUser() {
 function valueLabel(b: Benefit): string {
   if (b.type === 'credit' && b.amount_cents != null) return `₪${(b.amount_cents / 100).toFixed(0)}`
   if (b.type === 'discount' && b.discount_percent != null) return `${b.discount_percent}% off`
-  return b.free_item_description ?? b.title
+  return 'Free item'
 }
 
 function formatDate(iso: string): string {
@@ -55,10 +55,9 @@ function BenefitRow({ benefit }: { benefit: Benefit }) {
       </View>
 
       {/* Value + status */}
-      <View className="items-end ml-2 flex-shrink-0">
-        <Text className={`text-sm font-bold ${isRedeemed ? 'text-gray-400' : 'text-brand'}`}>
-          {valueLabel(benefit)}
-        </Text>
+      <View className="items-end ml-2 flex-shrink-0" style={{ maxWidth: 100 }}>
+        <Text className={`text-sm font-bold ${isRedeemed ? 'text-gray-400' : 'text-brand'}`}
+          numberOfLines={1}>{valueLabel(benefit)}</Text>
         <View className={`mt-0.5 px-2 py-0.5 rounded-full ${isRedeemed ? 'bg-gray-100' : 'bg-green-100'}`}>
           <Text className={`text-[10px] font-semibold ${isRedeemed ? 'text-gray-400' : 'text-brand'}`}>
             {isRedeemed ? 'Used' : 'Active'}
@@ -93,10 +92,12 @@ export default function HistoryScreen() {
       {/* Summary card */}
       {benefits.length > 0 && (
         <View className="mx-4 mb-4 bg-brand rounded-2xl p-5">
-          <Text className="text-white/80 text-sm mb-1">Total credit received</Text>
-          <Text className="text-white text-3xl font-bold">₪{(saved / 100).toFixed(0)}</Text>
+          <Text className="text-white/80 text-sm mb-1">Your benefits</Text>
+          <Text className="text-white text-3xl font-bold">
+            {benefits.length} benefit{benefits.length !== 1 ? 's' : ''}
+          </Text>
           <Text className="text-white/70 text-xs mt-1">
-            {benefits.length} benefit{benefits.length !== 1 ? 's' : ''} · {redeemedCount} redeemed
+            {redeemedCount} redeemed{saved > 0 ? ` · ₪${(saved / 100).toFixed(0)} credit earned` : ''}
           </Text>
         </View>
       )}
