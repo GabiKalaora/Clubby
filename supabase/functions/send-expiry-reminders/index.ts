@@ -49,14 +49,33 @@ Deno.serve(async (req) => {
     })
   }
 
-  // Build push messages — only for users with a token
+  // Collect unique user IDs for bulk token lookup
+  const userIds = [...new Set(benefits.map(b => {
+    const profile = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles
+    return profile?.id
+  }).filter(Boolean))] as string[]
+
+  // Fetch all push tokens for these users (multi-device support)
+  const { data: tokenRows } = await admin
+    .from('push_tokens' as never)
+    .select('user_id, token')
+    .in('user_id', userIds)
+    .eq('platform', 'mobile')
+    .gt('last_seen', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+  const tokensByUser: Record<string, string[]> = {}
+  for (const row of (tokenRows ?? []) as { user_id: string; token: string }[]) {
+    if (!tokensByUser[row.user_id]) tokensByUser[row.user_id] = []
+    tokensByUser[row.user_id].push(row.token)
+  }
+
+  // Build push messages — only for users with tokens
   const messages: ExpoMessage[] = []
   const logEntries: { user_id: string; benefit_id: string; type: string; message: string }[] = []
 
   for (const b of benefits) {
     const profile = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles
-    const token = profile?.expo_push_token
-    if (!token) continue
+    const tokens = tokensByUser[profile?.id] ?? (profile?.expo_push_token ? [profile.expo_push_token] : [])
+    if (!tokens.length) continue
     const prefs = (profile?.notification_prefs ?? {}) as Record<string, boolean>
     if (prefs['expiry_reminder'] === false) continue
 
@@ -79,13 +98,15 @@ Deno.serve(async (req) => {
       ? `Your ${valueText} at ${businessName} expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}!`
       : `"${b.title}" at ${businessName} expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}!`
 
-    messages.push({
-      to: token,
-      title: daysLeft <= 1 ? '⚠️ Benefit expires today!' : `⏰ Benefit expiring soon`,
-      body,
-      sound: 'default',
-      data: { benefitId: b.id },
-    })
+    for (const token of tokens) {
+      messages.push({
+        to: token,
+        title: daysLeft <= 1 ? '⚠️ Benefit expires today!' : `⏰ Benefit expiring soon`,
+        body,
+        sound: 'default',
+        data: { benefitId: b.id },
+      })
+    }
 
     logEntries.push({
       user_id: profile.id,

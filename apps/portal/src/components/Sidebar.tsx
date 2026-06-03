@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { Business, View } from '../Portal'
 
 interface Props {
@@ -11,28 +12,33 @@ interface Props {
   onSignOut: () => void
 }
 
-const NAV: { key: View; label: string; icon: string }[] = [
-  { key: 'dashboard',   label: 'Dashboard',   icon: '📊' },
-  { key: 'promotions',  label: 'Promotions',  icon: '🎁' },
-  { key: 'members',     label: 'Members',     icon: '👥' },
-  { key: 'stamp_cards', label: 'Stamp Cards', icon: '🥇' },
-  { key: 'stories',     label: 'Stories',     icon: '📖' },
-  { key: 'settings',    label: 'Settings',    icon: '⚙️' },
-  { key: 'qr',          label: 'QR Code',     icon: '📱' },
-]
-
 export function Sidebar({ view, onNavigate, businesses, selected, onSelectBusiness, email, onAddBusiness, onSignOut }: Props) {
+  const { t } = useTranslation()
+
+  const NAV: { key: View; label: string; icon: string }[] = [
+    { key: 'anchor',      label: '🏢 Platform View', icon: '' },
+    { key: 'dashboard',   label: t('nav.dashboard'),  icon: '📊' },
+    { key: 'promotions',  label: t('nav.promotions'),  icon: '🎁' },
+    { key: 'members',     label: t('nav.members'),     icon: '👥' },
+    { key: 'stamp_cards', label: t('nav.stampCards'),  icon: '🥇' },
+    { key: 'tiers',       label: '🏅 Tiers',           icon: '' },
+    { key: 'points',      label: '⭐ Points',           icon: '' },
+    { key: 'stories',     label: t('nav.stories'),     icon: '📖' },
+    { key: 'feed',        label: '📣 Feed Posts',       icon: '' },
+    { key: 'settings',    label: t('nav.settings'),    icon: '⚙️' },
+    { key: 'qr',          label: t('nav.qrCode'),      icon: '📱' },
+  ]
+
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <span className="sidebar-logo">🏪</span>
-        <span className="sidebar-brand">Clubby</span>
+        <img src="/wordmark.png" alt="Clubby" style={{ height: 32, objectFit: 'contain' }} />
       </div>
 
       {/* Business selector */}
       {businesses.length > 0 && (
         <div className="sidebar-section">
-          <p className="sidebar-label">Business</p>
+          <p className="sidebar-label">{t('sidebar.business')}</p>
           <select
             className="biz-select"
             value={selected?.id ?? ''}
@@ -45,7 +51,7 @@ export function Sidebar({ view, onNavigate, businesses, selected, onSelectBusine
               <option key={b.id} value={b.id}>{b.name}</option>
             ))}
           </select>
-          <button className="btn-add-biz" onClick={onAddBusiness}>+ Add business</button>
+          <button className="btn-add-biz" onClick={onAddBusiness}>{t('sidebar.addBusiness')}</button>
         </div>
       )}
 
@@ -66,7 +72,7 @@ export function Sidebar({ view, onNavigate, businesses, selected, onSelectBusine
       {/* Footer */}
       <div className="sidebar-footer">
         <p className="sidebar-email" title={email}>{email}</p>
-        <button className="btn-signout" onClick={onSignOut}>Sign out</button>
+        <button className="btn-signout" onClick={onSignOut}>{t('sidebar.signOut')}</button>
       </div>
     </aside>
   )

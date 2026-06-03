@@ -2,6 +2,7 @@ import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Sha
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
 import { useBusiness, useIsMember, useEnrollBusiness } from '../../hooks/useBusinesses'
 
@@ -34,6 +35,7 @@ function useSession() {
 }
 
 export default function StoreProfile() {
+  const { t } = useTranslation()
   const params = useLocalSearchParams<{ id: string }>()
   const id = Array.isArray(params.id) ? params.id[0] : params.id
   const router = useRouter()
@@ -56,7 +58,7 @@ export default function StoreProfile() {
     if (!user || !business) return
     const url = `clubby://enroll?token=${business.qr_code_token}&ref=${user.id}`
     Share.share({
-      message: `Join ${business.name} on Clubby and get a welcome reward! ${url}`,
+      message: t('store.inviteMessage', { name: business.name, url }),
       title: `Join ${business.name}`,
     })
   }
@@ -72,9 +74,9 @@ export default function StoreProfile() {
   if (!business) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50 items-center justify-center px-8">
-        <Text className="text-gray-500 text-center">Business not found.</Text>
+        <Text className="text-gray-500 text-center">{t('store.notFound')}</Text>
         <TouchableOpacity onPress={() => router.back()} className="mt-4">
-          <Text className="text-brand font-semibold">← Go back</Text>
+          <Text className="text-brand font-semibold">{t('store.goBack')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     )
@@ -84,11 +86,17 @@ export default function StoreProfile() {
   const activePromos = business.promotions ?? []
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900" edges={['bottom']}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Cover / header */}
         <View className="h-44 bg-brand/20 items-center justify-center relative">
-          {business.logo_url ? (
+          {business.cover_url ? (
+            <Image
+              source={{ uri: business.cover_url }}
+              className="absolute inset-0 w-full h-full"
+              resizeMode="cover"
+            />
+          ) : business.logo_url ? (
             <Image
               source={{ uri: business.logo_url }}
               className="absolute inset-0 w-full h-full"
@@ -118,8 +126,8 @@ export default function StoreProfile() {
         <View className="px-5 pt-4">
           {/* Business name + join button */}
           <View className="flex-row items-start justify-between mb-1">
-            <View className="flex-1 mr-3">
-              <Text className="text-2xl font-bold text-gray-900">{business.name}</Text>
+            <View className="flex-1 me-3">
+              <Text className="text-2xl font-bold text-gray-900 dark:text-white">{business.name}</Text>
               {business.category && (
                 <Text className="text-gray-400 text-sm capitalize mt-0.5">{business.category}</Text>
               )}
@@ -134,7 +142,7 @@ export default function StoreProfile() {
                 {enrolling
                   ? <ActivityIndicator size="small" color="white" />
                   : <Text className={`font-bold text-sm ${isMember ? 'text-gray-500' : 'text-white'}`}>
-                      {isMember ? '✓ Joined' : 'Join Club'}
+                      {isMember ? t('store.joined') : t('store.joinClub')}
                     </Text>
                 }
               </TouchableOpacity>
@@ -143,7 +151,7 @@ export default function StoreProfile() {
                   className="rounded-full px-4 py-1.5 bg-brand/10 border border-brand/20"
                   onPress={handleInvite}
                 >
-                  <Text className="text-brand text-xs font-semibold">👥 Invite friends</Text>
+                  <Text className="text-brand text-xs font-semibold">{t('store.inviteFriends')}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -160,7 +168,7 @@ export default function StoreProfile() {
           {/* Description */}
           {business.description && (
             <View className="bg-white rounded-2xl p-4 mb-4 border border-gray-100">
-              <Text className="font-semibold text-gray-800 mb-1">About</Text>
+              <Text className="font-semibold text-gray-800 mb-1">{t('store.about')}</Text>
               <Text className="text-gray-600 text-sm leading-5">{business.description}</Text>
             </View>
           )}
@@ -168,7 +176,7 @@ export default function StoreProfile() {
           {/* Active promotions */}
           {activePromos.length > 0 && (
             <View className="mb-4">
-              <Text className="font-semibold text-gray-800 mb-2">Current Offers</Text>
+              <Text className="font-semibold text-gray-800 mb-2">{t('store.currentOffers')}</Text>
               {activePromos.map((promo, i) => (
                 <View key={i} className="bg-brand/10 border border-brand/20 rounded-2xl p-4 mb-2">
                   <Text className="text-brand font-bold text-sm">🎁 {promo.title}</Text>
@@ -189,7 +197,7 @@ export default function StoreProfile() {
           {/* Opening hours */}
           {hours && Object.keys(hours).length > 0 && (
             <View className="bg-white rounded-2xl p-4 mb-6 border border-gray-100">
-              <Text className="font-semibold text-gray-800 mb-3">Opening Hours</Text>
+              <Text className="font-semibold text-gray-800 mb-3">{t('store.openingHours')}</Text>
               {DAY_ORDER.filter((d) => hours[d]).map((day) => (
                 <View key={day} className="flex-row justify-between py-1.5 border-b border-gray-50">
                   <Text className="text-gray-600 text-sm">{DAY_LABELS[day]}</Text>

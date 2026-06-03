@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { supabase } from '../../lib/supabase'
 import { consumePendingToken } from '../enroll'
+import { ONBOARDED_KEY } from './onboarding'
 
 export default function Register() {
   const router = useRouter()
@@ -35,7 +37,13 @@ export default function Register() {
         router.replace({ pathname: '/enroll', params: { token: pendingToken } } as never)
         return
       }
-      router.replace('/(tabs)/wallet')
+      // Show onboarding for new users
+      const onboarded = await AsyncStorage.getItem(ONBOARDED_KEY)
+      if (!onboarded) {
+        router.replace('/(auth)/onboarding' as never)
+      } else {
+        router.replace('/(tabs)/wallet')
+      }
     }
   }
 

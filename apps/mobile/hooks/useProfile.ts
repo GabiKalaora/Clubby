@@ -40,17 +40,19 @@ export function useUpdateProfile() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async ({
-      userId, display_name, date_of_birth, notification_prefs,
+      userId, display_name, date_of_birth, notification_prefs, avatar_url,
     }: {
       userId: string
       display_name?: string
       date_of_birth?: string | null
       notification_prefs?: NotificationPrefs
+      avatar_url?: string | null
     }) => {
       const patch: Record<string, unknown> = {}
       if (display_name !== undefined) patch.display_name = display_name.trim() || null
       if (date_of_birth !== undefined) patch.date_of_birth = date_of_birth || null
       if (notification_prefs !== undefined) patch.notification_prefs = notification_prefs
+      if (avatar_url !== undefined) patch.avatar_url = avatar_url
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error } = await supabase.from('profiles').update(patch as any).eq('id', userId)
       if (error) throw error

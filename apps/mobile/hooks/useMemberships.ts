@@ -5,6 +5,7 @@ export type Membership = {
   id: string
   joined_at: string
   business_id: string
+  total_stamps: number
   businesses: {
     id: string
     name: string
@@ -20,12 +21,13 @@ export function useMemberships(userId: string | undefined) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('memberships')
-        .select('id, joined_at, business_id, businesses(id, name, category, logo_url, description)')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .select('id, joined_at, business_id, total_stamps, businesses(id, name, category, logo_url, description)' as any)
         .eq('user_id', userId!)
         .eq('active', true)
         .order('joined_at', { ascending: false })
       if (error) throw error
-      return (data ?? []) as Membership[]
+      return (data ?? []) as unknown as Membership[]
     },
     enabled: !!userId,
     staleTime: 30_000,

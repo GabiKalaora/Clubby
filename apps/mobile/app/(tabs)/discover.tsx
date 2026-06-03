@@ -6,8 +6,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import * as Location from 'expo-location'
 import { supabase } from '../../lib/supabase'
-import { useBusinesses, useEnrollBusiness, type Business } from '../../hooks/useBusinesses'
+import { useNearbyBusinesses, useEnrollBusiness, type Business } from '../../hooks/useBusinesses'
 import { useMemberships } from '../../hooks/useMemberships'
 
 type Category = 'all' | 'food' | 'clothing' | 'shoes' | 'health' | 'tech' | 'service'
@@ -27,16 +29,6 @@ function isOpenNow(opening_hours: Business['opening_hours']): boolean {
   const closeMins = closeH * 60 + closeM
   return nowMins >= openMins && nowMins < closeMins
 }
-
-const CATEGORIES: { key: Category; label: string; emoji: string }[] = [
-  { key: 'all', label: 'All', emoji: '🌐' },
-  { key: 'food', label: 'Food', emoji: '🍔' },
-  { key: 'clothing', label: 'Clothing', emoji: '👕' },
-  { key: 'shoes', label: 'Shoes', emoji: '👟' },
-  { key: 'health', label: 'Health', emoji: '💊' },
-  { key: 'tech', label: 'Tech', emoji: '💻' },
-  { key: 'service', label: 'Service', emoji: '🛠️' },
-]
 
 function useCurrentUser() {
   return useQuery({
@@ -82,7 +74,7 @@ function BusinessCard({
     >
       <View className="flex-row items-center">
         {/* Logo */}
-        <View className="w-14 h-14 rounded-2xl bg-gray-100 items-center justify-center mr-3 overflow-hidden flex-shrink-0">
+        <View className="w-14 h-14 rounded-2xl bg-gray-100 items-center justify-center ms-3 overflow-hidden flex-shrink-0">
           {business.logo_url ? (
             <Image source={{ uri: business.logo_url }} className="w-full h-full" resizeMode="cover" />
           ) : (
@@ -94,7 +86,16 @@ function BusinessCard({
         <View className="flex-1">
           <Text className="font-bold text-gray-900 text-base">{business.name}</Text>
           {business.category && (
-            <Text className="text-gray-400 text-xs capitalize mt-0.5">{business.category}</Text>
+            <View className="flex-row items-center gap-1.5">
+              <Text className="text-gray-400 text-xs capitalize mt-0.5">{business.category}</Text>
+              {business.distance_km != null && (
+                <Text className="text-gray-400 text-xs mt-0.5">
+                  · {business.distance_km < 1
+                    ? `${Math.round(business.distance_km * 1000)} m`
+                    : `${business.distance_km.toFixed(1)} km`}
+                </Text>
+              )}
+            </View>
           )}
           {activePromo && (
             <View className="bg-brand/10 rounded-lg px-2 py-0.5 self-start mt-1.5">
@@ -112,7 +113,7 @@ function BusinessCard({
 
         {/* Enroll button */}
         <TouchableOpacity
-          className={`rounded-full w-9 h-9 items-center justify-center ml-2 flex-shrink-0 ${
+          className={`rounded-full w-9 h-9 items-center justify-center me-2 flex-shrink-0 ${
             enrolled ? 'bg-green-100' : 'bg-brand'
           }`}
           onPress={onEnroll}
@@ -131,16 +132,44 @@ function BusinessCard({
 }
 
 export default function Discover() {
+  const { t } = useTranslation()
+
+  const CATEGORIES: { key: Category; label: string; emoji: string }[] = [
+    { key: 'all', label: t('discover.categories.all'), emoji: '🌐' },
+    { key: 'food', label: t('discover.categories.food'), emoji: '🍔' },
+    { key: 'clothing', label: t('discover.categories.clothing'), emoji: '👕' },
+    { key: 'shoes', label: t('discover.categories.shoes'), emoji: '👟' },
+    { key: 'health', label: t('discover.categories.health'), emoji: '💊' },
+    { key: 'tech', label: t('discover.categories.tech'), emoji: '💻' },
+    { key: 'service', label: t('discover.categories.service'), emoji: '🛠️' },
+  ]
+
   const [activeCategory, setActiveCategory] = useState<Category>('all')
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [openNow, setOpenNow] = useState(false)
   const [enrollingId, setEnrollingId] = useState<string | null>(null)
   const [enrolledIds, setEnrolledIds] = useState<Set<string>>(new Set())
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync()
+        if (status !== 'granted') return
+        const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced })
+        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+      } catch {
+        // fail silently — location is optional
+      }
+    })()
+  }, [])
 
   const { data: user } = useCurrentUser()
   const { data: session } = useSession()
-  const { data: businesses = [], isLoading, refetch } = useBusinesses(
+  const { data: businesses = [], isLoading, refetch } = useNearbyBusinesses(
+    userLocation?.lat,
+    userLocation?.lng,
     activeCategory === 'all' ? undefined : activeCategory,
     debouncedSearch || undefined,
   )
@@ -187,14 +216,19 @@ export default function Discover() {
     <SafeAreaView className="flex-1 bg-gray-50">
       {/* Header */}
       <View className="px-5 pt-2 pb-3">
-        <Text className="text-2xl font-bold text-gray-900 mb-3">Discover</Text>
+        <View className="flex-row items-center gap-2 mb-3">
+          <Text className="text-2xl font-bold text-gray-900 dark:text-white">{t('discover.title')}</Text>
+          {userLocation && (
+            <Text className="text-xs text-brand">📍 Near me</Text>
+          )}
+        </View>
 
         {/* Search */}
-        <View className="bg-white border border-gray-200 rounded-2xl flex-row items-center px-4 py-2.5">
+        <View className="bg-white dark:bg-gray-800 dark:border-gray-700 border border-gray-200 rounded-2xl flex-row items-center px-4 py-2.5">
           <Text className="text-gray-400 mr-2">🔍</Text>
           <TextInput
             className="flex-1 text-gray-900 text-sm"
-            placeholder="Search businesses..."
+            placeholder={t('discover.searchPlaceholder')}
             placeholderTextColor="#9ca3af"
             value={search}
             onChangeText={handleSearchChange}
@@ -249,7 +283,7 @@ export default function Discover() {
             marginRight: 6,
           }} />
           <Text className={`text-xs font-semibold ${openNow ? 'text-white' : 'text-gray-700'}`}>
-            Open Now
+            {t('discover.openNow')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -278,12 +312,12 @@ export default function Discover() {
               <Text className="text-4xl mb-3">🏪</Text>
               <Text className="text-gray-500 text-center text-base">
                 {search
-                  ? `No businesses matching "${search}"`
+                  ? t('discover.emptySearch', { query: search })
                   : openNow
-                  ? 'No businesses open right now'
+                  ? t('discover.emptyOpenNow')
                   : activeCategory === 'all'
-                  ? 'No businesses yet'
-                  : `No ${activeCategory} businesses yet`}
+                  ? t('discover.empty')
+                  : t('discover.emptyCategory', { category: activeCategory })}
               </Text>
             </View>
           }

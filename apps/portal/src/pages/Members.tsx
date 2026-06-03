@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 import type { Business } from '../Portal'
 
@@ -10,13 +11,6 @@ type Member = {
 }
 
 type Cohort = 'all' | 'new' | 'active' | 'lapsed'
-
-const COHORT_LABELS: Record<Cohort, string> = {
-  all:    'All members',
-  new:    'New (joined ≤7 days)',
-  active: 'Active (benefit in last 30 days)',
-  lapsed: 'Lapsed (no activity 30+ days)',
-}
 
 type MemberBenefit = {
   id: string
@@ -42,6 +36,13 @@ function benefitValueLabel(b: MemberBenefit) {
 }
 
 export function Members({ business }: Props) {
+  const { t } = useTranslation()
+  const COHORT_LABELS: Record<Cohort, string> = {
+    all:    t('members.audienceAll'),
+    new:    t('members.audienceNew'),
+    active: t('members.audienceActive'),
+    lapsed: t('members.audienceLapsed'),
+  }
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
   const [showNotify, setShowNotify] = useState(false)
@@ -124,7 +125,7 @@ export function Members({ business }: Props) {
     setSending(false)
     const json = await res.json()
     if (res.ok) {
-      setNotifyResult(`✓ Notification sent to ${json.sent} member${json.sent !== 1 ? 's' : ''}`)
+      setNotifyResult(t('members.notifySent', { count: json.sent }))
       setMessage('')
       setShowNotify(false)
     } else {
@@ -155,16 +156,16 @@ export function Members({ business }: Props) {
     <div className="page-content">
       <div className="page-header">
         <div>
-          <h2 className="page-title">Members</h2>
-          <p className="page-subtitle">{business.name} · {members.length} member{members.length !== 1 ? 's' : ''}</p>
+          <h2 className="page-title">{t('members.title')}</h2>
+          <p className="page-subtitle">{t('members.subtitle', { name: business.name, count: members.length })}</p>
         </div>
         {members.length > 0 && (
           <div style={{ display: 'flex', gap: 8 }}>
             <button className="btn-secondary btn-sm" onClick={downloadCsv}>
-              ⬇️ Export CSV
+              {t('members.exportCSV')}
             </button>
             <button className="btn-primary btn-sm" onClick={() => { setShowNotify(true); setNotifyResult(null) }}>
-              📣 Notify members
+              {t('members.notifyMembers')}
             </button>
           </div>
         )}
@@ -172,17 +173,17 @@ export function Members({ business }: Props) {
 
       {showNotify && (
         <div className="card form-card" style={{ marginBottom: 24 }}>
-          <h3 style={{ marginBottom: 12 }}>Send message to members</h3>
+          <h3 style={{ marginBottom: 12 }}>{t('members.notifyTitle')}</h3>
           <form onSubmit={handleNotify}>
-            <label>Audience</label>
+            <label>{t('members.audience')}</label>
             <select value={cohort} onChange={e => setCohort(e.target.value as Cohort)} style={{ marginBottom: 12 }}>
               {(Object.keys(COHORT_LABELS) as Cohort[]).map(c => (
                 <option key={c} value={c}>{COHORT_LABELS[c]}</option>
               ))}
             </select>
-            <label>Message *</label>
+            <label>{t('members.messageLabel')}</label>
             <textarea
-              placeholder="e.g. This weekend only — 20% off everything!"
+              placeholder={t('members.messagePlaceholder')}
               value={message}
               onChange={e => setMessage(e.target.value)}
               rows={3}
@@ -191,7 +192,7 @@ export function Members({ business }: Props) {
             />
             <div className="form-row" style={{ marginTop: 12 }}>
               <button type="submit" className="btn-primary" style={{ flex: 1 }} disabled={sending || !message.trim()}>
-                {sending ? 'Sending…' : `Send to ${cohort === 'all' ? `${members.length} member${members.length !== 1 ? 's' : ''}` : COHORT_LABELS[cohort]}`}
+              {sending ? 'Sending…' : cohort === 'all' ? t('members.sendToAll', { count: members.length }) : t('members.sendTo', { cohort: COHORT_LABELS[cohort] })}
               </button>
               <button type="button" className="btn-secondary" style={{ flex: 1 }}
                 onClick={() => setShowNotify(false)}>
@@ -232,7 +233,7 @@ export function Members({ business }: Props) {
                   {selectedMember.display_name ?? 'Member'}
                 </h3>
                 <p style={{ fontSize: 13, color: '#64748b' }}>
-                  {selectedMember.phone ?? 'No phone'} · Joined {new Date(selectedMember.joined_at).toLocaleDateString()}
+                  {selectedMember.phone ?? t('members.detail.noPhone')} · {t('members.detail.joined', { date: new Date(selectedMember.joined_at).toLocaleDateString() })}
                 </p>
               </div>
               <button
@@ -245,7 +246,7 @@ export function Members({ business }: Props) {
 
             {totalSavings > 0 && (
               <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 10, padding: '10px 16px', marginBottom: 16, fontSize: 13, color: '#16a34a', fontWeight: 600 }}>
-                Total credit issued: ₪{totalSavings.toFixed(0)}
+                {t('members.detail.totalCredit', { amount: totalSavings.toFixed(0) })}
               </div>
             )}
 
@@ -255,17 +256,17 @@ export function Members({ business }: Props) {
                 <div className="spinner" style={{ margin: '24px auto' }} />
               ) : memberBenefits.length === 0 ? (
                 <p style={{ color: '#64748b', fontSize: 14, textAlign: 'center', padding: '24px 0' }}>
-                  No benefits issued yet.
+                  {t('members.detail.noBenefits')}
                 </p>
               ) : (
                 <table className="data-table" style={{ fontSize: 13 }}>
                   <thead>
                     <tr>
-                      <th>Benefit</th>
-                      <th>Type</th>
-                      <th>Value</th>
-                      <th>Issued</th>
-                      <th>Status</th>
+                      <th>{t('members.detail.columns.benefit')}</th>
+                      <th>{t('members.detail.columns.type')}</th>
+                      <th>{t('members.detail.columns.value')}</th>
+                      <th>{t('members.detail.columns.issued')}</th>
+                      <th>{t('members.detail.columns.status')}</th>
                       <th style={{ width: 100 }}></th>
                     </tr>
                   </thead>
@@ -278,8 +279,8 @@ export function Members({ business }: Props) {
                         <td className="text-muted">{new Date(b.created_at).toLocaleDateString()}</td>
                         <td>
                           {b.redeemed
-                            ? <span className="badge badge-gray">Used</span>
-                            : <span className="badge badge-green">Active</span>}
+                            ? <span className="badge badge-gray">{t('members.detail.used')}</span>
+                            : <span className="badge badge-green">{t('members.detail.active')}</span>}
                         </td>
                         <td>
                           {!b.redeemed && (
@@ -289,7 +290,7 @@ export function Members({ business }: Props) {
                               disabled={redeemingId === b.id}
                               onClick={() => markRedeemed(b.id)}
                             >
-                              {redeemingId === b.id ? '…' : '✓ Redeem'}
+                              {redeemingId === b.id ? '…' : t('members.detail.redeem')}
                             </button>
                           )}
                         </td>
@@ -307,31 +308,31 @@ export function Members({ business }: Props) {
         <div className="spinner" />
       ) : members.length === 0 ? (
         <div className="empty-state">
-          <p>No members yet. Share your QR code to start growing your club!</p>
+          <p>{t('members.empty')}</p>
         </div>
       ) : (
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
           <table className="data-table">
             <thead>
               <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Joined</th>
-                <th style={{ width: 80 }}>Details</th>
+                <th>{t('members.table.num')}</th>
+                <th>{t('members.table.name')}</th>
+                <th>{t('members.table.phone')}</th>
+                <th>{t('members.table.joined')}</th>
+                <th style={{ width: 80 }}>{t('members.table.details')}</th>
               </tr>
             </thead>
             <tbody>
               {members.map((m, i) => (
                 <tr key={m.user_id} style={{ cursor: 'pointer' }} onClick={() => openMember(m)}>
                   <td className="text-muted">{i + 1}</td>
-                  <td>{m.display_name ?? <span className="text-muted">Guest member</span>}</td>
+                  <td>{m.display_name ?? <span className="text-muted">{t('members.guestMember')}</span>}</td>
                   <td>{m.phone ?? <span className="text-muted">—</span>}</td>
                   <td className="text-muted">{new Date(m.joined_at).toLocaleDateString()}</td>
                   <td>
                     <button className="btn-link" style={{ fontSize: 12 }}
                       onClick={e => { e.stopPropagation(); openMember(m) }}>
-                      View
+                      {t('members.table.view')}
                     </button>
                   </td>
                 </tr>

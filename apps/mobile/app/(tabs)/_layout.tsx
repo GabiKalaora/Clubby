@@ -1,8 +1,11 @@
 import { Tabs } from 'expo-router'
 import { View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 
 export default function TabsLayout() {
+  const { t } = useTranslation()
+
   return (
     <Tabs
       screenOptions={{
@@ -15,7 +18,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="wallet"
         options={{
-          title: 'Wallet',
+          title: t('tabs.wallet'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="wallet-outline" size={size} color={color} />
           ),
@@ -57,7 +60,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="discover"
         options={{
-          title: 'Discover',
+          title: t('tabs.discover'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="storefront-outline" size={size} color={color} />
           ),

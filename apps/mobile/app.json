@@ -14,7 +14,7 @@
     "android": {
       "package": "com.clubby.mobile",
       "adaptiveIcon": {
-        "backgroundColor": "#2ecc71",
+        "backgroundColor": "#0f172a",
         "foregroundImage": "./assets/adaptive-icon.png"
       },
       "intentFilters": [
@@ -26,7 +26,10 @@
               "scheme": "clubby"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -48,7 +51,8 @@
         {
           "cameraPermission": "Allow Clubby to access your camera to scan QR codes."
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

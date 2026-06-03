@@ -1,0 +1,233 @@
+{
+  "common": {
+    "save": "שמור",
+    "cancel": "ביטול",
+    "close": "סגור",
+    "back": "←",
+    "edit": "✎",
+    "loading": "טוען…",
+    "error": "משהו השתבש",
+    "yes": "כן",
+    "no": "לא"
+  },
+  "tabs": {
+    "wallet": "ארנק",
+    "discover": "גלה",
+    "scan": "סריקה",
+    "manual": "קופון"
+  },
+  "auth": {
+    "signIn": {
+      "logoTagline": "ארנק ההטבות שלך",
+      "welcome": "ברוך הבא",
+      "subtitle": "הכנס את מספר הטלפון שלך להתחלה",
+      "phonePlaceholder": "+972 50 000 0000",
+      "continue": "המשך",
+      "sending": "שולח…",
+      "ownBusiness": "יש לך עסק?",
+      "goToPortal": "עבור לפורטל לעסקים ←"
+    },
+    "verify": {
+      "title": "אמת את מספרך",
+      "subtitle": "הכנס את הקוד בן 6 הספרות שנשלח ל-{{phone}}",
+      "codePlaceholder": "000000",
+      "verify": "אמת",
+      "verifying": "מאמת…",
+      "resend": "שלח קוד שוב",
+      "wrongNumber": "מספר שגוי?"
+    },
+    "register": {
+      "title": "צור חשבון",
+      "namePlaceholder": "השם שלך",
+      "continue": "המשך",
+      "saving": "שומר…"
+    }
+  },
+  "wallet": {
+    "title": "הארנק שלי",
+    "totalBalance": "יתרה כוללת",
+    "activeCredits_one": "קרדיט {{count}} פעיל",
+    "activeCredits_other": "{{count}} קרדיטים פעילים",
+    "viewHistory": "צפה בהיסטוריה ←",
+    "myClubs": "המועדונים שלי",
+    "stampCards": "כרטיסיות חותמות",
+    "feed": "עדכונים",
+    "enterCoupon": "+ הכנס קופון ידנית",
+    "empty": "אין הטבות עדיין — סרוק קוד QR כדי להצטרף למועדון!",
+    "tabs": {
+      "all": "הכל",
+      "balance": "יתרה",
+      "discounts": "הנחות",
+      "freeItems": "פריטים חינמיים"
+    }
+  },
+  "stampCard": {
+    "stamps": "{{current}} / {{required}} חותמות",
+    "rewardEarned": "✅ פרס הושג!",
+    "moreToEarn_one": "עוד {{count}} לפרס!",
+    "moreToEarn_other": "עוד {{count}} לפרס!"
+  },
+  "benefit": {
+    "use": "השתמש",
+    "used": "נוצל",
+    "active": "פעיל",
+    "freeItem": "פריט חינמי",
+    "manual": "ידני",
+    "expired": "פג תוקף",
+    "daysLeft_one": "נותר {{count}} יום",
+    "daysLeft_other": "נותרו {{count}} ימים"
+  },
+  "history": {
+    "title": "היסטוריית הטבות",
+    "yourBenefits": "ההטבות שלך",
+    "benefits_one": "הטבה {{count}}",
+    "benefits_other": "{{count}} הטבות",
+    "redeemed_one": "{{count}} מומש",
+    "redeemed_other": "{{count}} מומשו",
+    "creditEarned": "₪{{amount}} קרדיט הושג",
+    "empty": "אין הטבות עדיין. סרוק קוד QR כדי להצטרף למועדון ולהתחיל לצבור פרסים.",
+    "summary": {
+      "creditEarned": "קרדיט שנצבר",
+      "discountsUsed": "הנחות שנוצלו",
+      "freeItems": "פריטים חינמיים",
+      "businesses": "עסקים שבוקרו"
+    }
+  },
+  "discover": {
+    "title": "גלה עסקים",
+    "searchPlaceholder": "חפש עסקים…",
+    "openNow": "פתוח עכשיו",
+    "categories": {
+      "all": "הכל",
+      "food": "אוכל",
+      "clothing": "ביגוד",
+      "shoes": "נעליים",
+      "health": "בריאות",
+      "tech": "טכנולוגיה",
+      "service": "שירות"
+    },
+    "empty": "אין עסקים עדיין",
+    "emptyCategory": "אין עסקי {{category}} עדיין",
+    "emptySearch": "לא נמצאו עסקים עבור \"{{query}}\"",
+    "emptyOpenNow": "אין עסקים פתוחים כרגע"
+  },
+  "store": {
+    "joinClub": "הצטרף למועדון",
+    "joined": "✓ חבר",
+    "inviteFriends": "👥 הזמן חברים",
+    "about": "אודות",
+    "currentOffers": "מבצעים פעילים",
+    "openingHours": "שעות פתיחה",
+    "notFound": "העסק לא נמצא.",
+    "goBack": "← חזור",
+    "inviteMessage": "הצטרף ל-{{name}} בקלאבי וקבל פרס ברוכים הבאים! {{url}}"
+  },
+  "redeem": {
+    "confirmRedemption": "אשר מימוש",
+    "redeemed": "מומש!",
+    "enjoyAt": "תהנה מה-{{value}} ב-{{business}}",
+    "showToCashier": "הראה לקופאי ולחץ אשר כדי לסמן כמומש."
+  },
+  "notifications": {
+    "title": "התראות",
+    "all": "הכל",
+    "unread": "לא נקרא",
+    "emptyAll": "אין התראות עדיין",
+    "emptyUnread": "אין התראות שלא נקראו",
+    "groups": {
+      "today": "היום",
+      "yesterday": "אתמול",
+      "earlier": "קודם לכן"
+    }
+  },
+  "profile": {
+    "title": "פרופיל",
+    "setName": "הגדר שם",
+    "phone": "טלפון",
+    "email": "אימייל",
+    "dateOfBirth": "תאריך לידה",
+    "notSet": "לא הוגדר",
+    "dobPlaceholder": "YYYY-MM-DD",
+    "dobError": {
+      "format": "השתמש בפורמט YYYY-MM-DD",
+      "future": "התאריך לא יכול להיות בעתיד",
+      "year": "הכנס שנה תקינה",
+      "invalid": "תאריך לא תקין"
+    },
+    "language": "שפה",
+    "languageSubtitle": "בחר את השפה המועדפת עליך",
+    "notificationPrefs": "העדפות התראות",
+    "notificationPrefsSubtitle": "בחר אילו התראות Push לקבל",
+    "notifications": {
+      "expiryReminder": "תזכורות תפוגה",
+      "expiryReminderDesc": "כאשר הטבה עומדת לפוג",
+      "birthday": "פרסי יום הולדת",
+      "birthdayDesc": "מבצע מיוחד ביום ההולדת שלך",
+      "reEngagement": "מתגעגעים אליך",
+      "reEngagementDesc": "כשלא ביקרת זמן מה",
+      "directMessage": "הודעות מעסקים",
+      "directMessageDesc": "מבצעים שנשלחים על ידי עסקים"
+    },
+    "signOut": "התנתק",
+    "signOutConfirm": "האם אתה בטוח שברצונך להתנתק?",
+    "signOutTitle": "התנתקות"
+  },
+  "language": {
+    "english": "English",
+    "hebrew": "עברית",
+    "restartRequired": "האפליקציה תופעל מחדש להחלת שינוי השפה.",
+    "restart": "הפעל מחדש"
+  },
+  "enroll": {
+    "youreIn": "נרשמת!",
+    "welcomeGift": "מתנת הצטרפות",
+    "viewWallet": "צפה בארנק שלי",
+    "joining": "מצטרף…",
+    "signInToJoin": "התחבר כדי להצטרף",
+    "alreadyMember": "אתה כבר חבר!",
+    "errorTitle": "שגיאה",
+    "invalidQR": "קוד QR לא תקין"
+  },
+  "manual": {
+    "title": "הוסף קופון",
+    "storeName": "שם החנות",
+    "storeNamePlaceholder": "לדוגמה: בית קפה",
+    "couponTitle": "כותרת הקופון",
+    "couponTitlePlaceholder": "לדוגמה: 20% הנחה",
+    "type": "סוג",
+    "typeCredit": "קרדיט (₪)",
+    "typeDiscount": "הנחה (%)",
+    "typeFreeItem": "פריט חינמי",
+    "amount": "סכום (₪)",
+    "amountPlaceholder": "לדוגמה: 50",
+    "discountPercent": "הנחה (%)",
+    "discountPlaceholder": "לדוגמה: 20",
+    "itemDescription": "תיאור הפריט",
+    "itemPlaceholder": "לדוגמה: קפה חינם",
+    "expiryDate": "תאריך תפוגה (אופציונלי)",
+    "save": "שמור קופון",
+    "saving": "שומר…",
+    "disclaimer": "קופונים שנוספו ידנית אינם מאומתים על ידי החנות.",
+    "errors": {
+      "storeRequired": "שם החנות הוא שדה חובה",
+      "titleRequired": "כותרת הקופון היא שדה חובה",
+      "amountRequired": "הכנס סכום תקין",
+      "percentRequired": "הכנס אחוז תקין (1–100)",
+      "descRequired": "תיאור הפריט הוא שדה חובה"
+    }
+  },
+  "scan": {
+    "scanQR": "סרוק קוד QR",
+    "pointCamera": "כוון את המצלמה לקוד QR של העסק",
+    "enterManually": "הכנס קוד ידנית",
+    "tokenPlaceholder": "הדבק או הקלד את הטוקן של העסק",
+    "join": "הצטרף",
+    "joining": "מצטרף…",
+    "permissionTitle": "נדרשת הרשאת מצלמה",
+    "permissionSubtitle": "אפשר גישה למצלמה כדי לסרוק קודי QR",
+    "grantPermission": "אפשר גישה",
+    "confirmTitle": "נרשמת!",
+    "welcomeAt": "ברוך הבא ל-{{name}}!",
+    "noPermission": "הרשאת מצלמה נדחתה"
+  }
+}

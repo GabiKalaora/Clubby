@@ -1,0 +1,233 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "back": "←",
+    "edit": "✎",
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "tabs": {
+    "wallet": "Wallet",
+    "discover": "Discover",
+    "scan": "Scan",
+    "manual": "Coupon"
+  },
+  "auth": {
+    "signIn": {
+      "logoTagline": "Your loyalty wallet",
+      "welcome": "Welcome",
+      "subtitle": "Enter your phone number to get started",
+      "phonePlaceholder": "+1 555 000 0000",
+      "continue": "Continue",
+      "sending": "Sending…",
+      "ownBusiness": "Own a business?",
+      "goToPortal": "Go to Business Portal →"
+    },
+    "verify": {
+      "title": "Verify your number",
+      "subtitle": "Enter the 6-digit code sent to {{phone}}",
+      "codePlaceholder": "000000",
+      "verify": "Verify",
+      "verifying": "Verifying…",
+      "resend": "Resend code",
+      "wrongNumber": "Wrong number?"
+    },
+    "register": {
+      "title": "Create your account",
+      "namePlaceholder": "Your name",
+      "continue": "Continue",
+      "saving": "Saving…"
+    }
+  },
+  "wallet": {
+    "title": "Your Wallet",
+    "totalBalance": "Total balance",
+    "activeCredits_one": "{{count}} active credit",
+    "activeCredits_other": "{{count}} active credits",
+    "viewHistory": "View history →",
+    "myClubs": "My Clubs",
+    "stampCards": "Stamp Cards",
+    "feed": "Updates",
+    "enterCoupon": "+ Enter coupon manually",
+    "empty": "No benefits yet — scan a QR code to join a club!",
+    "tabs": {
+      "all": "All",
+      "balance": "Balance",
+      "discounts": "Discounts",
+      "freeItems": "Free Items"
+    }
+  },
+  "stampCard": {
+    "stamps": "{{current}} / {{required}} stamps",
+    "rewardEarned": "✅ Reward earned!",
+    "moreToEarn_one": "{{count}} more to earn!",
+    "moreToEarn_other": "{{count}} more to earn!"
+  },
+  "benefit": {
+    "use": "Use",
+    "used": "Used",
+    "active": "Active",
+    "freeItem": "Free item",
+    "manual": "Manual",
+    "expired": "Expired",
+    "daysLeft_one": "{{count}}d left",
+    "daysLeft_other": "{{count}}d left"
+  },
+  "history": {
+    "title": "Benefit History",
+    "yourBenefits": "Your benefits",
+    "benefits_one": "{{count}} benefit",
+    "benefits_other": "{{count}} benefits",
+    "redeemed_one": "{{count}} redeemed",
+    "redeemed_other": "{{count}} redeemed",
+    "creditEarned": "₪{{amount}} credit earned",
+    "empty": "No benefits yet. Scan a QR code or join a club to start earning rewards.",
+    "summary": {
+      "creditEarned": "Credit earned",
+      "discountsUsed": "Discounts used",
+      "freeItems": "Free items",
+      "businesses": "Businesses visited"
+    }
+  },
+  "discover": {
+    "title": "Discover",
+    "searchPlaceholder": "Search businesses…",
+    "openNow": "Open Now",
+    "categories": {
+      "all": "All",
+      "food": "Food",
+      "clothing": "Clothing",
+      "shoes": "Shoes",
+      "health": "Health",
+      "tech": "Tech",
+      "service": "Service"
+    },
+    "empty": "No businesses yet",
+    "emptyCategory": "No {{category}} businesses yet",
+    "emptySearch": "No businesses matching \"{{query}}\"",
+    "emptyOpenNow": "No businesses open right now"
+  },
+  "store": {
+    "joinClub": "Join Club",
+    "joined": "✓ Joined",
+    "inviteFriends": "👥 Invite friends",
+    "about": "About",
+    "currentOffers": "Current Offers",
+    "openingHours": "Opening Hours",
+    "notFound": "Business not found.",
+    "goBack": "← Go back",
+    "inviteMessage": "Join {{name}} on Clubby and get a welcome reward! {{url}}"
+  },
+  "redeem": {
+    "confirmRedemption": "Confirm redemption",
+    "redeemed": "Redeemed!",
+    "enjoyAt": "Enjoy your {{value}} at {{business}}",
+    "showToCashier": "Show this to the cashier, then tap Confirm to mark it as used."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "all": "All",
+    "unread": "Unread",
+    "emptyAll": "No notifications yet",
+    "emptyUnread": "No unread notifications",
+    "groups": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "earlier": "Earlier"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "setName": "Set your name",
+    "phone": "Phone",
+    "email": "Email",
+    "dateOfBirth": "Date of birth",
+    "notSet": "Not set",
+    "dobPlaceholder": "YYYY-MM-DD",
+    "dobError": {
+      "format": "Use format YYYY-MM-DD",
+      "future": "Date cannot be in the future",
+      "year": "Enter a valid year",
+      "invalid": "Invalid date"
+    },
+    "language": "Language",
+    "languageSubtitle": "Choose your preferred language",
+    "notificationPrefs": "Notification Preferences",
+    "notificationPrefsSubtitle": "Choose which push notifications you receive",
+    "notifications": {
+      "expiryReminder": "Expiry reminders",
+      "expiryReminderDesc": "When a benefit is about to expire",
+      "birthday": "Birthday rewards",
+      "birthdayDesc": "Special offer on your birthday",
+      "reEngagement": "We miss you",
+      "reEngagementDesc": "When you haven't visited in a while",
+      "directMessage": "Business messages",
+      "directMessageDesc": "Promotions sent by businesses"
+    },
+    "signOut": "Sign out",
+    "signOutConfirm": "Are you sure you want to sign out?",
+    "signOutTitle": "Sign out"
+  },
+  "language": {
+    "english": "English",
+    "hebrew": "עברית",
+    "restartRequired": "The app will restart to apply the language change.",
+    "restart": "Restart"
+  },
+  "enroll": {
+    "youreIn": "You're in!",
+    "welcomeGift": "Welcome Gift",
+    "viewWallet": "View my wallet",
+    "joining": "Joining…",
+    "signInToJoin": "Sign in to join",
+    "alreadyMember": "You're already a member!",
+    "errorTitle": "Oops",
+    "invalidQR": "Invalid QR code"
+  },
+  "manual": {
+    "title": "Add Coupon",
+    "storeName": "Store name",
+    "storeNamePlaceholder": "e.g. Coffee Shop",
+    "couponTitle": "Coupon title",
+    "couponTitlePlaceholder": "e.g. 20% off",
+    "type": "Type",
+    "typeCredit": "Credit (₪)",
+    "typeDiscount": "Discount (%)",
+    "typeFreeItem": "Free item",
+    "amount": "Amount (₪)",
+    "amountPlaceholder": "e.g. 50",
+    "discountPercent": "Discount (%)",
+    "discountPlaceholder": "e.g. 20",
+    "itemDescription": "Item description",
+    "itemPlaceholder": "e.g. Free coffee",
+    "expiryDate": "Expiry date (optional)",
+    "save": "Save coupon",
+    "saving": "Saving…",
+    "disclaimer": "Manually added coupons are not verified by the store.",
+    "errors": {
+      "storeRequired": "Store name is required",
+      "titleRequired": "Coupon title is required",
+      "amountRequired": "Enter a valid amount",
+      "percentRequired": "Enter a valid percentage (1–100)",
+      "descRequired": "Item description is required"
+    }
+  },
+  "scan": {
+    "scanQR": "Scan QR Code",
+    "pointCamera": "Point your camera at a business QR code",
+    "enterManually": "Enter code manually",
+    "tokenPlaceholder": "Paste or type the business token",
+    "join": "Join",
+    "joining": "Joining…",
+    "permissionTitle": "Camera permission required",
+    "permissionSubtitle": "Allow camera access to scan QR codes",
+    "grantPermission": "Grant permission",
+    "confirmTitle": "You're in!",
+    "welcomeAt": "Welcome to {{name}}!",
+    "noPermission": "Camera permission denied"
+  }
+}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   View, Text, TouchableOpacity, ActivityIndicator, Animated,
 } from 'react-native'
@@ -19,6 +20,7 @@ function valueLabel(benefit: Benefit): string {
 }
 
 export default function RedeemScreen() {
+  const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const qc = useQueryClient()
@@ -79,7 +81,7 @@ export default function RedeemScreen() {
   const businessName = benefit.businesses?.name ?? 'the store'
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
       {/* Back button */}
       <TouchableOpacity
         className="absolute top-14 left-5 z-10 w-9 h-9 rounded-full bg-gray-100 items-center justify-center"
@@ -95,9 +97,9 @@ export default function RedeemScreen() {
             <View className="w-24 h-24 rounded-full bg-brand items-center justify-center mb-6">
               <Text style={{ fontSize: 48 }}>✓</Text>
             </View>
-            <Text className="text-2xl font-bold text-gray-900 mb-2">Redeemed!</Text>
+            <Text className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('redeem.redeemed')}</Text>
             <Text className="text-gray-500 text-base text-center">
-              Enjoy your {valueLabel(benefit)} at {businessName}
+              {t('redeem.enjoyAt', { value: valueLabel(benefit), business: businessName })}
             </Text>
           </Animated.View>
         ) : (
@@ -105,7 +107,7 @@ export default function RedeemScreen() {
           <>
             <Text className="text-5xl mb-6">🎁</Text>
 
-            <Text className="text-2xl font-bold text-gray-900 text-center mb-2">
+            <Text className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">
               {benefit.title}
             </Text>
             <Text className="text-brand text-3xl font-bold mb-1">
@@ -115,7 +117,7 @@ export default function RedeemScreen() {
 
             <View className="bg-amber-50 border border-amber-200 rounded-2xl px-6 py-4 mb-10 w-full">
               <Text className="text-amber-800 text-sm text-center font-medium">
-                Show this to the cashier, then tap Confirm to mark it as used.
+                {t('redeem.showToCashier')}
               </Text>
             </View>
 
@@ -127,7 +129,7 @@ export default function RedeemScreen() {
               {redeeming ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text className="text-white text-base font-bold">Confirm redemption</Text>
+                <Text className="text-white text-base font-bold">{t('redeem.confirmRedemption')}</Text>
               )}
             </TouchableOpacity>
           </>

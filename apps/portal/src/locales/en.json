@@ -1,0 +1,348 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "edit": "Edit",
+    "delete": "Delete",
+    "active": "Active",
+    "inactive": "Inactive",
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "error": "Error",
+    "success": "Success",
+    "noData": "No data"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "promotions": "Promotions",
+    "members": "Members",
+    "stampCards": "Stamp Cards",
+    "stories": "Stories",
+    "settings": "Settings",
+    "qrCode": "QR Code"
+  },
+  "sidebar": {
+    "business": "Business",
+    "addBusiness": "+ Add business",
+    "signOut": "Sign out"
+  },
+  "auth": {
+    "welcome": "Welcome",
+    "subtitle": "Sign in or create your business account",
+    "emailPlaceholder": "owner@yourbusiness.com",
+    "passwordPlaceholder": "Password (min 6 chars)",
+    "signIn": "Sign in / Create account",
+    "newHere": "New here? An account is created automatically on first sign-in."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalMembers": "Total Members",
+    "activePromotions": "Active Promotions",
+    "benefitsIssued": "Benefits Issued",
+    "redemptionRate": "Redemption Rate",
+    "newMembersChart": "New Members — last 30 days",
+    "dailyRedemptionsChart": "Daily Redemptions — last 30 days",
+    "newMembers": "New members",
+    "redemptions": "Redemptions",
+    "tipNoMembers": "👋 No members yet. Share your QR code to get your first members!",
+    "tipNoPromotions": "💡 Add a promotion — members who scan your QR will receive a welcome benefit.",
+    "tipGreat": "🎉 Great! {{count}} member in your club.",
+    "tipGreat_other": "🎉 Great! {{count}} members in your club."
+  },
+  "promotions": {
+    "title": "Promotions",
+    "newPromotion": "+ New promotion",
+    "editTitle": "Edit Promotion",
+    "newTitle": "New Promotion",
+    "fields": {
+      "title": "Title *",
+      "titlePlaceholder": "e.g. Welcome discount",
+      "description": "Description",
+      "descriptionPlaceholder": "Optional details",
+      "benefitType": "Benefit type *",
+      "discount": "Discount (%)",
+      "credit": "Credit (₪)",
+      "freeItem": "Free item",
+      "amountLabel": "Amount (₪) *",
+      "discountLabel": "Discount (%) *",
+      "validFrom": "Valid from",
+      "validUntil": "Valid until",
+      "maxRedemptions": "Max redemptions (blank = unlimited)",
+      "maxRedemptionsPlaceholder": "e.g. 100"
+    },
+    "table": {
+      "title": "Title",
+      "type": "Type",
+      "value": "Value",
+      "redemptions": "Redemptions",
+      "validUntil": "Valid until",
+      "status": "Status"
+    },
+    "actions": {
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "delete": "Delete"
+    },
+    "deleteConfirm": "Delete this promotion? This cannot be undone. Issued benefits won't be affected.",
+    "deleteBtn": "Yes, delete",
+    "saveChanges": "Save changes",
+    "createPromotion": "Create promotion",
+    "empty": "No promotions yet. Create one to offer welcome benefits to new members.",
+    "errors": {
+      "titleRequired": "Title is required",
+      "valueRequired": "Enter a valid value"
+    }
+  },
+  "members": {
+    "title": "Members",
+    "subtitle": "{{name}} · {{count}} member",
+    "subtitle_other": "{{name}} · {{count}} members",
+    "exportCSV": "⬇️ Export CSV",
+    "notifyMembers": "📣 Notify members",
+    "notifyTitle": "Send message to members",
+    "audience": "Audience",
+    "audienceAll": "All members",
+    "audienceNew": "New (joined ≤7 days)",
+    "audienceActive": "Active (benefit in last 30 days)",
+    "audienceLapsed": "Lapsed (no activity 30+ days)",
+    "messageLabel": "Message *",
+    "messagePlaceholder": "e.g. This weekend only — 20% off everything!",
+    "sendTo": "Send to {{cohort}}",
+    "sendToAll": "Send to {{count}} member",
+    "sendToAll_other": "Send to {{count}} members",
+    "notifySent": "✓ Notification sent to {{count}} member",
+    "notifySent_other": "✓ Notification sent to {{count}} members",
+    "table": {
+      "num": "#",
+      "name": "Name",
+      "phone": "Phone",
+      "joined": "Joined",
+      "details": "Details",
+      "view": "View"
+    },
+    "guestMember": "Guest member",
+    "empty": "No members yet. Share your QR code to start growing your club!",
+    "detail": {
+      "noPhone": "No phone",
+      "joined": "Joined {{date}}",
+      "totalCredit": "Total credit issued: ₪{{amount}}",
+      "noBenefits": "No benefits issued yet.",
+      "columns": {
+        "benefit": "Benefit",
+        "type": "Type",
+        "value": "Value",
+        "issued": "Issued",
+        "status": "Status"
+      },
+      "redeem": "✓ Redeem",
+      "used": "Used",
+      "active": "Active"
+    }
+  },
+  "stampCards": {
+    "title": "Stamp Cards",
+    "newCard": "+ New card",
+    "editTitle": "Edit Stamp Card",
+    "newTitle": "New Stamp Card",
+    "fields": {
+      "name": "Card name *",
+      "namePlaceholder": "e.g. Coffee Loyalty Card",
+      "requiredStamps": "Stamps required *",
+      "rewardType": "Reward type *",
+      "freeItem": "Free item",
+      "credit": "Credit (₪)",
+      "discount": "Discount (%)",
+      "rewardTitle": "Reward title *",
+      "rewardTitlePlaceholder": "e.g. Free Coffee",
+      "rewardValue": "Reward value",
+      "creditPlaceholder": "e.g. 50 (₪)",
+      "discountPlaceholder": "e.g. 20 (%)"
+    },
+    "table": {
+      "name": "Name",
+      "stamps": "Stamps",
+      "reward": "Reward",
+      "status": "Status"
+    },
+    "stampRequired": "required",
+    "memberProgress": "Member Progress",
+    "progressColumns": {
+      "member": "Member",
+      "stamps": "Stamps",
+      "status": "Status"
+    },
+    "completed": "✅ Complete",
+    "inProgress": "{{current}}/{{required}}",
+    "addStamp": "Add stamp",
+    "addStampFor": "Add stamp for a member",
+    "memberIdPlaceholder": "Member ID or phone",
+    "empty": "No stamp cards yet. Create one to start a loyalty program.",
+    "errors": {
+      "nameRequired": "Card name is required",
+      "stampsRequired": "Enter a valid number of stamps",
+      "rewardTitleRequired": "Reward title is required",
+      "rewardValueRequired": "Enter a valid reward value"
+    }
+  },
+  "stories": {
+    "title": "Stories",
+    "newStory": "+ New story",
+    "active": "Active",
+    "expired": "Expired",
+    "fields": {
+      "imageUrl": "Image URL *",
+      "imageUrlPlaceholder": "https://example.com/image.jpg",
+      "caption": "Caption",
+      "captionPlaceholder": "Short promo text",
+      "ctaText": "Button text",
+      "ctaTextPlaceholder": "e.g. Shop now",
+      "ctaUrl": "Button URL",
+      "ctaUrlPlaceholder": "https://yoursite.com",
+      "expiresIn": "Expires in (hours)",
+      "expiresInPlaceholder": "e.g. 24"
+    },
+    "empty": "No stories yet. Create one to engage your members.",
+    "expires": "Expires {{date}}"
+  },
+  "settings": {
+    "title": "Business Settings",
+    "sections": {
+      "cover": "Cover Image",
+      "logo": "Business Logo",
+      "details": "Business Details",
+      "hours": "Opening Hours",
+      "webhook": "Custom Backend Integration",
+      "language": "Language"
+    },
+    "cover": {
+      "hint": "Shown as the header background on your store profile. Recommended: 1200×400px, landscape.",
+      "chooseCover": "Choose cover image",
+      "uploading": "Uploading…",
+      "remove": "Remove",
+      "pasteUrl": "Or paste an image URL",
+      "urlPlaceholder": "https://example.com/cover.jpg"
+    },
+    "logo": {
+      "clickToUpload": "Click the circle to upload a logo image.",
+      "formats": "JPG, PNG or WebP · max 2 MB recommended",
+      "chooseFile": "Choose file",
+      "uploading": "Uploading…",
+      "pasteUrl": "Or paste an image URL",
+      "urlPlaceholder": "https://example.com/logo.png"
+    },
+    "fields": {
+      "businessName": "Business name *",
+      "description": "Description",
+      "descriptionPlaceholder": "Short description of your business",
+      "address": "Address",
+      "addressPlaceholder": "123 Main St, City",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 555 000 0000"
+    },
+    "hours": {
+      "hint": "Toggle days on/off and set your opening and closing times.",
+      "closed": "Closed",
+      "to": "to"
+    },
+    "days": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    },
+    "webhook": {
+      "hint": "Optional. When a customer scans your QR code, Clubby will POST to your endpoint and use the benefit you return.",
+      "urlLabel": "Webhook URL",
+      "urlPlaceholder": "https://your-backend.com/clubby/webhook",
+      "secretLabel": "Signing Secret",
+      "secretHint": "(sent as X-Clubby-Signature header so you can verify the request)",
+      "secretPlaceholder": "Leave empty to skip signing",
+      "show": "Show",
+      "hide": "Hide",
+      "generate": "Generate"
+    },
+    "language": {
+      "label": "Language",
+      "hint": "Choose the portal display language",
+      "english": "English",
+      "hebrew": "עברית"
+    },
+    "saveChanges": "Save changes",
+    "savedSuccess": "Changes saved!",
+    "noBusinessName": "Business name is required"
+  },
+  "qrCode": {
+    "title": "Your QR Code",
+    "subtitle": "Display this at your counter for customers to scan",
+    "download": "Download PNG",
+    "hint": "Customers scan this with their phone camera to join your loyalty club."
+  },
+  "businessForm": {
+    "title": "Create your business",
+    "subtitle": "Set up your loyalty club in seconds",
+    "fields": {
+      "name": "Business name *",
+      "namePlaceholder": "e.g. Coffee House",
+      "category": "Category",
+      "description": "Description",
+      "descriptionPlaceholder": "What makes your business special?",
+      "address": "Address",
+      "addressPlaceholder": "123 Main St, City",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 555 000 0000"
+    },
+    "categories": {
+      "food": "Food & Drink",
+      "clothing": "Clothing",
+      "shoes": "Shoes",
+      "health": "Health & Beauty",
+      "tech": "Technology",
+      "service": "Services",
+      "other": "Other"
+    },
+    "create": "Create loyalty club",
+    "creating": "Creating…",
+    "cancel": "Cancel",
+    "errors": {
+      "nameRequired": "Business name is required"
+    }
+  },
+  "webhookGuide": {
+    "title": "Webhook Integration Guide",
+    "subtitle": "Connect your backend to issue custom benefits on QR scan",
+    "howItWorks": "How it works",
+    "steps": [
+      "Customer scans your QR code",
+      "Clubby sends a POST request to your webhook URL",
+      "Your server responds with a benefit",
+      "Clubby issues that benefit to the customer's wallet instantly",
+      "If your server is unavailable → Clubby falls back to your active promotions"
+    ],
+    "requestTitle": "Request Clubby sends you",
+    "signatureHint": "The X-Clubby-Signature header contains an HMAC-SHA256 of the body signed with your secret — use it to verify requests.",
+    "responseTitle": "Response your server must send",
+    "responseIntro": "HTTP 200 within 5 seconds:",
+    "table": {
+      "type": "type",
+      "extraField": "Extra field required",
+      "example": "Example"
+    },
+    "verifyTitle": "Verifying the signature (Node.js)",
+    "errorTitle": "Error handling",
+    "errors": [
+      ["Non-200 response", "Falls back to active promotions"],
+      ["Timeout (> 5s)", "Falls back to active promotions"],
+      ["Invalid JSON", "Falls back to active promotions"],
+      ["Missing benefit field", "Falls back to active promotions"],
+      ["No active promotions either", "Enrollment confirmed, no benefit issued"]
+    ],
+    "testingTitle": "Testing locally",
+    "testingText": "Use ngrok to expose a local server:"
+  }
+}

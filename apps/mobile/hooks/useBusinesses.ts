@@ -8,6 +8,9 @@ export type Business = {
   category: string | null
   description: string | null
   logo_url: string | null
+  cover_url: string | null
+  lat: number | null
+  lng: number | null
   address: string | null
   phone: string | null
   opening_hours: Record<string, { open: string; close: string }> | null
@@ -15,12 +18,14 @@ export type Business = {
   created_at: string
   // active promotion details (joined)
   promotions?: { title: string; benefit_type: string; benefit_value: number | null }[]
+  // computed client-side
+  distance_km?: number
 }
 
 async function fetchBusinesses(category?: string, search?: string): Promise<Business[]> {
   let query = supabase
     .from('businesses')
-    .select('id, name, category, description, logo_url, address, phone, opening_hours, qr_code_token, created_at, promotions(title, benefit_type, benefit_value)')
+    .select('id, name, category, description, logo_url, cover_url, lat, lng, address, phone, opening_hours, qr_code_token, created_at, promotions(title, benefit_type, benefit_value)')
     .eq('promotions.active', true)
     .order('created_at', { ascending: false })
 
@@ -33,7 +38,7 @@ async function fetchBusinesses(category?: string, search?: string): Promise<Busi
 
   const { data, error } = await query
   if (error) throw error
-  return (data ?? []) as Business[]
+  return (data ?? []) as unknown as Business[]
 }
 
 export function useBusinesses(category?: string, search?: string) {
@@ -55,7 +60,7 @@ export function useBusiness(id: string) {
         .eq('promotions.active', true)
         .single()
       if (error) throw error
-      return data as Business
+      return data as unknown as Business
     },
     staleTime: 60_000,
   })
@@ -75,6 +80,49 @@ export function useIsMember(userId: string | undefined, businessId: string) {
     },
     enabled: !!userId,
     staleTime: 30_000,
+  })
+}
+
+function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLng = ((lng2 - lng1) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2)
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
+export function useNearbyBusinesses(
+  userLat?: number,
+  userLng?: number,
+  category?: string,
+  search?: string,
+) {
+  return useQuery({
+    queryKey: ['businesses', category, search, userLat, userLng],
+    queryFn: async () => {
+      const businesses = await fetchBusinesses(category, search)
+      if (userLat == null || userLng == null) return businesses
+      return businesses
+        .map((b) => ({
+          ...b,
+          distance_km:
+            b.lat != null && b.lng != null
+              ? distanceKm(userLat, userLng, b.lat, b.lng)
+              : undefined,
+        }))
+        .sort((a, b) => {
+          if (a.distance_km == null && b.distance_km == null) return 0
+          if (a.distance_km == null) return 1
+          if (b.distance_km == null) return -1
+          return a.distance_km - b.distance_km
+        })
+    },
+    staleTime: 60_000,
   })
 }
 

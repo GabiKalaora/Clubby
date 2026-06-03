@@ -1,10 +1,15 @@
 import '../global.css'
-import { useEffect } from 'react'
-import { Platform } from 'react-native'
+import { useEffect, useState } from 'react'
+import { I18nManager, Platform, useColorScheme } from 'react-native'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import * as Notifications from 'expo-notifications'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
+import { initI18n, isHebrew } from '../lib/i18n'
+
+export const THEME_KEY = '@clubby_theme'
+export type ThemePreference = 'auto' | 'light' | 'dark'
 
 const queryClient = new QueryClient()
 
@@ -20,6 +25,9 @@ if (Platform.OS !== 'web') {
   })
 }
 
+// Allow RTL — must be called before any component renders
+I18nManager.allowRTL(true)
+
 function AuthGuard() {
   const router = useRouter()
   const segments = useSegments()
@@ -27,7 +35,6 @@ function AuthGuard() {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       const inTabs = segments[0] === '(tabs)'
-      // Only kick out if session is lost while on a protected tab
       if (!session && inTabs) {
         router.replace('/(auth)/sign-in')
       }
@@ -40,9 +47,31 @@ function AuthGuard() {
 
 export default function RootLayout() {
   const router = useRouter()
+  const systemScheme = useColorScheme()
+  const [i18nReady, setI18nReady] = useState(false)
+  const [themePreference, setThemePreference] = useState<ThemePreference>('auto')
+
+  const isDark = themePreference === 'dark' || (themePreference === 'auto' && systemScheme === 'dark')
+
+  useEffect(() => {
+    Promise.all([
+      initI18n(),
+      AsyncStorage.getItem(THEME_KEY),
+    ]).then(([, savedTheme]) => {
+      if (savedTheme) setThemePreference(savedTheme as ThemePreference)
+      if (Platform.OS !== 'web') {
+        const shouldBeRTL = isHebrew()
+        if (I18nManager.isRTL !== shouldBeRTL) {
+          I18nManager.forceRTL(shouldBeRTL)
+        }
+      }
+      setI18nReady(true)
+    })
+  }, [])
 
   useEffect(() => {
     if (Platform.OS !== 'web') registerPushToken()
+    else registerWebPush()
   }, [])
 
   useEffect(() => {
@@ -58,21 +87,61 @@ export default function RootLayout() {
     return () => sub.remove()
   }, [router])
 
+  if (!i18nReady) return null
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthGuard />
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack
+        screenOptions={{ headerShown: false }}
+        // Apply dark class for NativeWind dark: variants
+        {...(isDark ? { className: 'dark' } : {})}
+      />
     </QueryClientProvider>
   )
 }
 
 async function registerPushToken() {
   const { status } = await Notifications.requestPermissionsAsync()
-  if (status !== 'granted') return
 
   const token = (await Notifications.getExpoPushTokenAsync()).data
   const { data: { user } } = await supabase.auth.getUser()
   if (user) {
+    // Save to push_tokens table (multi-device support)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase as any).from('push_tokens').upsert(
+      { user_id: user.id, token, platform: 'mobile', last_seen: new Date().toISOString() },
+      { onConflict: 'user_id,token' },
+    )
+    // Keep profiles.expo_push_token updated for backward compat
     await supabase.from('profiles').update({ expo_push_token: token }).eq('id', user.id)
+  }
+}
+
+// Web push registration — only runs on HTTPS deployments
+async function registerWebPush() {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !('PushManager' in window)) return
+  if (window.location.hostname === 'localhost') return
+
+  try {
+    const reg = await navigator.serviceWorker.register('/sw.js')
+    const VAPID_KEY = process.env.EXPO_PUBLIC_VAPID_KEY
+    if (!VAPID_KEY) return
+
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: VAPID_KEY,
+    })
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any).from('push_tokens').upsert(
+        { user_id: user.id, token: JSON.stringify(sub), platform: 'web', last_seen: new Date().toISOString() },
+        { onConflict: 'user_id,token' },
+      )
+    }
+  } catch {
+    // Silently fail — web push is enhancement only
   }
 }

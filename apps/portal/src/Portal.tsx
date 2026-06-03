@@ -8,7 +8,11 @@ import { Members } from './pages/Members'
 import { QRPage } from './pages/QRPage'
 import { Stories } from './pages/Stories'
 import { StampCards } from './pages/StampCards'
+import { Tiers } from './pages/Tiers'
+import { Points } from './pages/Points'
+import { FeedPosts } from './pages/FeedPosts'
 import { Settings } from './pages/Settings'
+import { AnchorDashboard } from './pages/AnchorDashboard'
 
 export type DayHours = { open: string; close: string }
 export type OpeningHours = Partial<Record<'mon'|'tue'|'wed'|'thu'|'fri'|'sat'|'sun', DayHours>>
@@ -21,13 +25,14 @@ export type Business = {
   address: string | null
   phone: string | null
   logo_url: string | null
+  cover_url: string | null
   qr_code_token: string
   webhook_url: string | null
   webhook_secret: string | null
   opening_hours: OpeningHours | null
 }
 
-export type View = 'dashboard' | 'promotions' | 'members' | 'qr' | 'stories' | 'stamp_cards' | 'settings'
+export type View = 'anchor' | 'dashboard' | 'promotions' | 'members' | 'qr' | 'stories' | 'stamp_cards' | 'tiers' | 'points' | 'feed' | 'settings'
 
 interface Props {
   userId: string
@@ -44,7 +49,7 @@ export function Portal({ userId, email }: Props) {
   useEffect(() => {
     supabase
       .from('businesses')
-      .select('id, name, category, description, address, phone, logo_url, qr_code_token, webhook_url, webhook_secret, opening_hours')
+      .select('id, name, category, description, address, phone, logo_url, cover_url, qr_code_token, webhook_url, webhook_secret, opening_hours')
       .eq('owner_id', userId)
       .order('created_at', { ascending: true })
       .then(({ data }) => {
@@ -57,7 +62,7 @@ export function Portal({ userId, email }: Props) {
   }, [userId])
 
   function handleBusinessCreated(name: string, token: string, id: string) {
-    const biz: Business = { id, name, category: null, description: null, address: null, phone: null, logo_url: null, qr_code_token: token }
+    const biz: Business = { id, name, category: null, description: null, address: null, phone: null, logo_url: null, cover_url: null, qr_code_token: token }
     setBusinesses(prev => [...prev, biz])
     setSelected(biz)
     setShowNewBiz(false)
@@ -104,11 +109,15 @@ export function Portal({ userId, email }: Props) {
         onSignOut={handleSignOut}
       />
       <main className="main-content">
+        {view === 'anchor'                                             && <AnchorDashboard />}
         {selected && view === 'dashboard'   && <Dashboard   business={selected} />}
         {selected && view === 'promotions'  && <Promotions  business={selected} />}
         {selected && view === 'members'     && <Members     business={selected} />}
         {selected && view === 'stories'     && <Stories     business={selected} />}
+        {selected && view === 'feed'        && <FeedPosts   business={selected} />}
         {selected && view === 'stamp_cards' && <StampCards  business={selected} />}
+        {selected && view === 'tiers'       && <Tiers        business={selected} />}
+        {selected && view === 'points'      && <Points       business={selected} />}
         {selected && view === 'settings'    && <Settings    business={selected} onUpdated={handleBusinessUpdated} />}
         {selected && view === 'qr'          && <QRPage      business={selected} />}
         {!selected && (

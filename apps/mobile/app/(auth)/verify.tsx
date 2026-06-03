@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
 import { consumePendingToken } from '../enroll'
 
@@ -8,6 +9,7 @@ export default function Verify() {
   const params = useLocalSearchParams<{ phone: string }>()
   const phone = Array.isArray(params.phone) ? params.phone[0] : params.phone
   const router = useRouter()
+  const { t } = useTranslation()
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -43,17 +45,17 @@ export default function Verify() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-white justify-center px-6"
+      className="flex-1 bg-white dark:bg-gray-900 justify-center px-6"
     >
-      <Text className="text-3xl font-bold text-gray-800 mb-2">Enter your code</Text>
+      <Text className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{t('auth.verify.title')}</Text>
       <Text className="text-gray-500 mb-8">
-        We sent a 6-digit code to {phone}
+        {t('auth.verify.subtitle', { phone })}
         {'\n'}In local dev, use <Text className="font-mono font-bold">000000</Text>
       </Text>
 
       <TextInput
         className="border border-gray-200 rounded-xl px-4 py-4 text-2xl text-center tracking-widest mb-4 bg-gray-50"
-        placeholder="000000"
+        placeholder={t('auth.verify.codePlaceholder')}
         keyboardType="number-pad"
         maxLength={6}
         value={otp}
@@ -66,12 +68,12 @@ export default function Verify() {
         disabled={loading || otp.length < 6}
       >
         <Text className="text-white font-semibold text-base">
-          {loading ? 'Verifying...' : 'Verify'}
+          {loading ? t('auth.verify.verifying') : t('auth.verify.verify')}
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity className="mt-4 items-center" onPress={() => router.back()}>
-        <Text className="text-gray-400 text-sm">Wrong number? Go back</Text>
+        <Text className="text-gray-400 text-sm">{t('auth.verify.wrongNumber')}</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   )

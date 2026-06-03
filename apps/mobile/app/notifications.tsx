@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   View, Text, FlatList, TouchableOpacity,
   ActivityIndicator, RefreshControl,
@@ -67,6 +68,7 @@ function useCurrentUser() {
 }
 
 export default function Notifications() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('all')
 
@@ -85,6 +87,12 @@ export default function Notifications() {
     ? notifications.filter((n) => !n.read_at)
     : notifications
 
+  const groupKeys: Record<string, string> = {
+    Today: t('notifications.groups.today'),
+    Yesterday: t('notifications.groups.yesterday'),
+    Earlier: t('notifications.groups.earlier'),
+  }
+
   // Build grouped list: insert section headers
   type ListItem = { type: 'header'; label: string } | { type: 'item'; data: NotificationItem }
   const listData: ListItem[] = []
@@ -99,27 +107,27 @@ export default function Notifications() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <View className="flex-row items-center px-5 pt-2 pb-4 gap-x-3">
         <TouchableOpacity onPress={() => router.back()} className="w-9 h-9 items-center justify-center">
           <Text className="text-2xl text-gray-600">‹</Text>
         </TouchableOpacity>
-        <Text className="text-2xl font-bold text-gray-900 flex-1">Notifications</Text>
+        <Text className="text-2xl font-bold text-gray-900 dark:text-white flex-1">{t('notifications.title')}</Text>
       </View>
 
       {/* Tabs */}
       <View className="flex-row px-4 mb-3 gap-x-2">
-        {(['all', 'unread'] as Tab[]).map((t) => (
+        {(['all', 'unread'] as Tab[]).map((tabKey) => (
           <TouchableOpacity
-            key={t}
-            onPress={() => setTab(t)}
+            key={tabKey}
+            onPress={() => setTab(tabKey)}
             className={`flex-1 rounded-full py-2 items-center ${
-              tab === t ? 'bg-brand' : 'bg-white border border-gray-200'
+              tab === tabKey ? 'bg-brand' : 'bg-white border border-gray-200'
             }`}
           >
-            <Text className={`text-xs font-semibold ${tab === t ? 'text-white' : 'text-gray-500'}`}>
-              {t === 'all' ? 'All' : 'Unread'}
+            <Text className={`text-xs font-semibold ${tab === tabKey ? 'text-white' : 'text-gray-500'}`}>
+              {tabKey === 'all' ? t('notifications.all') : t('notifications.unread')}
             </Text>
           </TouchableOpacity>
         ))}
@@ -142,7 +150,7 @@ export default function Notifications() {
             if (item.type === 'header') {
               return (
                 <Text className="px-5 pt-5 pb-2 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                  {item.label}
+                  {groupKeys[item.label] ?? item.label}
                 </Text>
               )
             }
@@ -164,7 +172,7 @@ export default function Notifications() {
                   <Text className="text-lg">{TYPE_ICON[n.type] ?? '🔔'}</Text>
                 </View>
                 <View className="flex-1">
-                  <Text className={`text-sm leading-5 ${isUnread ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
+                  <Text className={`text-sm leading-5 dark:text-white ${isUnread ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
                     {n.message ?? 'You have a new notification'}
                   </Text>
                   <Text className="text-xs text-gray-400 mt-1">{timeLabel(n.sent_at)}</Text>
@@ -179,7 +187,7 @@ export default function Notifications() {
             <View className="items-center justify-center py-16 px-8">
               <Text className="text-4xl mb-3">🔔</Text>
               <Text className="text-gray-500 text-center text-base">
-                {tab === 'unread' ? 'No unread notifications' : 'No notifications yet'}
+                {tab === 'unread' ? t('notifications.emptyUnread') : t('notifications.emptyAll')}
               </Text>
             </View>
           }

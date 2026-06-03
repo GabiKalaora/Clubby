@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, Linking } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, Linking, Image } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
 
 const PORTAL_URL = process.env.EXPO_PUBLIC_PORTAL_URL ?? 'http://localhost:5174'
 
 export default function SignIn() {
   const router = useRouter()
+  const { t } = useTranslation()
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -25,23 +27,24 @@ export default function SignIn() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-white justify-center px-6"
+      className="flex-1 bg-white dark:bg-gray-900 justify-center px-6"
     >
-      {/* Logo mark */}
+      {/* Wordmark logo */}
       <View className="items-center mb-10">
-        <View className="w-20 h-20 rounded-3xl bg-brand items-center justify-center mb-4 shadow-sm shadow-brand/30">
-          <Text style={{ fontSize: 40 }}>🏪</Text>
-        </View>
-        <Text className="text-3xl font-bold text-gray-900">Clubby</Text>
-        <Text className="text-gray-400 text-sm mt-1">Your loyalty wallet</Text>
+        <Image
+          source={require('../../assets/wordmark.png')}
+          style={{ width: 200, height: 60 }}
+          resizeMode="contain"
+        />
+        <Text className="text-gray-400 dark:text-gray-500 text-sm mt-2">{t('auth.signIn.logoTagline')}</Text>
       </View>
 
-      <Text className="text-xl font-bold text-gray-800 mb-1">Welcome</Text>
-      <Text className="text-gray-500 mb-6">Enter your phone number to get started</Text>
+      <Text className="text-xl font-bold text-gray-800 dark:text-white mb-1">{t('auth.signIn.welcome')}</Text>
+      <Text className="text-gray-500 dark:text-gray-400 mb-6">{t('auth.signIn.subtitle')}</Text>
 
       <TextInput
-        className="border border-gray-200 rounded-xl px-4 py-4 text-base mb-4 bg-gray-50"
-        placeholder="+1 555 000 0000"
+        className="border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-4 text-base mb-4 bg-gray-50 dark:bg-gray-800 dark:text-white"
+        placeholder={t('auth.signIn.phonePlaceholder')}
         keyboardType="phone-pad"
         autoComplete="tel"
         value={phone}
@@ -54,14 +57,14 @@ export default function SignIn() {
         disabled={loading || phone.length < 7}
       >
         <Text className="text-white font-semibold text-base">
-          {loading ? 'Sending...' : 'Continue'}
+          {loading ? t('auth.signIn.sending') : t('auth.signIn.continue')}
         </Text>
       </TouchableOpacity>
 
       <View className="mt-10 items-center">
-        <Text className="text-gray-400 text-sm mb-1">Own a business?</Text>
+        <Text className="text-gray-400 text-sm mb-1">{t('auth.signIn.ownBusiness')}</Text>
         <TouchableOpacity onPress={() => Linking.openURL(PORTAL_URL)}>
-          <Text className="text-brand font-semibold text-sm">Go to Business Portal →</Text>
+          <Text className="text-brand font-semibold text-sm">{t('auth.signIn.goToPortal')}</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

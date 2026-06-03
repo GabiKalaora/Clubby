@@ -60,12 +60,37 @@ serve(async (req) => {
       })
     }
 
-    // Fetch business including webhook fields (only owner can read these via service role)
-    const { data: business, error: bizError } = await adminClient
+    // Fetch business — check main token first, then location tokens
+    let business = null
+
+    const { data: mainBiz } = await adminClient
       .from('businesses')
       .select('id, name, category, description, logo_url, webhook_url, webhook_secret')
       .eq('qr_code_token', token)
       .single()
+
+    if (mainBiz) {
+      business = mainBiz
+    } else {
+      // Try business_locations — look up by location token
+      const { data: locRow } = await adminClient
+        .from('business_locations' as never)
+        .select('business_id')
+        .eq('qr_code_token', token)
+        .eq('active', true)
+        .single() as { data: { business_id: string } | null }
+
+      if (locRow?.business_id) {
+        const { data: biz } = await adminClient
+          .from('businesses')
+          .select('id, name, category, description, logo_url, webhook_url, webhook_secret')
+          .eq('id', locRow.business_id)
+          .single()
+        business = biz
+      }
+    }
+
+    const bizError = business ? null : { message: 'Invalid QR code' }
 
     if (bizError || !business) {
       return new Response(JSON.stringify({ error: 'Invalid QR code' }), {
@@ -219,8 +244,13 @@ serve(async (req) => {
       }
     }
 
+    // ── Earn points ──────────────────────────────────────────────────────────
+    // Award points every time a member scans (new member or returning)
+    const { data: pointsResult } = await adminClient
+      .rpc('earn_points', { p_business_id: business.id, p_user_id: user.id })
+
     return new Response(
-      JSON.stringify({ business: publicBusiness, welcomeBenefit, alreadyMember, webhookMessage }),
+      JSON.stringify({ business: publicBusiness, welcomeBenefit, alreadyMember, webhookMessage, points: pointsResult }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   } catch (err) {

@@ -1,0 +1,348 @@
+{
+  "common": {
+    "save": "שמור",
+    "cancel": "ביטול",
+    "close": "סגור",
+    "edit": "ערוך",
+    "delete": "מחק",
+    "active": "פעיל",
+    "inactive": "לא פעיל",
+    "loading": "טוען…",
+    "saving": "שומר…",
+    "error": "שגיאה",
+    "success": "הצלחה",
+    "noData": "אין נתונים"
+  },
+  "nav": {
+    "dashboard": "לוח בקרה",
+    "promotions": "מבצעים",
+    "members": "חברים",
+    "stampCards": "כרטיסיות חותמות",
+    "stories": "סטוריז",
+    "settings": "הגדרות",
+    "qrCode": "קוד QR"
+  },
+  "sidebar": {
+    "business": "עסק",
+    "addBusiness": "+ הוסף עסק",
+    "signOut": "התנתק"
+  },
+  "auth": {
+    "welcome": "ברוך הבא",
+    "subtitle": "התחבר או צור חשבון עסקי",
+    "emailPlaceholder": "owner@yourbusiness.com",
+    "passwordPlaceholder": "סיסמה (לפחות 6 תווים)",
+    "signIn": "התחבר / צור חשבון",
+    "newHere": "חדש כאן? חשבון נוצר אוטומטית בכניסה הראשונה."
+  },
+  "dashboard": {
+    "title": "לוח בקרה",
+    "totalMembers": "סה\"כ חברים",
+    "activePromotions": "מבצעים פעילים",
+    "benefitsIssued": "הטבות שהונפקו",
+    "redemptionRate": "שיעור מימוש",
+    "newMembersChart": "חברים חדשים — 30 ימים אחרונים",
+    "dailyRedemptionsChart": "מימושים יומיים — 30 ימים אחרונים",
+    "newMembers": "חברים חדשים",
+    "redemptions": "מימושים",
+    "tipNoMembers": "👋 אין חברים עדיין. שתף את קוד ה-QR שלך כדי לקבל את החברים הראשונים!",
+    "tipNoPromotions": "💡 הוסף מבצע — חברים שיסרקו את ה-QR שלך יקבלו הטבת ברוכים הבאים.",
+    "tipGreat": "🎉 מעולה! חבר {{count}} במועדון שלך.",
+    "tipGreat_other": "🎉 מעולה! {{count}} חברים במועדון שלך."
+  },
+  "promotions": {
+    "title": "מבצעים",
+    "newPromotion": "+ מבצע חדש",
+    "editTitle": "עריכת מבצע",
+    "newTitle": "מבצע חדש",
+    "fields": {
+      "title": "כותרת *",
+      "titlePlaceholder": "לדוגמה: הנחת ברוכים הבאים",
+      "description": "תיאור",
+      "descriptionPlaceholder": "פרטים נוספים (אופציונלי)",
+      "benefitType": "סוג הטבה *",
+      "discount": "הנחה (%)",
+      "credit": "קרדיט (₪)",
+      "freeItem": "פריט חינמי",
+      "amountLabel": "סכום (₪) *",
+      "discountLabel": "הנחה (%) *",
+      "validFrom": "בתוקף מ",
+      "validUntil": "בתוקף עד",
+      "maxRedemptions": "מקסימום מימושים (ריק = ללא הגבלה)",
+      "maxRedemptionsPlaceholder": "לדוגמה: 100"
+    },
+    "table": {
+      "title": "כותרת",
+      "type": "סוג",
+      "value": "ערך",
+      "redemptions": "מימושים",
+      "validUntil": "בתוקף עד",
+      "status": "סטטוס"
+    },
+    "actions": {
+      "edit": "ערוך",
+      "duplicate": "שכפל",
+      "activate": "הפעל",
+      "deactivate": "השבת",
+      "delete": "מחק"
+    },
+    "deleteConfirm": "למחוק את המבצע? לא ניתן לבטל פעולה זו. הטבות שהונפקו לא יושפעו.",
+    "deleteBtn": "כן, מחק",
+    "saveChanges": "שמור שינויים",
+    "createPromotion": "צור מבצע",
+    "empty": "אין מבצעים עדיין. צור אחד כדי להציע הטבות ברוכים הבאים לחברים חדשים.",
+    "errors": {
+      "titleRequired": "כותרת היא שדה חובה",
+      "valueRequired": "הכנס ערך תקין"
+    }
+  },
+  "members": {
+    "title": "חברים",
+    "subtitle": "{{name}} · {{count}} חבר",
+    "subtitle_other": "{{name}} · {{count}} חברים",
+    "exportCSV": "⬇️ ייצא CSV",
+    "notifyMembers": "📣 הודע לחברים",
+    "notifyTitle": "שלח הודעה לחברים",
+    "audience": "קהל יעד",
+    "audienceAll": "כל החברים",
+    "audienceNew": "חדשים (הצטרפו ≤7 ימים)",
+    "audienceActive": "פעילים (הטבה ב-30 ימים האחרונים)",
+    "audienceLapsed": "לא פעילים (אין פעילות 30+ ימים)",
+    "messageLabel": "הודעה *",
+    "messagePlaceholder": "לדוגמה: סוף השבוע בלבד — 20% הנחה על הכל!",
+    "sendTo": "שלח ל-{{cohort}}",
+    "sendToAll": "שלח ל-{{count}} חבר",
+    "sendToAll_other": "שלח ל-{{count}} חברים",
+    "notifySent": "✓ הודעה נשלחה ל-{{count}} חבר",
+    "notifySent_other": "✓ הודעה נשלחה ל-{{count}} חברים",
+    "table": {
+      "num": "#",
+      "name": "שם",
+      "phone": "טלפון",
+      "joined": "הצטרף",
+      "details": "פרטים",
+      "view": "צפה"
+    },
+    "guestMember": "חבר אורח",
+    "empty": "אין חברים עדיין. שתף את קוד ה-QR שלך כדי להתחיל לצבור חברים!",
+    "detail": {
+      "noPhone": "אין טלפון",
+      "joined": "הצטרף {{date}}",
+      "totalCredit": "סה\"כ קרדיט שהונפק: ₪{{amount}}",
+      "noBenefits": "לא הונפקו הטבות עדיין.",
+      "columns": {
+        "benefit": "הטבה",
+        "type": "סוג",
+        "value": "ערך",
+        "issued": "הונפק",
+        "status": "סטטוס"
+      },
+      "redeem": "✓ מימוש",
+      "used": "נוצל",
+      "active": "פעיל"
+    }
+  },
+  "stampCards": {
+    "title": "כרטיסיות חותמות",
+    "newCard": "+ כרטיס חדש",
+    "editTitle": "עריכת כרטיס חותמות",
+    "newTitle": "כרטיס חותמות חדש",
+    "fields": {
+      "name": "שם הכרטיס *",
+      "namePlaceholder": "לדוגמה: כרטיס נאמנות קפה",
+      "requiredStamps": "חותמות נדרשות *",
+      "rewardType": "סוג פרס *",
+      "freeItem": "פריט חינמי",
+      "credit": "קרדיט (₪)",
+      "discount": "הנחה (%)",
+      "rewardTitle": "כותרת הפרס *",
+      "rewardTitlePlaceholder": "לדוגמה: קפה חינמי",
+      "rewardValue": "ערך הפרס",
+      "creditPlaceholder": "לדוגמה: 50 (₪)",
+      "discountPlaceholder": "לדוגמה: 20 (%)"
+    },
+    "table": {
+      "name": "שם",
+      "stamps": "חותמות",
+      "reward": "פרס",
+      "status": "סטטוס"
+    },
+    "stampRequired": "נדרשות",
+    "memberProgress": "התקדמות חברים",
+    "progressColumns": {
+      "member": "חבר",
+      "stamps": "חותמות",
+      "status": "סטטוס"
+    },
+    "completed": "✅ הושלם",
+    "inProgress": "{{current}}/{{required}}",
+    "addStamp": "הוסף חותמת",
+    "addStampFor": "הוסף חותמת לחבר",
+    "memberIdPlaceholder": "מזהה חבר או טלפון",
+    "empty": "אין כרטיסיות חותמות עדיין. צור אחת להתחלת תוכנית נאמנות.",
+    "errors": {
+      "nameRequired": "שם הכרטיס הוא שדה חובה",
+      "stampsRequired": "הכנס מספר חותמות תקין",
+      "rewardTitleRequired": "כותרת הפרס היא שדה חובה",
+      "rewardValueRequired": "הכנס ערך פרס תקין"
+    }
+  },
+  "stories": {
+    "title": "סטוריז",
+    "newStory": "+ סטורי חדש",
+    "active": "פעיל",
+    "expired": "פג תוקף",
+    "fields": {
+      "imageUrl": "כתובת תמונה *",
+      "imageUrlPlaceholder": "https://example.com/image.jpg",
+      "caption": "כיתוב",
+      "captionPlaceholder": "טקסט פרסומי קצר",
+      "ctaText": "טקסט כפתור",
+      "ctaTextPlaceholder": "לדוגמה: קנה עכשיו",
+      "ctaUrl": "קישור כפתור",
+      "ctaUrlPlaceholder": "https://yoursite.com",
+      "expiresIn": "פג תוקף בעוד (שעות)",
+      "expiresInPlaceholder": "לדוגמה: 24"
+    },
+    "empty": "אין סטוריז עדיין. צור אחד כדי לשמור על מעורבות החברים.",
+    "expires": "פג תוקף {{date}}"
+  },
+  "settings": {
+    "title": "הגדרות עסק",
+    "sections": {
+      "cover": "תמונת כיסוי",
+      "logo": "לוגו העסק",
+      "details": "פרטי העסק",
+      "hours": "שעות פתיחה",
+      "webhook": "אינטגרציה עם מערכת חיצונית",
+      "language": "שפה"
+    },
+    "cover": {
+      "hint": "מוצג כרקע הכותרת בפרופיל החנות. מומלץ: 1200×400 פיקסל, לרוחב.",
+      "chooseCover": "בחר תמונת כיסוי",
+      "uploading": "מעלה…",
+      "remove": "הסר",
+      "pasteUrl": "או הדבק כתובת תמונה",
+      "urlPlaceholder": "https://example.com/cover.jpg"
+    },
+    "logo": {
+      "clickToUpload": "לחץ על העיגול כדי להעלות לוגו.",
+      "formats": "JPG, PNG או WebP · מומלץ עד 2 MB",
+      "chooseFile": "בחר קובץ",
+      "uploading": "מעלה…",
+      "pasteUrl": "או הדבק כתובת תמונה",
+      "urlPlaceholder": "https://example.com/logo.png"
+    },
+    "fields": {
+      "businessName": "שם העסק *",
+      "description": "תיאור",
+      "descriptionPlaceholder": "תיאור קצר של העסק",
+      "address": "כתובת",
+      "addressPlaceholder": "רחוב הרצל 1, תל אביב",
+      "phone": "טלפון",
+      "phonePlaceholder": "+972 50 000 0000"
+    },
+    "hours": {
+      "hint": "הפעל/כבה ימים והגדר שעות פתיחה וסגירה.",
+      "closed": "סגור",
+      "to": "עד"
+    },
+    "days": {
+      "mon": "שני",
+      "tue": "שלישי",
+      "wed": "רביעי",
+      "thu": "חמישי",
+      "fri": "שישי",
+      "sat": "שבת",
+      "sun": "ראשון"
+    },
+    "webhook": {
+      "hint": "אופציונלי. כאשר לקוח סורק את קוד ה-QR שלך, Clubby יישלח בקשת POST לנקודת הקצה שלך.",
+      "urlLabel": "Webhook URL",
+      "urlPlaceholder": "https://your-backend.com/clubby/webhook",
+      "secretLabel": "מפתח חתימה",
+      "secretHint": "(נשלח כ-X-Clubby-Signature header לאימות הבקשה)",
+      "secretPlaceholder": "השאר ריק לדלג על חתימה",
+      "show": "הצג",
+      "hide": "הסתר",
+      "generate": "צור"
+    },
+    "language": {
+      "label": "שפה",
+      "hint": "בחר את שפת התצוגה של הפורטל",
+      "english": "English",
+      "hebrew": "עברית"
+    },
+    "saveChanges": "שמור שינויים",
+    "savedSuccess": "השינויים נשמרו!",
+    "noBusinessName": "שם העסק הוא שדה חובה"
+  },
+  "qrCode": {
+    "title": "קוד ה-QR שלך",
+    "subtitle": "הצג זאת בדלפק כדי שלקוחות יסרקו",
+    "download": "הורד PNG",
+    "hint": "לקוחות סורקים עם מצלמת הטלפון כדי להצטרף למועדון הנאמנות שלך."
+  },
+  "businessForm": {
+    "title": "צור את העסק שלך",
+    "subtitle": "הגדר את מועדון הנאמנות שלך תוך שניות",
+    "fields": {
+      "name": "שם העסק *",
+      "namePlaceholder": "לדוגמה: בית קפה",
+      "category": "קטגוריה",
+      "description": "תיאור",
+      "descriptionPlaceholder": "מה מייחד את העסק שלך?",
+      "address": "כתובת",
+      "addressPlaceholder": "רחוב הרצל 1, תל אביב",
+      "phone": "טלפון",
+      "phonePlaceholder": "+972 50 000 0000"
+    },
+    "categories": {
+      "food": "אוכל ושתייה",
+      "clothing": "ביגוד",
+      "shoes": "נעליים",
+      "health": "בריאות ויופי",
+      "tech": "טכנולוגיה",
+      "service": "שירותים",
+      "other": "אחר"
+    },
+    "create": "צור מועדון נאמנות",
+    "creating": "יוצר…",
+    "cancel": "ביטול",
+    "errors": {
+      "nameRequired": "שם העסק הוא שדה חובה"
+    }
+  },
+  "webhookGuide": {
+    "title": "מדריך אינטגרציית Webhook",
+    "subtitle": "חבר את הבאקאנד שלך כדי להנפיק הטבות מותאמות אישית בסריקת QR",
+    "howItWorks": "איך זה עובד",
+    "steps": [
+      "לקוח סורק את קוד ה-QR שלך",
+      "Clubby שולחת בקשת POST לכתובת ה-webhook שלך",
+      "השרת שלך מגיב עם הטבה",
+      "Clubby מנפיקה את ההטבה לארנק הלקוח מיידית",
+      "אם השרת שלך לא זמין → Clubby חוזרת למבצעים הפעילים שלך"
+    ],
+    "requestTitle": "בקשה ש-Clubby שולחת לך",
+    "signatureHint": "ה-header של X-Clubby-Signature מכיל HMAC-SHA256 של הגוף, חתום עם הסוד שלך — השתמש בו לאימות הבקשות.",
+    "responseTitle": "תגובה שהשרת שלך חייב לשלוח",
+    "responseIntro": "HTTP 200 תוך 5 שניות:",
+    "table": {
+      "type": "סוג",
+      "extraField": "שדה נוסף נדרש",
+      "example": "דוגמה"
+    },
+    "verifyTitle": "אימות החתימה (Node.js)",
+    "errorTitle": "טיפול בשגיאות",
+    "errors": [
+      ["תגובה שאינה 200", "חוזר למבצעים פעילים"],
+      ["פסק זמן (> 5 שניות)", "חוזר למבצעים פעילים"],
+      ["JSON לא תקין", "חוזר למבצעים פעילים"],
+      ["שדה benefit חסר", "חוזר למבצעים פעילים"],
+      ["גם אין מבצעים פעילים", "אישור הצטרפות, ללא הטבה"]
+    ],
+    "testingTitle": "בדיקה מקומית",
+    "testingText": "השתמש ב-ngrok כדי לחשוף שרת מקומי:"
+  }
+}

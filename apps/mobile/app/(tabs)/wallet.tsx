@@ -6,22 +6,94 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
 import { useBenefits, useRedeemBenefit, type Benefit } from '../../hooks/useBenefits'
+import { useFeedPosts, type FeedPost } from '../../hooks/useFeedPosts'
 import { useMemberships } from '../../hooks/useMemberships'
 import { useUnreadCount } from '../../hooks/useNotifications'
 import { useActiveStories } from '../../hooks/useStories'
 import { useStampCards, type StampCard } from '../../hooks/useStampCards'
 import BenefitCard from '../../components/BenefitCard'
+import type { Tier } from '../../hooks/useTiers'
+import { usePointsBalances } from '../../hooks/usePoints'
 
 type Tab = 'all' | 'credit' | 'discount' | 'free_item'
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'credit', label: 'Balance' },
-  { key: 'discount', label: 'Discounts' },
-  { key: 'free_item', label: 'Free Items' },
-]
+function FeedCard({ post }: { post: FeedPost }) {
+  const router = useRouter()
+  const biz = post.businesses
+  const TYPE_COLOR: Record<string, string> = {
+    promotion: '#2ecc71',
+    offer: '#f59e0b',
+    announcement: '#6366f1',
+    story: '#ec4899',
+  }
+  const color = TYPE_COLOR[post.type] ?? '#2ecc71'
+  return (
+    <View className="bg-white rounded-2xl mx-4 mb-3 overflow-hidden shadow-sm border border-gray-100">
+      {post.image_url && (
+        <Image source={{ uri: post.image_url }} style={{ width: '100%', height: 160 }} resizeMode="cover" />
+      )}
+      <View className="p-4">
+        <View className="flex-row items-center mb-2 gap-x-2">
+          <View className="w-7 h-7 rounded-full bg-gray-100 items-center justify-center overflow-hidden flex-shrink-0">
+            {biz?.logo_url
+              ? <Image source={{ uri: biz.logo_url }} style={{ width: 28, height: 28 }} />
+              : <Text style={{ fontSize: 14 }}>🏪</Text>}
+          </View>
+          <Text className="text-xs font-semibold text-gray-600 flex-1" numberOfLines={1}>{biz?.name}</Text>
+          <View className="rounded-full px-2 py-0.5" style={{ backgroundColor: color + '20' }}>
+            <Text className="text-[10px] font-bold" style={{ color }}>{post.type.toUpperCase()}</Text>
+          </View>
+        </View>
+        <Text className="text-sm font-bold text-gray-900 mb-1">{post.title}</Text>
+        {post.body && <Text className="text-xs text-gray-500 leading-4" numberOfLines={3}>{post.body}</Text>}
+        {post.cta_text && (
+          <TouchableOpacity
+            className="mt-3 rounded-full py-2 items-center"
+            style={{ backgroundColor: color }}
+            onPress={() => router.push({ pathname: '/store/[id]', params: { id: post.business_id } } as never)}
+          >
+            <Text className="text-white text-xs font-bold">{post.cta_text}</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  )
+}
+
+function useAllTiers(businessIds: string[]) {
+  return useQuery({
+    queryKey: ['tiers-all', businessIds.join(',')],
+    enabled: businessIds.length > 0,
+    staleTime: 300_000,
+    queryFn: async (): Promise<Record<string, Tier[]>> => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = await (supabase as any)
+        .from('tiers')
+        .select('id, name, min_stamps, color, icon, business_id')
+        .in('business_id', businessIds)
+        .order('min_stamps', { ascending: true })
+      const map: Record<string, Tier[]> = {}
+      for (const t of data ?? []) {
+        const row = t as Tier & { business_id: string }
+        if (!map[row.business_id]) map[row.business_id] = []
+        map[row.business_id].push(row)
+      }
+      return map
+    },
+  })
+}
+
+function getCurrentTier(totalStamps: number, tiers: Tier[]): Tier | null {
+  if (!tiers.length) return null
+  let current: Tier | null = null
+  for (const t of tiers) {
+    if (totalStamps >= t.min_stamps) current = t
+  }
+  return current
+}
 
 function useCurrentUser() {
   return useQuery({
@@ -43,7 +115,15 @@ function totalBalance(benefits: Benefit[]): string {
 
 export default function Wallet() {
   const router = useRouter()
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<Tab>('all')
+
+  const TABS: { key: Tab; label: string }[] = [
+    { key: 'all', label: t('wallet.tabs.all') },
+    { key: 'credit', label: t('wallet.tabs.balance') },
+    { key: 'discount', label: t('wallet.tabs.discounts') },
+    { key: 'free_item', label: t('wallet.tabs.freeItems') },
+  ]
 
   const { data: user } = useCurrentUser()
   const { data: benefits = [], isLoading, refetch, isRefetching } = useBenefits(user?.id)
@@ -52,6 +132,9 @@ export default function Wallet() {
   const { data: memberships = [] } = useMemberships(user?.id)
   const membershipBusinessIds = memberships.map((m) => m.business_id)
   const { data: stampCards = [] } = useStampCards(membershipBusinessIds, user?.id)
+  const { data: allTiers = {} } = useAllTiers(membershipBusinessIds)
+  const { data: pointsBalances = [] } = usePointsBalances(user?.id)
+  const { data: feedPosts = [] } = useFeedPosts(membershipBusinessIds)
 
   const filtered = activeTab === 'all'
     ? benefits
@@ -62,10 +145,10 @@ export default function Wallet() {
   )
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
       {/* Header */}
       <View className="flex-row items-center justify-between px-5 pt-2 pb-4">
-        <Text className="text-2xl font-bold text-gray-900">Your Wallet</Text>
+        <Text className="text-2xl font-bold text-gray-900 dark:text-white">{t('wallet.title')}</Text>
         <View className="flex-row gap-x-2">
           <TouchableOpacity
             className="w-9 h-9 rounded-full bg-gray-200 items-center justify-center"
@@ -127,13 +210,13 @@ export default function Wallet() {
         onPress={() => router.push('/history' as never)}
         activeOpacity={0.85}
       >
-        <Text className="text-white/80 text-sm mb-1">Total balance</Text>
+        <Text className="text-white/80 text-sm mb-1">{t('wallet.totalBalance')}</Text>
         <Text className="text-white text-4xl font-bold">{totalBalance(benefits)}</Text>
         <View className="flex-row justify-between items-center mt-1">
           <Text className="text-white/70 text-xs">
-            {activeCredits.length} active credit{activeCredits.length !== 1 ? 's' : ''}
-          </Text>
-          <Text className="text-white/60 text-xs">View history →</Text>
+              {t('wallet.activeCredits', { count: activeCredits.length })}
+            </Text>
+            <Text className="text-white/60 text-xs">{t('wallet.viewHistory')}</Text>
         </View>
       </TouchableOpacity>
 
@@ -141,7 +224,7 @@ export default function Wallet() {
       {memberships.length > 0 && (
         <View className="mb-4">
           <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 mb-2">
-            My Clubs
+            {t('wallet.myClubs')}
           </Text>
           <ScrollView
             horizontal
@@ -151,6 +234,7 @@ export default function Wallet() {
             {memberships.map((m) => {
               const biz = m.businesses
               const bizBenefits = benefits.filter((b) => b.business_id === m.business_id && !b.redeemed)
+              const tier = getCurrentTier(m.total_stamps ?? 0, allTiers[m.business_id] ?? [])
               return (
                 <TouchableOpacity
                   key={m.id}
@@ -166,6 +250,11 @@ export default function Wallet() {
                     )}
                   </View>
                   <Text className="text-[11px] font-semibold text-gray-800 text-center" numberOfLines={1}>{biz.name}</Text>
+                  {tier && (
+                    <View className="mt-1 rounded-full px-1.5 py-0.5" style={{ backgroundColor: tier.color + '22' }}>
+                      <Text className="text-[9px] font-bold" style={{ color: tier.color }}>{tier.icon} {tier.name}</Text>
+                    </View>
+                  )}
                   {bizBenefits.length > 0 && (
                     <View className="mt-1 bg-brand rounded-full px-1.5 py-0.5">
                       <Text className="text-white text-[9px] font-bold">{bizBenefits.length}</Text>
@@ -178,11 +267,21 @@ export default function Wallet() {
         </View>
       )}
 
+      {/* Promotions Feed */}
+      {feedPosts.length > 0 && (
+        <View className="mb-4">
+          <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 mb-2">
+            {t('wallet.feed')}
+          </Text>
+          {feedPosts.map(post => <FeedCard key={post.id} post={post} />)}
+        </View>
+      )}
+
       {/* Stamp cards */}
       {stampCards.length > 0 && (
         <View className="mb-4">
           <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 mb-2">
-            Stamp Cards
+            {t('wallet.stampCards')}
           </Text>
           <ScrollView
             horizontal
@@ -191,6 +290,30 @@ export default function Wallet() {
           >
             {stampCards.map((card) => (
               <StampCardWidget key={card.id} card={card} />
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Points balances */}
+      {pointsBalances.length > 0 && (
+        <View className="mb-4">
+          <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-5 mb-2">
+            Points
+          </Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
+            {pointsBalances.map((pb) => (
+              <TouchableOpacity
+                key={pb.id}
+                onPress={() => router.push({ pathname: '/store/[id]', params: { id: pb.business_id } } as never)}
+                className="bg-white rounded-2xl px-4 py-3 shadow-sm border border-gray-100 items-center"
+                style={{ minWidth: 110 }}
+              >
+                <Text className="text-brand text-2xl font-bold">{pb.balance}</Text>
+                <Text className="text-[10px] text-gray-400 mt-0.5" numberOfLines={1}>{pb.program?.name ?? 'Points'}</Text>
+                <Text className="text-[9px] text-gray-300 mt-0.5">pts available</Text>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
@@ -222,7 +345,7 @@ export default function Wallet() {
         className="mx-4 mb-3 border border-dashed border-brand/40 rounded-full py-2.5 items-center"
         onPress={() => router.push('/manual' as never)}
       >
-        <Text className="text-brand text-xs font-semibold">+ Enter coupon manually</Text>
+        <Text className="text-brand text-xs font-semibold">{t('wallet.enterCoupon')}</Text>
       </TouchableOpacity>
 
       {/* Benefit list */}
@@ -249,7 +372,7 @@ export default function Wallet() {
               <Text className="text-4xl mb-3">🎁</Text>
               <Text className="text-gray-500 text-center text-base">
                 {activeTab === 'all'
-                  ? 'No benefits yet — scan a QR code to join a club!'
+                  ? t('wallet.empty')
                   : `No ${activeTab.replace('_', ' ')} benefits`}
               </Text>
             </View>
@@ -263,6 +386,7 @@ export default function Wallet() {
 }
 
 function StampCardWidget({ card }: { card: StampCard }) {
+  const { t } = useTranslation()
   const dots = Array.from({ length: card.required_stamps }, (_, i) => i < card.current_stamps)
   const cols = Math.min(card.required_stamps, 5)
 
@@ -281,8 +405,8 @@ function StampCardWidget({ card }: { card: StampCard }) {
       </View>
       <Text className="text-[11px] text-gray-500">
         {card.completed
-          ? '✅ Reward earned!'
-          : `${card.current_stamps} / ${card.required_stamps} stamps`}
+          ? t('stampCard.rewardEarned')
+          : t('stampCard.stamps', { current: card.current_stamps, required: card.required_stamps })}
       </Text>
       {!card.completed && (
         <>
@@ -290,7 +414,7 @@ function StampCardWidget({ card }: { card: StampCard }) {
             🎁 {card.reward_title}
           </Text>
           <Text className="text-[10px] text-gray-400 mt-0.5" numberOfLines={1}>
-            {card.required_stamps - card.current_stamps} more to earn!
+            {t('stampCard.moreToEarn', { count: card.required_stamps - card.current_stamps })}
           </Text>
         </>
       )}
