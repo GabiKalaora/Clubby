@@ -70,6 +70,7 @@ export function FeedPosts({ business }: Props) {
     e.preventDefault()
     if (!form.title.trim()) { setError('Title is required'); return }
     setSaving(true)
+    setError('')
     const row = {
       business_id: business.id,
       type: form.type,
@@ -80,14 +81,23 @@ export function FeedPosts({ business }: Props) {
       expires_at: form.expires_at || null,
       active: true,
     }
-    if (formMode === 'edit' && editingId) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase as any).from('feed_posts').update(row).eq('id', editingId)
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase as any).from('feed_posts').insert(row)
+    try {
+      if (formMode === 'edit' && editingId) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: err } = await (supabase as any).from('feed_posts').update(row).eq('id', editingId)
+        if (err) throw err
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: err } = await (supabase as any).from('feed_posts').insert(row)
+        if (err) throw err
+      }
+      setFormMode(null)
+      load()
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Save failed — please try again')
+    } finally {
+      setSaving(false)
     }
-    setSaving(false); setFormMode(null); load()
   }
 
   async function toggleActive(id: string, active: boolean) {

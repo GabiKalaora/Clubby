@@ -61,9 +61,11 @@ export function AnchorDashboard() {
   const [growth, setGrowth] = useState<GrowthPoint[]>([])
   const [topBusinesses, setTopBusinesses] = useState<TopBusiness[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     setLoading(true)
+    setLoadError(false)
     Promise.all([
       (supabase as any).rpc('get_platform_stats').single(),
       (supabase as any).rpc('get_platform_growth'),
@@ -75,6 +77,9 @@ export function AnchorDashboard() {
         day: shortDate(p.day),
       })))
       setTopBusinesses((topRes.data ?? []) as TopBusiness[])
+      setLoading(false)
+    }).catch(() => {
+      setLoadError(true)
       setLoading(false)
     })
   }, [])
@@ -90,6 +95,10 @@ export function AnchorDashboard() {
 
       {loading ? (
         <div className="spinner" />
+      ) : loadError ? (
+        <div className="alert-error" style={{ marginTop: 24 }}>
+          Failed to load platform analytics. Please refresh the page.
+        </div>
       ) : (
         <>
           {/* Stat cards */}

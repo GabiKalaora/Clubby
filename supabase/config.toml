@@ -261,9 +261,22 @@ max_frequency = "5s"
 
 # Use pre-defined map of phone number to OTP for testing.
 # Any phone number listed here will accept the specified OTP in local dev.
+# Local dev: any number starting with 972 (Israel) or 1 (US) uses OTP 000000
 [auth.sms.test_otp]
 972501234567 = "000000"
-15550000000 = "000000"
+972501111111 = "000000"
+972501234568 = "000000"
+972521234567 = "000000"
+972541234567 = "000000"
+972521111111 = "000000"
+972541111111 = "000000"
+15550000000  = "000000"
+15551234567  = "000000"
+972521000001 = "000000"
+972521000002 = "000000"
+972521000003 = "000000"
+972521000004 = "000000"
+972521000005 = "000000"
 
 # Configure logged in session timeouts.
 # [auth.sessions]

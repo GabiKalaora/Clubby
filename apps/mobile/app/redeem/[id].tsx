@@ -27,6 +27,7 @@ export default function RedeemScreen() {
 
   const [redeemed, setRedeemed] = useState(false)
   const [redeeming, setRedeeming] = useState(false)
+  const [redeemError, setRedeemError] = useState('')
   const scaleAnim = useState(() => new Animated.Value(0))[0]
 
   const { data: user } = useQuery({
@@ -62,12 +63,16 @@ export default function RedeemScreen() {
       .eq('id', benefit.id)
       .eq('user_id', user.id)
     setRedeeming(false)
-    if (error) return
+    if (error) {
+      setRedeemError(error.message)
+      return
+    }
     qc.invalidateQueries({ queryKey: ['benefits', user.id] })
     qc.invalidateQueries({ queryKey: ['benefits-all', user.id] })
     setRedeemed(true)
     Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true, bounciness: 14 }).start()
-    setTimeout(() => router.back(), 2500)
+    const timer = setTimeout(() => router.back(), 2500)
+    return () => clearTimeout(timer)
   }
 
   if (isLoading || !benefit) {
@@ -120,6 +125,12 @@ export default function RedeemScreen() {
                 {t('redeem.showToCashier')}
               </Text>
             </View>
+
+            {redeemError ? (
+              <View style={{ backgroundColor: '#ef444418', borderRadius: 12, padding: 12, marginBottom: 16, width: '100%' }}>
+                <Text style={{ color: '#ef4444', fontSize: 13, textAlign: 'center' }}>{redeemError}</Text>
+              </View>
+            ) : null}
 
             <TouchableOpacity
               className="bg-brand rounded-full py-4 w-full items-center"

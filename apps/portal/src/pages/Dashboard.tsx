@@ -30,6 +30,7 @@ export function Dashboard({ business }: Props) {
   const [growth, setGrowth] = useState<GrowthPoint[]>([])
   const [trend, setTrend]   = useState<TrendPoint[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [exporting, setExporting] = useState(false)
 
   async function handleExport() {
@@ -63,6 +64,7 @@ export function Dashboard({ business }: Props) {
 
   useEffect(() => {
     setLoading(true)
+    setLoadError(false)
     Promise.all([
       supabase.rpc('get_business_stats', { p_business_id: business.id }).single(),
       supabase.rpc('get_member_growth',    { p_business_id: business.id }),
@@ -71,6 +73,9 @@ export function Dashboard({ business }: Props) {
       setStats((statsRes.data as Stats) ?? null)
       setGrowth(((growthRes.data ?? []) as GrowthPoint[]).map(p => ({ ...p, day: shortDate(p.day) })))
       setTrend(((trendRes.data ?? []) as TrendPoint[]).map(p => ({ ...p, day: shortDate(p.day) })))
+      setLoading(false)
+    }).catch(() => {
+      setLoadError(true)
       setLoading(false)
     })
   }, [business.id])
@@ -93,6 +98,10 @@ export function Dashboard({ business }: Props) {
 
       {loading ? (
         <div className="spinner" />
+      ) : loadError ? (
+        <div className="alert-error" style={{ marginTop: 24 }}>
+          Failed to load dashboard data. Please refresh the page.
+        </div>
       ) : (
         <>
           {/* Stat cards */}

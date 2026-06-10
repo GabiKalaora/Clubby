@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, StatusBar, ActivityIndicator, Image } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
@@ -12,18 +12,22 @@ export default function Verify() {
   const { t } = useTranslation()
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   async function handleVerify() {
+    setError('')
     setLoading(true)
-    const { data, error } = await supabase.auth.verifyOtp({
+    const { data, error: verifyErr } = await supabase.auth.verifyOtp({
       phone: phone!,
       token: otp,
       type: 'sms',
     })
     setLoading(false)
-    if (error) {
-      Alert.alert('Invalid code', error.message)
-    } else if (data.session) {
+    if (verifyErr) {
+      setError(verifyErr.message)
+      return
+    }
+    if (data.session) {
       const pendingToken = consumePendingToken()
       if (pendingToken) {
         router.replace({ pathname: '/enroll', params: { token: pendingToken } } as never)
@@ -45,36 +49,88 @@ export default function Verify() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-white dark:bg-gray-900 justify-center px-6"
+      style={{ flex: 1, backgroundColor: '#151617' }}
     >
-      <Text className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{t('auth.verify.title')}</Text>
-      <Text className="text-gray-500 mb-8">
-        {t('auth.verify.subtitle', { phone })}
-        {'\n'}In local dev, use <Text className="font-mono font-bold">000000</Text>
-      </Text>
+      <StatusBar barStyle="light-content" backgroundColor="#151617" />
+      <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 28 }}>
 
-      <TextInput
-        className="border border-gray-200 rounded-xl px-4 py-4 text-2xl text-center tracking-widest mb-4 bg-gray-50"
-        placeholder={t('auth.verify.codePlaceholder')}
-        keyboardType="number-pad"
-        maxLength={6}
-        value={otp}
-        onChangeText={setOtp}
-      />
+        {/* Wordmark */}
+        <View style={{ alignItems: 'center', marginBottom: 48 }}>
+          <Image
+            source={require('../../assets/wordmark.png')}
+            style={{ width: 180, height: 52 }}
+            resizeMode="contain"
+          />
+        </View>
 
-      <TouchableOpacity
-        className="bg-brand rounded-full py-4 items-center"
-        onPress={handleVerify}
-        disabled={loading || otp.length < 6}
-      >
-        <Text className="text-white font-semibold text-base">
-          {loading ? t('auth.verify.verifying') : t('auth.verify.verify')}
+        <Text style={{ color: '#ffffff', fontSize: 28, fontFamily: 'Urbanist_700Bold', marginBottom: 6 }}>
+          {t('auth.verify.title')}
         </Text>
-      </TouchableOpacity>
+        <Text style={{ color: '#8e969f', fontSize: 15, fontFamily: 'Urbanist_400Regular', marginBottom: 8 }}>
+          {t('auth.verify.subtitle', { phone })}
+        </Text>
+        {(process.env.EXPO_PUBLIC_SUPABASE_URL ?? '').includes('127.0.0.1') ? (
+          <Text style={{ color: '#4a5260', fontSize: 13, fontFamily: 'Urbanist_400Regular', marginBottom: 32 }}>
+            Local dev: use <Text style={{ color: '#2ecc71', fontFamily: 'Urbanist_700Bold' }}>000000</Text>
+          </Text>
+        ) : <View style={{ height: 32 }} />}
 
-      <TouchableOpacity className="mt-4 items-center" onPress={() => router.back()}>
-        <Text className="text-gray-400 text-sm">{t('auth.verify.wrongNumber')}</Text>
-      </TouchableOpacity>
+        {/* OTP input */}
+        <TextInput
+          style={{
+            backgroundColor: '#1e2022',
+            borderWidth: 1,
+            borderColor: error ? '#ef444455' : '#2a2d2f',
+            borderRadius: 16,
+            paddingHorizontal: 16,
+            paddingVertical: Platform.OS === 'ios' ? 20 : 16,
+            color: '#ffffff',
+            fontSize: 32,
+            fontFamily: 'Urbanist_700Bold',
+            textAlign: 'center',
+            letterSpacing: 12,
+            marginBottom: 12,
+          }}
+          placeholder="------"
+          placeholderTextColor="#2a2d2f"
+          keyboardType="number-pad"
+          maxLength={6}
+          value={otp}
+          onChangeText={v => { setOtp(v); setError('') }}
+        />
+
+        {/* Error */}
+        {error ? (
+          <View style={{ backgroundColor: '#ef444418', borderRadius: 12, padding: 12, marginBottom: 16 }}>
+            <Text style={{ color: '#ef4444', fontSize: 13, fontFamily: 'Urbanist_500Medium' }}>{error}</Text>
+          </View>
+        ) : <View style={{ height: 16 }} />}
+
+        {/* CTA */}
+        <TouchableOpacity
+          onPress={handleVerify}
+          disabled={loading || otp.length < 6}
+          style={{
+            backgroundColor: otp.length >= 6 ? '#1a7a4a' : '#1e2022',
+            borderRadius: 16, paddingVertical: 18, alignItems: 'center', marginBottom: 20,
+            shadowColor: '#1a7a4a', shadowOpacity: otp.length >= 6 ? 0.4 : 0,
+            shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: otp.length >= 6 ? 6 : 0,
+          }}
+        >
+          {loading
+            ? <ActivityIndicator color="white" />
+            : <Text style={{ color: otp.length >= 6 ? '#ffffff' : '#4a5260', fontSize: 17, fontFamily: 'Urbanist_700Bold' }}>
+                {t('auth.verify.verify')}
+              </Text>}
+        </TouchableOpacity>
+
+        <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => router.back()}>
+          <Text style={{ color: '#4a5260', fontSize: 14, fontFamily: 'Urbanist_500Medium' }}>
+            {t('auth.verify.wrongNumber')}
+          </Text>
+        </TouchableOpacity>
+
+      </View>
     </KeyboardAvoidingView>
   )
 }

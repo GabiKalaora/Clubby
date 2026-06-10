@@ -70,6 +70,7 @@ export default function ProfileScreen() {
   const [editingDob, setEditingDob] = useState(false)
   const [dobError, setDobError] = useState('')
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [avatarError, setAvatarError] = useState('')
   const [themePreference, setThemePreferenceState] = useState<ThemePreference>('auto')
 
   useEffect(() => {
@@ -100,7 +101,7 @@ export default function ProfileScreen() {
       const { data: { publicUrl } } = supabase.storage.from('user-avatars').getPublicUrl(path)
       updateProfile({ userId: user.id, avatar_url: publicUrl })
     } catch (e) {
-      Alert.alert('Upload failed', String(e))
+      setAvatarError(String(e))
     } finally {
       setUploadingAvatar(false)
     }
@@ -160,13 +161,22 @@ export default function ProfileScreen() {
 
   async function handleLanguageChange(lang: SupportedLang) {
     await changeLanguage(lang)
-    if (Platform.OS !== 'web') {
-      // On native, I18nManager.forceRTL requires a full reload
-      Alert.alert(t('language.restartRequired'), '', [
-        { text: t('language.restart'), onPress: () => { /* RN DevMenu.reload() not available — user taps OK */ } },
-      ])
+    if (Platform.OS === 'web') {
+      // Web: react-i18next re-renders automatically, but reload to apply RTL dir attribute
+      window.location.reload()
+    } else {
+      // Native: I18nManager.forceRTL requires a full app restart
+      // DevSettings.reload() works in Expo dev builds; in production build user must manually restart
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { DevSettings } = require('react-native')
+        DevSettings.reload()
+      } catch {
+        Alert.alert(t('language.restartRequired'), t('language.restartManually'), [
+          { text: t('common.ok') },
+        ])
+      }
     }
-    // On web, react-i18next re-renders automatically — no reload needed
   }
 
   function formatDob(dob: string | null): string {
@@ -203,6 +213,9 @@ export default function ProfileScreen() {
               onPress={handleAvatarUpload}
               uploading={uploadingAvatar}
             />
+            {avatarError ? (
+              <Text className="text-red-500 text-xs text-center mt-1 px-4">{avatarError}</Text>
+            ) : null}
 
             {editing ? (
               <View className="flex-row items-center gap-x-2 mt-1">

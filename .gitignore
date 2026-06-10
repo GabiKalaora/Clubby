@@ -37,3 +37,7 @@ npm-debug.log*
 .vscode/
 .idea/
 scripts/take_demo_screenshots.py
+
+# Mock backend runtime data (demo-local only)
+apps/mock-backend/data/*.json
+slides/*.pptx

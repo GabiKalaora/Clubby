@@ -5,6 +5,14 @@ import { Stack, useRouter, useSegments } from 'expo-router'
 import * as Notifications from 'expo-notifications'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  useFonts,
+  Urbanist_400Regular,
+  Urbanist_500Medium,
+  Urbanist_600SemiBold,
+  Urbanist_700Bold,
+  Urbanist_800ExtraBold,
+} from '@expo-google-fonts/urbanist'
 import { supabase } from '../lib/supabase'
 import { initI18n, isHebrew } from '../lib/i18n'
 
@@ -51,6 +59,14 @@ export default function RootLayout() {
   const [i18nReady, setI18nReady] = useState(false)
   const [themePreference, setThemePreference] = useState<ThemePreference>('auto')
 
+  const [fontsLoaded] = useFonts({
+    Urbanist_400Regular,
+    Urbanist_500Medium,
+    Urbanist_600SemiBold,
+    Urbanist_700Bold,
+    Urbanist_800ExtraBold,
+  })
+
   const isDark = themePreference === 'dark' || (themePreference === 'auto' && systemScheme === 'dark')
 
   useEffect(() => {
@@ -87,7 +103,7 @@ export default function RootLayout() {
     return () => sub.remove()
   }, [router])
 
-  if (!i18nReady) return null
+  if (!i18nReady || !fontsLoaded) return null
 
   return (
     <QueryClientProvider client={queryClient}>

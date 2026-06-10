@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>אושר עד — מסוף קופה</title>
+  <style>
+    :root {
+      --bg:       #0e0f11;
+      --surface:  #1a1b1e;
+      --card:     #22242a;
+      --border:   #2e3038;
+      --green:    #1a7a4a;
+      --green-lt: #2ecc71;
+      --text:     #f0f2f5;
+      --muted:    #8e969f;
+      --dim:      #4a5260;
+      --red:      #ef4444;
+      --gold:     #f59e0b;
+      --silver:   #94a3b8;
+      --bronze:   #cd7f32;
+      --blue:     #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, 'Segoe UI', Arial, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header-logo {
+      width: 36px; height: 36px;
+      background: var(--green);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .header-title { font-size: 18px; font-weight: 700; }
+    .header-sub   { font-size: 12px; color: var(--muted); }
+    .header-spacer{ flex: 1; }
+    .tab-btn {
+      padding: 7px 16px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: 13px; font-weight: 600;
+      background: transparent; color: var(--muted);
+      transition: all 0.15s;
+    }
+    .tab-btn.active { background: var(--green); color: white; }
+    .tab-btn:hover:not(.active) { background: var(--card); color: var(--text); }
+
+    /* ── Layout ── */
+    .page { display: none; padding: 20px 24px; }
+    .page.visible { display: block; }
+    .two-col { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .card-title { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+
+    /* ── Member lookup ── */
+    .lookup-row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .lookup-input {
+      flex: 1; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px; color: var(--text);
+      font-size: 14px; outline: none; text-align: right;
+    }
+    .lookup-input:focus { border-color: var(--green); }
+    .btn {
+      padding: 10px 18px; border-radius: 10px; border: none; cursor: pointer;
+      font-size: 13px; font-weight: 700; transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-green  { background: var(--green);  color: white; }
+    .btn-blue   { background: var(--blue);   color: white; }
+    .btn-red    { background: var(--red);    color: white; }
+    .btn-muted  { background: var(--border); color: var(--muted); cursor: not-allowed; }
+    .btn-lg { padding: 14px 24px; font-size: 15px; width: 100%; border-radius: 14px; }
+
+    /* ── Member card ── */
+    .member-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: none;
+    }
+    .member-card.show { display: block; }
+    .member-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .member-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+    .member-name    { font-size: 16px; font-weight: 700; }
+    .member-name-he { font-size: 13px; color: var(--muted); }
+    .tier-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    }
+    .tier-gold   { background: #f59e0b22; color: var(--gold);   border: 1px solid #f59e0b44; }
+    .tier-silver { background: #94a3b822; color: var(--silver); border: 1px solid #94a3b844; }
+    .tier-bronze { background: #cd7f3222; color: var(--bronze); border: 1px solid #cd7f3244; }
+    .member-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .stat-box {
+      background: var(--card); border-radius: 10px; padding: 10px 12px;
+      text-align: center;
+    }
+    .stat-val { font-size: 18px; font-weight: 800; color: var(--green-lt); }
+    .stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Product grid ── */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      max-height: 460px;
+      overflow-y: auto;
+    }
+    .product-tile {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .product-tile:hover { border-color: var(--green); background: var(--card); }
+    .product-tile.selected { border-color: var(--green); background: #1a7a4a18; }
+    .product-emoji { font-size: 22px; margin-bottom: 4px; }
+    .product-name  { font-size: 11px; line-height: 1.3; color: var(--text); margin-bottom: 4px; min-height: 28px; }
+    .product-price { font-size: 13px; font-weight: 700; color: var(--green-lt); }
+    .product-qty   {
+      display: inline-block; background: var(--green); color: white;
+      border-radius: 10px; padding: 1px 7px; font-size: 11px; font-weight: 700;
+      margin-top: 3px;
+    }
+
+    /* ── Basket ── */
+    .basket-items { max-height: 240px; overflow-y: auto; margin-bottom: 12px; }
+    .basket-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 0; border-bottom: 1px solid var(--border);
+    }
+    .basket-row:last-child { border-bottom: none; }
+    .basket-name { flex: 1; font-size: 12px; }
+    .basket-qty-ctrl {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .qty-btn {
+      width: 22px; height: 22px; border-radius: 6px; border: none;
+      background: var(--border); color: var(--text); cursor: pointer; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .qty-num { font-size: 12px; font-weight: 700; min-width: 18px; text-align: center; }
+    .basket-price { font-size: 12px; font-weight: 700; color: var(--green-lt); min-width: 52px; text-align: left; }
+
+    .basket-total-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+    .basket-total-row.grand { font-size: 16px; font-weight: 800; color: var(--green-lt); padding-top: 8px; border-top: 1px solid var(--border); margin-top: 4px; }
+
+    .payment-selector { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .pay-opt {
+      flex: 1; min-width: 80px; padding: 8px; border-radius: 10px; border: 1.5px solid var(--border);
+      text-align: center; cursor: pointer; font-size: 12px; font-weight: 600;
+      transition: all 0.15s; background: var(--surface);
+    }
+    .pay-opt.selected { border-color: var(--green); background: #1a7a4a18; color: var(--green-lt); }
+
+    .installments-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; }
+    .install-select {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); border-radius: 8px; padding: 4px 8px; font-size: 13px;
+    }
+
+    /* ── Receipt ── */
+    .receipt-box {
+      background: var(--surface);
+      border: 1px solid var(--green);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 12px;
+      display: none;
+    }
+    .receipt-box.show { display: block; }
+    .receipt-banner {
+      background: #1a7a4a22;
+      border: 1px solid var(--green);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green-lt);
+      text-align: center;
+    }
+    .receipt-pre {
+      font-size: 12px; line-height: 1.7; color: var(--muted);
+      white-space: pre-wrap; font-family: 'Courier New', monospace;
+      background: var(--bg); border-radius: 8px; padding: 12px;
+    }
+
+    /* ── Dashboard ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .dash-stat {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px; text-align: center;
+    }
+    .dash-stat-val   { font-size: 28px; font-weight: 800; color: var(--green-lt); }
+    .dash-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      text-align: right; font-size: 11px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .5px;
+      padding: 8px 12px; border-bottom: 1px solid var(--border);
+    }
+    .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* ── Notifications ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--green); color: white; padding: 12px 24px;
+      border-radius: 12px; font-weight: 700; font-size: 14px;
+      box-shadow: 0 8px 24px rgba(26,122,74,0.4);
+      z-index: 999; opacity: 0; transition: opacity 0.3s;
+      pointer-events: none; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+    .toast.error { background: var(--red); box-shadow: 0 8px 24px rgba(239,68,68,0.4); }
+
+    .empty-state { text-align: center; color: var(--dim); padding: 32px; font-size: 13px; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🏪</div>
+  <div>
+    <div class="header-title">אושר עד — מסוף קופה</div>
+    <div class="header-sub">Osher-Ad POS Terminal · Demo Integration</div>
+  </div>
+  <div class="header-spacer"></div>
+  <button class="tab-btn active" onclick="showTab('pos')">🛒 קופה</button>
+  <button class="tab-btn" onclick="showTab('dashboard')">📊 דשבורד</button>
+  <button class="tab-btn" onclick="showTab('anchor')">🏢 רשת</button>
+  <button class="tab-btn" onclick="showTab('log')">🔌 לוג אינטגרציה</button>
+  <button class="tab-btn" onclick="showTab('api')">📋 API</button>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ POS TAB -->
+<div class="page visible" id="tab-pos">
+  <div class="two-col">
+
+    <!-- LEFT: member lookup + products -->
+    <div>
+      <!-- Member lookup -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">חיפוש חבר מועדון</div>
+        <div class="lookup-row">
+          <input class="lookup-input" id="phone-input" type="tel"
+            placeholder="מספר טלפון — למשל 0521000001"
+            onkeydown="if(event.key==='Enter') lookupMember()" />
+          <button class="btn btn-green" onclick="lookupMember()">חפש</button>
+        </div>
+        <div class="member-card" id="member-display">
+          <div class="member-top">
+            <div class="member-avatar" id="member-avatar">?</div>
+            <div>
+              <div class="member-name" id="member-name">—</div>
+              <div class="member-name-he" id="member-name-he">—</div>
+              <div style="margin-top:5px"><span class="tier-badge" id="tier-badge">—</span></div>
+            </div>
+          </div>
+          <div class="member-stats">
+            <div class="stat-box">
+              <div class="stat-val" id="member-points">0</div>
+              <div class="stat-label">נקודות</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="member-spent">₪0</div>
+              <div class="stat-label">הוצאה השנה</div>
+            </div>
+          </div>
+        </div>
+        <!-- Quick-select demo customers -->
+        <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--muted);align-self:center">הדגמה:</span>
+          <button class="btn" style="background:var(--surface);color:var(--text);border:1px solid var(--border);padding:4px 10px;font-size:11px;border-radius:8px" onclick="quickSelect('+972521000001')">דנה 🥇</button>
+          <button class="btn" style="background:var(--surface);color:var(--text);border:1px solid var(--border);padding:4px 10px;font-size:11px;border-radius:8px" onclick="quickSelect('+972521000002')">יוסי 🥈</button>
+          <button class="btn" style="background:var(--surface);color:var(--text);border:1px solid var(--border);padding:4px 10px;font-size:11px;border-radius:8px" onclick="quickSelect('+972521000003')">מאיה 🥈</button>
+          <button class="btn" style="background:var(--surface);color:var(--text);border:1px solid var(--border);padding:4px 10px;font-size:11px;border-radius:8px" onclick="quickSelect('+972521000004')">אורן 🥉</button>
+          <button class="btn" style="background:var(--surface);color:var(--text);border:1px solid var(--border);padding:4px 10px;font-size:11px;border-radius:8px" onclick="quickSelect('+972521000005')">תמר 🥉</button>
+        </div>
+      </div>
+
+      <!-- Product grid -->
+      <div class="card">
+        <div class="card-title">קטלוג מוצרים</div>
+        <div class="product-grid" id="product-grid">
+          <div class="empty-state">טוען מוצרים…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: basket + checkout -->
+    <div>
+      <div class="card">
+        <div class="card-title">עגלת קנייה</div>
+
+        <div class="basket-items" id="basket-items">
+          <div class="empty-state">לחץ על מוצר להוספה</div>
+        </div>
+
+        <div id="basket-totals" style="display:none">
+          <div class="basket-total-row"><span>סכום ביניים</span><span id="tot-subtotal">₪0.00</span></div>
+          <div class="basket-total-row"><span>מע"מ 17%</span><span id="tot-vat">₪0.00</span></div>
+          <div class="basket-total-row grand"><span>סה"כ לתשלום</span><span id="tot-total">₪0.00</span></div>
+        </div>
+
+        <div style="margin-top:14px">
+          <div class="card-title">אמצעי תשלום</div>
+          <div class="payment-selector">
+            <div class="pay-opt selected" data-pay="credit_card" onclick="selectPayment(this)">💳 אשראי</div>
+            <div class="pay-opt" data-pay="cash" onclick="selectPayment(this)">💵 מזומן</div>
+            <div class="pay-opt" data-pay="apple_pay" onclick="selectPayment(this)">🍎 Apple Pay</div>
+          </div>
+          <div class="installments-row" id="installments-row">
+            <span>תשלומים:</span>
+            <select class="install-select" id="installments-select">
+              <option value="1">תשלום אחד</option>
+              <option value="3">3 תשלומים</option>
+              <option value="6">6 תשלומים</option>
+              <option value="12">12 תשלומים</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-green btn-lg" id="checkout-btn" onclick="checkout()" disabled>
+          בצע מכירה
+        </button>
+        <button class="btn btn-lg" style="background:var(--border);color:var(--muted);margin-top:8px" onclick="clearBasket()">נקה עגלה</button>
+
+        <!-- Receipt -->
+        <div class="receipt-box" id="receipt-box">
+          <div class="receipt-banner" id="receipt-banner">✅ עסקה הושלמה בהצלחה</div>
+          <div class="receipt-pre" id="receipt-pre"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ DASHBOARD TAB -->
+<div class="page" id="tab-dashboard">
+  <div class="card-title" style="font-size:18px;font-weight:800;margin-bottom:16px;color:var(--text)">📊 דשבורד ניהולי — אושר עד</div>
+  <div class="stat-grid" id="dash-stats">
+    <div class="empty-state">טוען נתונים…</div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">חברי המועדון הפעילים ביותר</div>
+    <table class="data-table" id="top-members-table">
+      <thead><tr><th>#</th><th>שם</th><th>דרגה</th><th>סה"כ קניות</th></tr></thead>
+      <tbody id="top-members-body"><tr><td colspan="4" style="text-align:center;color:var(--dim)">אין נתונים עדיין</td></tr></tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">עסקאות אחרונות</div>
+    <table class="data-table">
+      <thead><tr><th>מספר עסקה</th><th>חבר</th><th>סה"כ</th><th>נקודות</th><th>זמן</th></tr></thead>
+      <tbody id="recent-tx-body"><tr><td colspan="5" style="text-align:center;color:var(--dim)">אין עסקאות עדיין</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ ANCHOR TAB -->
+<div class="page" id="tab-anchor">
+  <div class="card-title" style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:16px">
+    🏢 דשבורד ניהולי — רשת אושר עד
+    <span style="font-size:11px;color:var(--muted);margin-right:10px;font-weight:400">Powered by Clubby</span>
+  </div>
+  <div class="stat-grid" id="anchor-kpis">
+    <div class="empty-state">טוען נתונים…</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <div class="card-title">סניפים מובילים</div>
+      <table class="data-table">
+        <thead><tr><th>סניף</th><th>חברים</th><th>הכנסה</th></tr></thead>
+        <tbody id="anchor-branches-body"><tr><td colspan="3" style="text-align:center;color:var(--dim)">…</td></tr></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">פילוח דרגות חברים</div>
+      <div id="anchor-tiers" style="display:flex;gap:12px;padding:8px 0">
+        <div class="empty-state" style="padding:16px">…</div>
+      </div>
+      <div class="card-title" style="margin-top:16px">קטגוריות מובילות</div>
+      <div id="anchor-cats"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ LOG TAB -->
+<div class="page" id="tab-log">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div class="card-title" style="font-size:18px;font-weight:800;color:var(--text);margin:0">🔌 לוג אינטגרציה Clubby</div>
+    <button class="btn btn-green" style="padding:6px 14px;font-size:12px" onclick="loadEvents()">רענן</button>
+  </div>
+  <div class="card" style="padding:0">
+    <table class="data-table">
+      <thead>
+        <tr><th>זמן</th><th>סוג</th><th>פרטים</th></tr>
+      </thead>
+      <tbody id="events-body">
+        <tr><td colspan="3" style="text-align:center;color:var(--dim)">אין אירועים עדיין</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════ API TAB -->
+<div class="page" id="tab-api">
+  <div class="card-title" style="font-size:18px;font-weight:800;margin-bottom:16px;color:var(--text)">🔌 Clubby Integration API</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-title">endpoints זמינים</div>
+      <table class="data-table">
+        <thead><tr><th>Method</th><th>Path</th><th>תיאור</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--green-lt)">GET</td><td>/api/health</td><td>בדיקת תקינות</td></tr>
+          <tr><td style="color:var(--green-lt)">GET</td><td>/api/products</td><td>קטלוג מוצרים</td></tr>
+          <tr><td style="color:var(--green-lt)">GET</td><td>/api/members?phone=…</td><td>חיפוש חבר לפי טלפון</td></tr>
+          <tr><td style="color:var(--blue)">POST</td><td>/api/purchase</td><td>עיבוד מכירה + הנפקת הטבה</td></tr>
+          <tr><td style="color:var(--green-lt)">GET</td><td>/api/members/:id/history</td><td>היסטוריית קניות</td></tr>
+          <tr><td style="color:var(--green-lt)">GET</td><td>/api/dashboard</td><td>נתוני דשבורד</td></tr>
+          <tr><td style="color:var(--blue)">POST</td><td>/clubby/webhook</td><td>↩ Clubby קורא לכאן בסריקת QR</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Clubby Webhook — payload נכנס</div>
+      <pre style="font-size:12px;color:var(--muted);background:var(--bg);border-radius:8px;padding:12px;overflow-x:auto">{
+  "event": "qr_scan",
+  "user_id": "3bae20ea-...",
+  "token": "Olr2j-dMkjVN",
+  "timestamp": 1717200000000
+}
+</pre>
+      <div class="card-title" style="margin-top:14px">תגובה לClubby (לפי דרגת חבר)</div>
+      <pre style="font-size:12px;color:var(--green-lt);background:var(--bg);border-radius:8px;padding:12px;overflow-x:auto">{
+  "benefit": {
+    "type": "discount",
+    "title": "20% הנחת חבר זהב — אושר עד",
+    "discount_percent": 20,
+    "expires_at": "2026-07-07T..."
+  },
+  "message": "ברוך הבא דנה! 20% הנחה נוספה"
+}
+</pre>
+    </div>
+    <div class="card">
+      <div class="card-title">POST /api/purchase — body</div>
+      <pre style="font-size:12px;color:var(--muted);background:var(--bg);border-radius:8px;padding:12px;overflow-x:auto">{
+  "phone": "+972521000001",
+  "payment_method": "credit_card",
+  "installments": 3,
+  "items": [
+    { "code": "7290000066474", "qty": 2 },
+    { "code": "7290006396703", "qty": 1 }
+  ]
+}
+</pre>
+    </div>
+    <div class="card">
+      <div class="card-title">POST /api/purchase — תגובה</div>
+      <pre style="font-size:12px;color:var(--green-lt);background:var(--bg);border-radius:8px;padding:12px;overflow-x:auto">{
+  "transaction_id": "OSH-1717...-1001",
+  "total": 45.80,
+  "points_earned": 152,
+  "new_balance": 2992,
+  "clubby_benefit_issued": true,
+  "clubby_benefit": {
+    "type": "credit",
+    "title": "₪30 קרדיט נאמנות — אושר עד",
+    "amount_cents": 3000
+  },
+  "receipt_he": "קבלה — אושר עד\n..."
+}
+</pre>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">בדיקת health</div>
+    <button class="btn btn-green" onclick="testHealth()" style="margin-bottom:12px">בדוק עכשיו</button>
+    <pre id="health-output" style="font-size:12px;color:var(--muted);background:var(--bg);border-radius:8px;padding:12px;white-space:pre-wrap">לחץ "בדוק עכשיו"…</pre>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const CATEGORY_EMOJI = {
+  dairy:'🥛', bakery:'🍞', oils:'🫒', produce:'🥦', eggs:'🥚',
+  dry:'🌾', canned:'🥫', snacks:'🍫', beverages:'🧃', deli:'🥙', health:'🧴',
+}
+
+let allProducts = []
+let basket = {}         // code → qty
+let currentMember = null
+let paymentMethod = 'credit_card'
+
+// ── Init ────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const data = await api('/api/products')
+    allProducts = data
+    renderProducts()
+  } catch(e) {
+    document.getElementById('product-grid').innerHTML =
+      '<div class="empty-state">שגיאה בטעינת מוצרים: ' + e.message + '</div>'
+  }
+}
+
+// ── Tab switching ────────────────────────────────────────────────────────────
+function showTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('visible'))
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  document.getElementById('tab-' + tab).classList.add('visible')
+  document.querySelector(`[onclick="showTab('${tab}')"]`).classList.add('active')
+  if (tab === 'dashboard') loadDashboard()
+  if (tab === 'anchor') loadAnchor()
+  if (tab === 'log') loadEvents()
+}
+
+// ── API helper ───────────────────────────────────────────────────────────────
+async function api(path, opts = {}) {
+  const res = await fetch(path, opts)
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }))
+    throw new Error(err.error || res.statusText)
+  }
+  return res.json()
+}
+
+function toast(msg, isError = false) {
+  const el = document.getElementById('toast')
+  el.textContent = msg
+  el.className = 'toast show' + (isError ? ' error' : '')
+  clearTimeout(el._t)
+  el._t = setTimeout(() => el.classList.remove('show'), 3500)
+}
+
+// ── Member lookup ────────────────────────────────────────────────────────────
+function quickSelect(phone) {
+  document.getElementById('phone-input').value = phone
+  lookupMember()
+}
+
+async function lookupMember() {
+  const raw = document.getElementById('phone-input').value.trim()
+  if (!raw) return
+  // Normalize: 0521000001 → +972521000001
+  let phone = raw
+  if (phone.startsWith('05') && phone.length === 10) phone = '+972' + phone.slice(1)
+
+  try {
+    const data = await api('/api/members?phone=' + encodeURIComponent(phone))
+    currentMember = data.member
+    renderMemberCard(currentMember)
+    toast('✓ חבר נמצא: ' + currentMember.name_he)
+    updateCheckoutBtn()
+  } catch(e) {
+    toast('חבר לא נמצא: ' + e.message, true)
+    currentMember = null
+    document.getElementById('member-display').classList.remove('show')
+    updateCheckoutBtn()
+  }
+}
+
+function renderMemberCard(m) {
+  const tierColors = { gold:'#f59e0b', silver:'#94a3b8', bronze:'#cd7f32' }
+  const tierClass  = { gold:'tier-gold', silver:'tier-silver', bronze:'tier-bronze' }
+  const tierEmoji  = { gold:'🥇', silver:'🥈', bronze:'🥉' }
+  const tierLabel  = { gold:'זהב', silver:'כסף', bronze:'ארד' }
+
+  document.getElementById('member-avatar').style.background = tierColors[m.tier]
+  document.getElementById('member-avatar').textContent = m.name_he[0]
+  document.getElementById('member-name').textContent = m.name
+  document.getElementById('member-name-he').textContent = m.name_he
+  const badge = document.getElementById('tier-badge')
+  badge.className = 'tier-badge ' + tierClass[m.tier]
+  badge.textContent = tierEmoji[m.tier] + ' ' + tierLabel[m.tier]
+  document.getElementById('member-points').textContent = m.points.toLocaleString()
+  document.getElementById('member-spent').textContent = '₪' + m.spent_ytd.toLocaleString()
+  document.getElementById('member-display').classList.add('show')
+}
+
+// ── Products ─────────────────────────────────────────────────────────────────
+function renderProducts() {
+  const grid = document.getElementById('product-grid')
+  grid.innerHTML = allProducts.map(p => {
+    const qty = basket[p.code] || 0
+    return `<div class="product-tile ${qty>0?'selected':''}" onclick="toggleProduct('${p.code}')" id="tile-${p.code}">
+      <div class="product-emoji">${CATEGORY_EMOJI[p.category] || '📦'}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-price">₪${p.price.toFixed(2)}</div>
+      ${qty>0 ? `<span class="product-qty">×${qty}</span>` : ''}
+    </div>`
+  }).join('')
+}
+
+function toggleProduct(code) {
+  if (!basket[code]) basket[code] = 0
+  basket[code]++
+  renderProducts()
+  renderBasket()
+  updateCheckoutBtn()
+}
+
+// ── Basket ───────────────────────────────────────────────────────────────────
+function renderBasket() {
+  const items = Object.entries(basket).filter(([,q]) => q > 0)
+  const container = document.getElementById('basket-items')
+  const totalsEl  = document.getElementById('basket-totals')
+
+  if (items.length === 0) {
+    container.innerHTML = '<div class="empty-state">לחץ על מוצר להוספה</div>'
+    totalsEl.style.display = 'none'
+    return
+  }
+
+  const productMap = Object.fromEntries(allProducts.map(p => [p.code, p]))
+  let subtotal = 0
+  const rows = items.map(([code, qty]) => {
+    const p = productMap[code]
+    if (!p) return ''
+    const lineTotal = p.price * qty
+    subtotal += lineTotal
+    return `<div class="basket-row">
+      <div class="basket-name">${p.name}</div>
+      <div class="basket-qty-ctrl">
+        <button class="qty-btn" onclick="changeQty('${code}',-1)">−</button>
+        <span class="qty-num">${qty}</span>
+        <button class="qty-btn" onclick="changeQty('${code}',1)">+</button>
+      </div>
+      <div class="basket-price">₪${lineTotal.toFixed(2)}</div>
+    </div>`
+  })
+
+  container.innerHTML = rows.join('')
+  const vat   = subtotal * 0.17
+  const total = subtotal + vat
+  document.getElementById('tot-subtotal').textContent = '₪' + subtotal.toFixed(2)
+  document.getElementById('tot-vat').textContent      = '₪' + vat.toFixed(2)
+  document.getElementById('tot-total').textContent    = '₪' + total.toFixed(2)
+  totalsEl.style.display = 'block'
+}
+
+function changeQty(code, delta) {
+  basket[code] = (basket[code] || 0) + delta
+  if (basket[code] <= 0) delete basket[code]
+  renderProducts()
+  renderBasket()
+  updateCheckoutBtn()
+}
+
+function clearBasket() {
+  basket = {}
+  renderProducts()
+  renderBasket()
+  document.getElementById('receipt-box').classList.remove('show')
+  updateCheckoutBtn()
+}
+
+// ── Payment ──────────────────────────────────────────────────────────────────
+function selectPayment(el) {
+  document.querySelectorAll('.pay-opt').forEach(e => e.classList.remove('selected'))
+  el.classList.add('selected')
+  paymentMethod = el.dataset.pay
+  document.getElementById('installments-row').style.display =
+    paymentMethod === 'credit_card' ? 'flex' : 'none'
+}
+
+function updateCheckoutBtn() {
+  const btn = document.getElementById('checkout-btn')
+  const hasItems = Object.values(basket).some(q => q > 0)
+  const hasMember = !!currentMember
+  btn.disabled = !hasItems || !hasMember
+  btn.className = 'btn btn-lg ' + (hasItems && hasMember ? 'btn-green' : '')
+  btn.style.background = hasItems && hasMember ? '' : 'var(--border)'
+  btn.style.color = hasItems && hasMember ? '' : 'var(--dim)'
+  btn.style.cursor = hasItems && hasMember ? '' : 'not-allowed'
+  btn.textContent = !hasMember ? 'יש לחפש חבר תחילה' : !hasItems ? 'סל ריק' : 'בצע מכירה'
+}
+
+// ── Checkout ─────────────────────────────────────────────────────────────────
+async function checkout() {
+  if (!currentMember) { toast('יש לחפש חבר מועדון תחילה', true); return }
+  const items = Object.entries(basket)
+    .filter(([,q]) => q > 0)
+    .map(([code, qty]) => ({ code, qty }))
+  if (items.length === 0) { toast('הסל ריק', true); return }
+
+  const installments = parseInt(document.getElementById('installments-select').value)
+  const btn = document.getElementById('checkout-btn')
+  btn.disabled = true
+  btn.textContent = 'מעבד…'
+
+  try {
+    const result = await api('/api/purchase', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: currentMember.phone,
+        items,
+        payment_method: paymentMethod,
+        installments,
+      }),
+    })
+
+    // Show receipt
+    const bannerEl = document.getElementById('receipt-banner')
+    const benefitStatus = result.clubby_benefit_issued
+    bannerEl.innerHTML = benefitStatus === true
+      ? `✅ עסקה הושלמה! <br>🎁 הטבה נשלחה ל-Clubby: <strong>${result.clubby_benefit?.title}</strong>`
+      : benefitStatus === 'pending'
+      ? `✅ עסקה הושלמה! <br>⏳ הטבה בתהליך שליחה ל-Clubby: <strong>${result.clubby_benefit?.title}</strong>`
+      : '✅ עסקה הושלמה בהצלחה'
+
+    document.getElementById('receipt-pre').textContent = result.receipt_he
+    document.getElementById('receipt-box').classList.add('show')
+
+    // Update member display
+    if (currentMember) {
+      currentMember.points = result.new_balance
+      document.getElementById('member-points').textContent = result.new_balance.toLocaleString()
+    }
+
+    toast(result.clubby_benefit_issued ? '🎁 הטבה נשלחה ל-Clubby!' : '✓ עסקה הושלמה')
+    basket = {}
+    renderProducts()
+    renderBasket()
+  } catch(e) {
+    toast('שגיאה: ' + e.message, true)
+  } finally {
+    btn.disabled = false
+    updateCheckoutBtn()
+  }
+}
+
+// ── Dashboard ────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    const d = await api('/api/dashboard')
+    const s = d.stats
+    document.getElementById('dash-stats').innerHTML = `
+      <div class="dash-stat"><div class="dash-stat-val">${s.total_members}</div><div class="dash-stat-label">חברי מועדון</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">${s.transactions_today}</div><div class="dash-stat-label">עסקאות היום</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">₪${s.revenue_today.toFixed(0)}</div><div class="dash-stat-label">הכנסות היום</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">${s.points_issued_today}</div><div class="dash-stat-label">נקודות שהונפקו</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">${s.active_members_today}</div><div class="dash-stat-label">חברים פעילים היום</div></div>
+    `
+    const tierEmoji = { gold:'🥇', silver:'🥈', bronze:'🥉' }
+    document.getElementById('top-members-body').innerHTML = d.top_members.length
+      ? d.top_members.map((m,i) => `<tr>
+          <td style="color:var(--muted)">#${i+1}</td>
+          <td style="font-weight:600">${m.name}</td>
+          <td>${tierEmoji[m.tier]||''} ${m.tier}</td>
+          <td style="color:var(--green-lt)">₪${m.total_spent.toFixed(2)}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="4" style="text-align:center;color:var(--dim)">אין עסקאות עדיין</td></tr>'
+
+    document.getElementById('recent-tx-body').innerHTML = d.recent_transactions.length
+      ? d.recent_transactions.map(t => `<tr>
+          <td style="font-size:11px;color:var(--muted)">${t.id}</td>
+          <td>${t.member_id}</td>
+          <td style="color:var(--green-lt)">₪${t.total.toFixed(2)}</td>
+          <td>+${t.points_earned}</td>
+          <td style="font-size:11px;color:var(--dim)">${new Date(t.timestamp).toLocaleTimeString('he-IL')}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="5" style="text-align:center;color:var(--dim)">אין עסקאות עדיין</td></tr>'
+  } catch(e) {
+    toast('שגיאה בטעינת דשבורד: ' + e.message, true)
+  }
+}
+
+// ── Health check ─────────────────────────────────────────────────────────────
+async function testHealth() {
+  try {
+    const d = await api('/api/health')
+    document.getElementById('health-output').textContent = JSON.stringify(d, null, 2)
+    document.getElementById('health-output').style.color = 'var(--green-lt)'
+  } catch(e) {
+    document.getElementById('health-output').textContent = 'Error: ' + e.message
+    document.getElementById('health-output').style.color = 'var(--red)'
+  }
+}
+
+// ── Anchor Dashboard ─────────────────────────────────────────────────────────
+async function loadAnchor() {
+  try {
+    const d = await api('/api/anchor-dashboard')
+    const k = d.kpis
+    document.getElementById('anchor-kpis').innerHTML = `
+      <div class="dash-stat"><div class="dash-stat-val">${k.total_members.toLocaleString()}</div><div class="dash-stat-label">חברי מועדון</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">₪${Math.round(k.revenue_total).toLocaleString()}</div><div class="dash-stat-label">הכנסות כולל</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">${k.benefits_issued}</div><div class="dash-stat-label">הטבות שהונפקו</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">${k.active_today}</div><div class="dash-stat-label">פעילים היום</div></div>
+      <div class="dash-stat"><div class="dash-stat-val">${k.branches}</div><div class="dash-stat-label">סניפים</div></div>
+    `
+    document.getElementById('anchor-branches-body').innerHTML = d.branches.map((b, i) => `
+      <tr>
+        <td style="font-weight:600">${b.name}</td>
+        <td style="color:var(--green-lt)">${b.members.toLocaleString()}</td>
+        <td style="color:var(--green-lt)">₪${b.revenue.toLocaleString()}</td>
+      </tr>`).join('')
+
+    const tb = d.tier_breakdown
+    const total = (tb.gold||0) + (tb.silver||0) + (tb.bronze||0) || 1
+    document.getElementById('anchor-tiers').innerHTML = [
+      ['🥇 זהב', tb.gold||0, '#D4AF37'],
+      ['🥈 כסף', tb.silver||0, '#A8B2C8'],
+      ['🥉 ארד',  tb.bronze||0, '#CD7F32'],
+    ].map(([label, count, color]) => `
+      <div style="flex:1;background:${color}18;border:1px solid ${color}44;border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:18px;font-weight:800;color:${color}">${count}</div>
+        <div style="font-size:11px;color:var(--muted)">${label}</div>
+      </div>`).join('')
+
+    document.getElementById('anchor-cats').innerHTML = (d.top_categories||[]).map(c => `
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:12px;color:var(--text)">${c.category}</span>
+        <span style="font-size:12px;color:var(--green-lt);font-weight:700">₪${Math.round(c.revenue).toLocaleString()}</span>
+      </div>`).join('') || '<div class="empty-state" style="padding:12px">אין נתונים</div>'
+  } catch(e) { toast('שגיאה בטעינת דשבורד רשת: ' + e.message, true) }
+}
+
+// ── Integration Events Log ───────────────────────────────────────────────────
+const EVENT_ICONS = {
+  purchase:           { icon:'🛒', color:'var(--green-lt)' },
+  purchase_duplicate: { icon:'⚠️',  color:'var(--gold, #f59e0b)' },
+  benefit_issued:     { icon:'🎁', color:'var(--green-lt)' },
+  benefit_error:      { icon:'❌', color:'#ef4444' },
+  webhook_inbound:    { icon:'←',  color:'#06b6d4' },
+  webhook_response:   { icon:'→',  color:'#a855f7' },
+}
+
+async function loadEvents() {
+  try {
+    const evts = await api('/api/events?limit=50')
+    const tbody = document.getElementById('events-body')
+    if (!evts.length) {
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--dim)">אין אירועים עדיין — בצע מכירה או סרוק QR</td></tr>'
+      return
+    }
+    tbody.innerHTML = evts.map(e => {
+      const cfg = EVENT_ICONS[e.type] || { icon:'•', color:'var(--muted)' }
+      const time = new Date(e.ts).toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit', second:'2-digit' })
+      const detail = formatEventDetail(e)
+      return `<tr>
+        <td style="font-size:11px;color:var(--dim);white-space:nowrap">${time}</td>
+        <td><span style="color:${cfg.color};font-weight:700;font-size:13px">${cfg.icon} ${e.type.replace('_',' ')}</span></td>
+        <td style="font-size:12px;color:var(--muted)">${detail}</td>
+      </tr>`
+    }).join('')
+  } catch(e) { toast('שגיאה בטעינת לוג: ' + e.message, true) }
+}
+
+function formatEventDetail(e) {
+  const d = e.data || {}
+  switch(e.type) {
+    case 'purchase':           return `${d.member || ''} · ₪${d.total||0} · +${d.points_earned||0} נק'`
+    case 'purchase_duplicate': return `${d.transaction_id || ''} (כפולה — הוחזרה תשובה מקורית)`
+    case 'benefit_issued':     return `${d.phone||''} ← ${d.benefit_title||''}`
+    case 'benefit_error':      return `${d.phone||''} — שגיאה: ${d.error||d.status||'unknown'}`
+    case 'webhook_inbound':    return `user: ${(d.user_id||'').slice(0,8)}… token: ${d.token||''}`
+    case 'webhook_response':   return `הטבה: ${d.benefit_title||''}`
+    default:                   return JSON.stringify(d).slice(0,80)
+  }
+}
+
+// Auto-refresh log every 5s when tab is visible
+setInterval(() => {
+  if (document.getElementById('tab-log').classList.contains('visible')) loadEvents()
+}, 5000)
+
+init()
+</script>
+</body>
+</html>

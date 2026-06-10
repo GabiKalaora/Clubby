@@ -65,20 +65,20 @@ export default function StoreProfile() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50 items-center justify-center">
+      <View style={{ flex: 1, backgroundColor: '#151617', alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator color="#2ecc71" />
-      </SafeAreaView>
+      </View>
     )
   }
 
   if (!business) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50 items-center justify-center px-8">
-        <Text className="text-gray-500 text-center">{t('store.notFound')}</Text>
-        <TouchableOpacity onPress={() => router.back()} className="mt-4">
-          <Text className="text-brand font-semibold">{t('store.goBack')}</Text>
+      <View style={{ flex: 1, backgroundColor: '#151617', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
+        <Text style={{ color: '#8e969f', textAlign: 'center', fontFamily: 'Urbanist_500Medium' }}>{t('store.notFound')}</Text>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 16 }}>
+          <Text style={{ color: '#2ecc71', fontFamily: 'Urbanist_600SemiBold' }}>{t('store.goBack')}</Text>
         </TouchableOpacity>
-      </SafeAreaView>
+      </View>
     )
   }
 
@@ -86,106 +86,105 @@ export default function StoreProfile() {
   const activePromos = business.promotions ?? []
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900" edges={['bottom']}>
+    <View style={{ flex: 1, backgroundColor: '#151617' }}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Cover / header */}
-        <View className="h-44 bg-brand/20 items-center justify-center relative">
+        {/* Cover — full bleed dark hero */}
+        <View style={{ height: 240, backgroundColor: '#0f3d25', position: 'relative' }}>
           {business.cover_url ? (
-            <Image
-              source={{ uri: business.cover_url }}
-              className="absolute inset-0 w-full h-full"
-              resizeMode="cover"
-            />
+            <Image source={{ uri: business.cover_url }} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} resizeMode="cover" />
           ) : business.logo_url ? (
-            <Image
-              source={{ uri: business.logo_url }}
-              className="absolute inset-0 w-full h-full"
-              resizeMode="cover"
-              style={{ opacity: 0.3 }}
-            />
+            <Image source={{ uri: business.logo_url }} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.25 }} resizeMode="cover" />
           ) : null}
+
+          {/* Dark gradient overlay */}
+          <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 100, backgroundColor: 'rgba(21,22,23,0.6)' }} />
 
           {/* Back button */}
           <TouchableOpacity
-            className="absolute top-3 left-4 bg-white/80 rounded-full px-3 py-1.5"
             onPress={() => router.back()}
+            style={{ position: 'absolute', top: 52, left: 16, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 4 }}
           >
-            <Text className="text-gray-700 text-sm font-medium">← Back</Text>
+            <Text style={{ color: '#ffffff', fontSize: 14, fontFamily: 'Urbanist_600SemiBold' }}>← {t('common.back')}</Text>
           </TouchableOpacity>
-
-          {/* Logo circle */}
-          <View className="w-20 h-20 rounded-2xl bg-white items-center justify-center shadow-md overflow-hidden">
-            {business.logo_url ? (
-              <Image source={{ uri: business.logo_url }} className="w-full h-full" resizeMode="cover" />
-            ) : (
-              <Text className="text-4xl">🏪</Text>
-            )}
-          </View>
         </View>
 
-        <View className="px-5 pt-4">
-          {/* Business name + join button */}
-          <View className="flex-row items-start justify-between mb-1">
-            <View className="flex-1 me-3">
-              <Text className="text-2xl font-bold text-gray-900 dark:text-white">{business.name}</Text>
-              {business.category && (
-                <Text className="text-gray-400 text-sm capitalize mt-0.5">{business.category}</Text>
-              )}
+        {/* White bottom sheet style content */}
+        <View style={{ backgroundColor: '#1e2022', borderTopLeftRadius: 28, borderTopRightRadius: 28, marginTop: -28, paddingTop: 24, paddingHorizontal: 20, paddingBottom: 40 }}>
+          {/* Logo + name row */}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 }}>
+            <View style={{ width: 72, height: 72, borderRadius: 22, backgroundColor: '#2a2d2f', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginEnd: 14, borderWidth: 3, borderColor: '#151617', flexShrink: 0 }}>
+              {business.logo_url
+                ? <Image source={{ uri: business.logo_url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                : <Text style={{ fontSize: 32 }}>🏪</Text>}
             </View>
 
-            <View className="items-end gap-y-2">
-              <TouchableOpacity
-                className={`rounded-full px-5 py-2.5 ${isMember ? 'bg-gray-100' : 'bg-brand'}`}
-                onPress={isMember ? undefined : handleJoin}
-                disabled={enrolling || isMember}
-              >
-                {enrolling
-                  ? <ActivityIndicator size="small" color="white" />
-                  : <Text className={`font-bold text-sm ${isMember ? 'text-gray-500' : 'text-white'}`}>
-                      {isMember ? t('store.joined') : t('store.joinClub')}
-                    </Text>
-                }
-              </TouchableOpacity>
-              {isMember && (
-                <TouchableOpacity
-                  className="rounded-full px-4 py-1.5 bg-brand/10 border border-brand/20"
-                  onPress={handleInvite}
-                >
-                  <Text className="text-brand text-xs font-semibold">{t('store.inviteFriends')}</Text>
-                </TouchableOpacity>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 22, fontFamily: 'Urbanist_800ExtraBold', color: '#ffffff', marginBottom: 2 }}>{business.name}</Text>
+              {business.category && (
+                <Text style={{ color: '#8e969f', fontSize: 13, fontFamily: 'Urbanist_500Medium', textTransform: 'capitalize' }}>{business.category}</Text>
               )}
             </View>
           </View>
 
-          {/* Address */}
-          {business.address && (
-            <Text className="text-gray-500 text-sm mb-1">📍 {business.address}</Text>
-          )}
-          {business.phone && (
-            <Text className="text-gray-500 text-sm mb-3">📞 {business.phone}</Text>
+          {/* Join / Invite buttons */}
+          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
+            <TouchableOpacity
+              onPress={isMember ? undefined : handleJoin}
+              disabled={enrolling || isMember}
+              style={{
+                flex: 1, borderRadius: 16, paddingVertical: 14, alignItems: 'center',
+                backgroundColor: isMember ? '#2a2d2f' : '#1a7a4a',
+                shadowColor: isMember ? 'transparent' : '#1a7a4a',
+                shadowOpacity: 0.4, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 6,
+              }}
+            >
+              {enrolling
+                ? <ActivityIndicator size="small" color="white" />
+                : <Text style={{ fontFamily: 'Urbanist_700Bold', fontSize: 15, color: isMember ? '#8e969f' : '#ffffff' }}>
+                    {isMember ? `✓ ${t('store.joined')}` : t('store.joinClub')}
+                  </Text>}
+            </TouchableOpacity>
+            {isMember && (
+              <TouchableOpacity
+                onPress={handleInvite}
+                style={{ flex: 1, borderRadius: 16, paddingVertical: 14, alignItems: 'center', backgroundColor: '#1a7a4a22', borderWidth: 1.5, borderColor: '#1a7a4a' }}
+              >
+                <Text style={{ fontFamily: 'Urbanist_700Bold', fontSize: 15, color: '#2ecc71' }}>{t('store.inviteFriends')}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Address + phone */}
+          {(business.address || business.phone) && (
+            <View style={{ backgroundColor: '#151617', borderRadius: 16, padding: 14, marginBottom: 16, gap: 8 }}>
+              {business.address && (
+                <Text style={{ color: '#8e969f', fontSize: 13, fontFamily: 'Urbanist_500Medium' }}>📍 {business.address}</Text>
+              )}
+              {business.phone && (
+                <Text style={{ color: '#8e969f', fontSize: 13, fontFamily: 'Urbanist_500Medium' }}>📞 {business.phone}</Text>
+              )}
+            </View>
           )}
 
-          {/* Description */}
+          {/* About */}
           {business.description && (
-            <View className="bg-white rounded-2xl p-4 mb-4 border border-gray-100">
-              <Text className="font-semibold text-gray-800 mb-1">{t('store.about')}</Text>
-              <Text className="text-gray-600 text-sm leading-5">{business.description}</Text>
+            <View style={{ backgroundColor: '#151617', borderRadius: 16, padding: 16, marginBottom: 16 }}>
+              <Text style={{ fontFamily: 'Urbanist_700Bold', color: '#ffffff', fontSize: 15, marginBottom: 8 }}>{t('store.about')}</Text>
+              <Text style={{ color: '#8e969f', fontSize: 14, fontFamily: 'Urbanist_400Regular', lineHeight: 22 }}>{business.description}</Text>
             </View>
           )}
 
           {/* Active promotions */}
           {activePromos.length > 0 && (
-            <View className="mb-4">
-              <Text className="font-semibold text-gray-800 mb-2">{t('store.currentOffers')}</Text>
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontFamily: 'Urbanist_700Bold', color: '#ffffff', fontSize: 15, marginBottom: 10 }}>{t('store.currentOffers')}</Text>
               {activePromos.map((promo, i) => (
-                <View key={i} className="bg-brand/10 border border-brand/20 rounded-2xl p-4 mb-2">
-                  <Text className="text-brand font-bold text-sm">🎁 {promo.title}</Text>
+                <View key={i} style={{ backgroundColor: '#1a7a4a22', borderWidth: 1, borderColor: '#1a7a4a44', borderRadius: 16, padding: 14, marginBottom: 8, borderLeftWidth: 4, borderLeftColor: '#1a7a4a' }}>
+                  <Text style={{ color: '#2ecc71', fontFamily: 'Urbanist_700Bold', fontSize: 14 }}>🎁 {promo.title}</Text>
                   {promo.benefit_value != null && (
-                    <Text className="text-brand/70 text-xs mt-0.5">
-                      {promo.benefit_type === 'credit'
-                        ? `₪${(promo.benefit_value / 100).toFixed(0)} credit`
-                        : promo.benefit_type === 'discount'
-                        ? `${promo.benefit_value}% off`
+                    <Text style={{ color: '#2ecc71', fontSize: 12, marginTop: 4, fontFamily: 'Urbanist_500Medium' }}>
+                      {promo.benefit_type === 'credit' ? `₪${(promo.benefit_value / 100).toFixed(0)} credit`
+                        : promo.benefit_type === 'discount' ? `${promo.benefit_value}% off`
                         : 'Free item'}
                     </Text>
                   )}
@@ -196,20 +195,18 @@ export default function StoreProfile() {
 
           {/* Opening hours */}
           {hours && Object.keys(hours).length > 0 && (
-            <View className="bg-white rounded-2xl p-4 mb-6 border border-gray-100">
-              <Text className="font-semibold text-gray-800 mb-3">{t('store.openingHours')}</Text>
-              {DAY_ORDER.filter((d) => hours[d]).map((day) => (
-                <View key={day} className="flex-row justify-between py-1.5 border-b border-gray-50">
-                  <Text className="text-gray-600 text-sm">{DAY_LABELS[day]}</Text>
-                  <Text className="text-gray-900 text-sm font-medium">
-                    {hours[day].open} – {hours[day].close}
-                  </Text>
+            <View style={{ backgroundColor: '#151617', borderRadius: 16, padding: 16 }}>
+              <Text style={{ fontFamily: 'Urbanist_700Bold', color: '#ffffff', fontSize: 15, marginBottom: 12 }}>{t('store.openingHours')}</Text>
+              {DAY_ORDER.filter((d) => hours[d]).map((day, i, arr) => (
+                <View key={day} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: i < arr.length - 1 ? 1 : 0, borderBottomColor: '#2a2d2f' }}>
+                  <Text style={{ color: '#8e969f', fontSize: 14, fontFamily: 'Urbanist_500Medium' }}>{DAY_LABELS[day]}</Text>
+                  <Text style={{ color: '#ffffff', fontSize: 14, fontFamily: 'Urbanist_600SemiBold' }}>{hours[day].open} – {hours[day].close}</Text>
                 </View>
               ))}
             </View>
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   )
 }

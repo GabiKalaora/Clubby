@@ -54,15 +54,19 @@ export function Members({ business }: Props) {
   const [selectedMember, setSelectedMember] = useState<Member | null>(null)
   const [memberBenefits, setMemberBenefits] = useState<MemberBenefit[]>([])
   const [benefitsLoading, setBenefitsLoading] = useState(false)
+  const [loadError, setLoadError] = useState(false)
 
   useEffect(() => {
     setLoading(true)
+    setLoadError(false)
     supabase
       .rpc('get_business_members', { p_business_id: business.id })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) { setLoadError(true); setLoading(false); return }
         setMembers((data ?? []) as Member[])
         setLoading(false)
       })
+      .catch(() => { setLoadError(true); setLoading(false) })
   }, [business.id])
 
   function openMember(m: Member) {
@@ -221,18 +225,19 @@ export function Members({ business }: Props) {
           onClick={e => { if (e.target === e.currentTarget) closeMember() }}
         >
           <div style={{
-            background: 'white', borderRadius: 16, padding: 28,
+            background: 'var(--surface)', borderRadius: 16, padding: 28,
             width: '100%', maxWidth: 540, maxHeight: '85vh',
             overflow: 'hidden', display: 'flex', flexDirection: 'column',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.25)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.35)',
+            border: '1px solid var(--border)',
           }}>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
               <div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', marginBottom: 4 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>
                   {selectedMember.display_name ?? 'Member'}
                 </h3>
-                <p style={{ fontSize: 13, color: '#64748b' }}>
+                <p style={{ fontSize: 13, color: 'var(--text2)' }}>
                   {selectedMember.phone ?? t('members.detail.noPhone')} · {t('members.detail.joined', { date: new Date(selectedMember.joined_at).toLocaleDateString() })}
                 </p>
               </div>
@@ -306,6 +311,10 @@ export function Members({ business }: Props) {
 
       {loading ? (
         <div className="spinner" />
+      ) : loadError ? (
+        <div className="alert-error" style={{ marginTop: 24 }}>
+          Failed to load members. Please refresh the page.
+        </div>
       ) : members.length === 0 ? (
         <div className="empty-state">
           <p>{t('members.empty')}</p>

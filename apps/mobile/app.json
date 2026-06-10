@@ -52,7 +52,8 @@
           "cameraPermission": "Allow Clubby to access your camera to scan QR codes."
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

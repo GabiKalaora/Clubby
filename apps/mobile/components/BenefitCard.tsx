@@ -8,13 +8,19 @@ type Props = {
   onRedeem: (id: string) => void
 }
 
+const TYPE_ACCENT: Record<string, string> = {
+  credit:    '#1a7a4a',
+  discount:  '#2563eb',
+  free_item: '#9333ea',
+}
+
 function expiryBadge(expiresAt: string | null, t: ReturnType<typeof useTranslation>['t']): { label: string; color: string } | null {
   if (!expiresAt) return null
   const diff = new Date(expiresAt).getTime() - Date.now()
   const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
-  if (days < 0) return { label: t('benefit.expired'), color: 'bg-gray-400' }
-  if (days <= 3) return { label: t('benefit.daysLeft', { count: days }), color: 'bg-red-400' }
-  if (days <= 7) return { label: t('benefit.daysLeft', { count: days }), color: 'bg-amber-400' }
+  if (days < 0) return { label: t('benefit.expired'), color: '#6b7280' }
+  if (days <= 3) return { label: t('benefit.daysLeft', { count: days }), color: '#ef4444' }
+  if (days <= 7) return { label: t('benefit.daysLeft', { count: days }), color: '#f59e0b' }
   return null
 }
 
@@ -36,57 +42,68 @@ export default function BenefitCard({ benefit }: Props) {
   const logoUrl = benefit.businesses?.logo_url
   const isExpired = benefit.expires_at != null && new Date(benefit.expires_at) < new Date()
   const isUsed = benefit.redeemed
+  const accent = TYPE_ACCENT[benefit.type] ?? '#1a7a4a'
 
   return (
-    <View className={`bg-white dark:bg-gray-800 rounded-2xl mx-4 mb-3 p-4 shadow-sm border ${isUsed ? 'border-gray-100 opacity-60' : 'border-gray-100'}`}>
-      <View className="flex-row items-center">
+    <View style={{
+      backgroundColor: '#1e2022',
+      borderRadius: 20,
+      marginHorizontal: 16,
+      marginBottom: 10,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: '#2a2d2f',
+      opacity: isUsed ? 0.55 : 1,
+      // colored left accent bar
+      borderLeftWidth: 4,
+      borderLeftColor: isUsed ? '#2a2d2f' : accent,
+    }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 14 }}>
         {/* Logo */}
-        <View className="w-12 h-12 rounded-xl bg-gray-100 items-center justify-center ms-3 overflow-hidden flex-shrink-0">
-          {logoUrl ? (
-            <Image source={{ uri: logoUrl }} className="w-full h-full" resizeMode="cover" />
-          ) : (
-            <Text className="text-xl">🏪</Text>
-          )}
+        <View style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: '#2a2d2f', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginEnd: 12, flexShrink: 0 }}>
+          {logoUrl
+            ? <Image source={{ uri: logoUrl }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+            : <Text style={{ fontSize: 22 }}>🏪</Text>}
         </View>
 
-        {/* Content — fixed layout, no flex-wrap on name row */}
-        <View className="flex-1 min-w-0">
-          <View className="flex-row items-center gap-x-1.5">
-            <Text className="font-semibold text-gray-900 dark:text-white text-sm" numberOfLines={1}>{businessName}</Text>
+        {/* Content */}
+        <View style={{ flex: 1, minWidth: 0 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Text style={{ fontFamily: 'Urbanist_700Bold', color: '#ffffff', fontSize: 14 }} numberOfLines={1}>{businessName}</Text>
             {!benefit.verified && (
-              <View className="bg-gray-200 rounded px-1.5 py-0.5 flex-shrink-0">
-                <Text className="text-gray-500 text-[10px]">{t('benefit.manual')}</Text>
+              <View style={{ backgroundColor: '#2a2d2f', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 }}>
+                <Text style={{ color: '#8e969f', fontSize: 10, fontFamily: 'Urbanist_500Medium' }}>{t('benefit.manual')}</Text>
               </View>
             )}
           </View>
-          <Text className="text-gray-500 dark:text-gray-400 text-xs mt-0.5" numberOfLines={1}>{benefit.title}</Text>
+          <Text style={{ color: '#8e969f', fontSize: 12, marginTop: 2, fontFamily: 'Urbanist_400Regular' }} numberOfLines={1}>{benefit.title}</Text>
           {badge && !isUsed && (
-            <View className={`${badge.color} rounded px-1.5 py-0.5 self-start mt-1`}>
-              <Text className="text-white text-xs font-medium">{badge.label}</Text>
+            <View style={{ backgroundColor: badge.color + '22', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, alignSelf: 'flex-start', marginTop: 6 }}>
+              <Text style={{ color: badge.color, fontSize: 11, fontFamily: 'Urbanist_600SemiBold' }}>{badge.label}</Text>
             </View>
           )}
         </View>
 
-        {/* Value + status */}
-        <View className="items-end me-3 flex-shrink-0" style={{ maxWidth: 90 }}>
+        {/* Value + action */}
+        <View style={{ alignItems: 'flex-end', marginStart: 8, flexShrink: 0, maxWidth: 90 }}>
           {isUsed ? (
             <>
-              <Text className="text-gray-400 font-bold text-sm">{valueLabel(benefit, t)}</Text>
-              <View className="bg-gray-100 rounded-full px-2.5 py-1 mt-1.5">
-                <Text className="text-gray-400 text-xs font-semibold">{t('benefit.used')}</Text>
+              <Text style={{ color: '#4a5260', fontFamily: 'Urbanist_700Bold', fontSize: 14 }}>{valueLabel(benefit, t)}</Text>
+              <View style={{ backgroundColor: '#2a2d2f', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5, marginTop: 6 }}>
+                <Text style={{ color: '#4a5260', fontSize: 11, fontFamily: 'Urbanist_600SemiBold' }}>{t('benefit.used')}</Text>
               </View>
             </>
           ) : (
             <>
-              <View className="bg-gray-900 rounded-xl px-2.5 py-1 mb-2">
-                <Text className="text-white font-bold text-sm" numberOfLines={1}>{valueLabel(benefit, t)}</Text>
+              <View style={{ backgroundColor: accent + '22', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5, marginBottom: 8 }}>
+                <Text style={{ color: accent === '#1a7a4a' ? '#2ecc71' : accent, fontFamily: 'Urbanist_800ExtraBold', fontSize: 15 }} numberOfLines={1}>{valueLabel(benefit, t)}</Text>
               </View>
               {!isExpired && (
                 <TouchableOpacity
-                  className="bg-brand rounded-full px-3 py-1.5"
+                  style={{ backgroundColor: accent, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 8 }}
                   onPress={() => router.push({ pathname: '/redeem/[id]', params: { id: benefit.id } } as never)}
                 >
-                  <Text className="text-white text-xs font-semibold">{t('benefit.use')}</Text>
+                  <Text style={{ color: 'white', fontSize: 12, fontFamily: 'Urbanist_700Bold' }}>{t('benefit.use')}</Text>
                 </TouchableOpacity>
               )}
             </>
