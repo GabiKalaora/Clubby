@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingVi
 import { useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { supabase } from '../../lib/supabase'
+import { ErrorBanner } from '../../components/ErrorBanner'
 import { consumePendingToken } from '../enroll'
 import { ONBOARDED_KEY } from './onboarding'
 
@@ -110,11 +111,7 @@ export default function Register() {
           onChangeText={setLastName}
         />
 
-        {error ? (
-          <View style={{ backgroundColor: '#ef444418', borderRadius: 12, padding: 12, marginBottom: 16 }}>
-            <Text style={{ color: '#ef4444', fontSize: 13, fontFamily: 'Urbanist_500Medium' }}>{error}</Text>
-          </View>
-        ) : null}
+        <ErrorBanner message={error} />
 
         <TouchableOpacity
           onPress={handleRegister}

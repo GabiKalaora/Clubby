@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
+import { useCurrentUser, useSession } from '../../hooks/useAuth'
 import { useBusiness, useIsMember, useEnrollBusiness } from '../../hooks/useBusinesses'
 
 const DAY_LABELS: Record<string, string> = {
@@ -11,28 +12,6 @@ const DAY_LABELS: Record<string, string> = {
   thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday',
 }
 const DAY_ORDER = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
-
-function useCurrentUser() {
-  return useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      return user
-    },
-    staleTime: Infinity,
-  })
-}
-
-function useSession() {
-  return useQuery({
-    queryKey: ['session'],
-    queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      return session
-    },
-    staleTime: Infinity,
-  })
-}
 
 export default function StoreProfile() {
   const { t } = useTranslation()

@@ -10,21 +10,12 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as ImagePicker from 'expo-image-picker'
 import { supabase } from '../lib/supabase'
+import { useCurrentUser } from '../hooks/useAuth'
 import { useProfile, useUpdateProfile, type NotificationPrefs } from '../hooks/useProfile'
 import { changeLanguage, type SupportedLang } from '../lib/i18n'
 import i18n from '../lib/i18n'
 import { THEME_KEY, type ThemePreference } from './_layout'
 
-function useCurrentUser() {
-  return useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      return user
-    },
-    staleTime: Infinity,
-  })
-}
 
 function Avatar({
   name, phone, avatarUrl, onPress, uploading,
@@ -186,7 +177,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#151617' }}>
       {/* Header */}
       <View className="flex-row items-center px-5 pt-2 pb-4">
         <TouchableOpacity
@@ -246,13 +237,13 @@ export default function ProfileScreen() {
           </View>
 
           {/* Info rows */}
-          <View className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden mb-4">
+          <View style={{ backgroundColor: '#1e2022', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2a2d2f' }}>
             <InfoRow label={t('profile.phone')} value={profile?.phone ?? user?.phone ?? '—'} />
             <InfoRow label={t('profile.email')} value={user?.email ?? '—'} last />
           </View>
 
           {/* Birthday */}
-          <View className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden mb-4">
+          <View style={{ backgroundColor: '#1e2022', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2a2d2f' }}>
             <View className="flex-row justify-between items-center px-5 py-4">
               <Text className="text-gray-500 text-sm">{t('profile.dateOfBirth')}</Text>
               {editingDob ? (
@@ -290,7 +281,7 @@ export default function ProfileScreen() {
           </View>
 
           {/* Language */}
-          <View className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden mb-4">
+          <View style={{ backgroundColor: '#1e2022', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2a2d2f' }}>
             <View className="px-5 pt-4 pb-2">
               <Text className="text-sm font-semibold text-gray-900">{t('profile.language')}</Text>
               <Text className="text-xs text-gray-400 mt-0.5">{t('profile.languageSubtitle')}</Text>
@@ -314,7 +305,7 @@ export default function ProfileScreen() {
           </View>
 
           {/* Theme */}
-          <View className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden mb-4">
+          <View style={{ backgroundColor: '#1e2022', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2a2d2f' }}>
             <View className="px-5 pt-4 pb-2">
               <Text className="text-sm font-semibold text-gray-900 dark:text-white">🌙 Theme</Text>
               <Text className="text-xs text-gray-400 mt-0.5">Choose your preferred display theme</Text>
@@ -343,7 +334,7 @@ export default function ProfileScreen() {
           </View>
 
           {/* Notification preferences */}
-          <View className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden mb-4">
+          <View style={{ backgroundColor: '#1e2022', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2a2d2f' }}>
             <View className="px-5 pt-4 pb-2">
               <Text className="text-sm font-semibold text-gray-900">{t('profile.notificationPrefs')}</Text>
               <Text className="text-xs text-gray-400 mt-0.5">{t('profile.notificationPrefsSubtitle')}</Text>

@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
+import { useCurrentUser } from '../../hooks/useAuth'
 import { useAddBenefit } from '../../hooks/useBenefits'
 
 type BenefitType = 'credit' | 'discount' | 'free_item'
@@ -34,14 +35,7 @@ export default function Manual() {
   const [expiryDate, setExpiryDate] = useState('')
   const [error, setError] = useState('')
 
-  const { data: user } = useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      return user
-    },
-    staleTime: Infinity,
-  })
+  const { data: user } = useCurrentUser()
 
   const { mutate: addBenefit, isPending } = useAddBenefit()
 

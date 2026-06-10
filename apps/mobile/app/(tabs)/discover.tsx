@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as Location from 'expo-location'
 import { supabase } from '../../lib/supabase'
+import { useCurrentUser, useSession } from '../../hooks/useAuth'
 import { useNearbyBusinesses, useEnrollBusiness, type Business } from '../../hooks/useBusinesses'
 import { useMemberships } from '../../hooks/useMemberships'
 
@@ -28,28 +29,6 @@ function isOpenNow(opening_hours: Business['opening_hours']): boolean {
   const openMins = openH * 60 + openM
   const closeMins = closeH * 60 + closeM
   return nowMins >= openMins && nowMins < closeMins
-}
-
-function useCurrentUser() {
-  return useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      return user
-    },
-    staleTime: Infinity,
-  })
-}
-
-function useSession() {
-  return useQuery({
-    queryKey: ['session'],
-    queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      return session
-    },
-    staleTime: Infinity,
-  })
 }
 
 // Category square colors — like the reference app

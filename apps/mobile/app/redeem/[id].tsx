@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
+import { useCurrentUser } from '../../hooks/useAuth'
 import type { Benefit } from '../../hooks/useBenefits'
 
 function valueLabel(benefit: Benefit): string {
@@ -30,14 +31,7 @@ export default function RedeemScreen() {
   const [redeemError, setRedeemError] = useState('')
   const scaleAnim = useState(() => new Animated.Value(0))[0]
 
-  const { data: user } = useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      return user
-    },
-    staleTime: Infinity,
-  })
+  const { data: user } = useCurrentUser()
 
   const { data: benefit, isLoading } = useQuery({
     queryKey: ['benefit', id],
@@ -77,7 +71,7 @@ export default function RedeemScreen() {
 
   if (isLoading || !benefit) {
     return (
-      <SafeAreaView className="flex-1 bg-white items-center justify-center">
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#151617', alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator color="#2ecc71" />
       </SafeAreaView>
     )
@@ -86,7 +80,7 @@ export default function RedeemScreen() {
   const businessName = benefit.businesses?.name ?? 'the store'
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#151617' }}>
       {/* Back button */}
       <TouchableOpacity
         className="absolute top-14 left-5 z-10 w-9 h-9 rounded-full bg-gray-100 items-center justify-center"

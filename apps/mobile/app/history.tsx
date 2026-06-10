@@ -5,18 +5,8 @@ import { TouchableOpacity } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
+import { useCurrentUser } from '../hooks/useAuth'
 import { useAllBenefits, type Benefit } from '../hooks/useBenefits'
-
-function useCurrentUser() {
-  return useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      return user
-    },
-    staleTime: Infinity,
-  })
-}
 
 function valueLabel(b: Benefit): string {
   if (b.type === 'credit' && b.amount_cents != null) return `₪${(b.amount_cents / 100).toFixed(0)}`
@@ -40,7 +30,7 @@ function BenefitRow({ benefit }: { benefit: Benefit }) {
   const isRedeemed = benefit.redeemed
 
   return (
-    <View className="flex-row items-center px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#151617', borderBottomWidth: 1, borderBottomColor: '#2a2d2f' }}>
       {/* Logo */}
       <View className="w-10 h-10 rounded-xl bg-gray-100 items-center justify-center overflow-hidden ms-3 flex-shrink-0">
         {biz?.logo_url ? (
@@ -80,7 +70,7 @@ export default function HistoryScreen() {
   const redeemedCount = benefits.filter(b => b.redeemed).length
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#151617' }}>
       {/* Header */}
       <View className="flex-row items-center px-5 pt-2 pb-4">
         <TouchableOpacity

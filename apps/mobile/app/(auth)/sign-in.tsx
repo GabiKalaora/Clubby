@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
+import { ErrorBanner } from '../../components/ErrorBanner'
 
 const PORTAL_URL = process.env.EXPO_PUBLIC_PORTAL_URL ?? 'http://localhost:5174'
 
@@ -98,11 +99,8 @@ export default function SignIn() {
         </View>
 
         {/* Error */}
-        {error ? (
-          <View style={{ backgroundColor: '#ef444418', borderRadius: 12, padding: 12, marginBottom: 16 }}>
-            <Text style={{ color: '#ef4444', fontSize: 13, fontFamily: 'Urbanist_500Medium' }}>{error}</Text>
-          </View>
-        ) : <View style={{ height: 16 }} />}
+        <ErrorBanner message={error} />
+        {!error && <View style={{ height: 16 }} />}
 
         {/* CTA */}
         <TouchableOpacity

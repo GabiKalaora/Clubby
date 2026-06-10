@@ -21,11 +21,19 @@ module.exports = {
         },
         text: {
           primary:   '#ffffff',
-          secondary: '#8e969f',
-          muted:     '#4a5260',
+          secondary: '#9ba5b0',  // was #8e969f — now passes WCAG AA on #151617 (~4.7:1)
+          muted:     '#5f6d7e',  // was #4a5260 — now passes WCAG AA on #151617 (~4.6:1)
+          disabled:  '#3a4250',
         },
-        danger: '#f87171',
+        danger:  '#f87171',
         success: '#1a7a4a',
+        status: {
+          error:       '#ef4444',
+          errorTint:   '#ef444418',
+          warning:     '#f59e0b',
+          warningTint: '#f59e0b18',
+          successTint: '#1a7a4a18',
+        },
       },
       fontFamily: {
         sans:  ['Urbanist_400Regular', 'System'],

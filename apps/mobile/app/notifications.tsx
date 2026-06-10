@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
+import { useCurrentUser } from '../hooks/useAuth'
 import {
   useNotifications, useMarkAllRead, type NotificationItem,
 } from '../hooks/useNotifications'
@@ -56,16 +57,6 @@ function groupLabel(iso: string): string {
   return 'Earlier'
 }
 
-function useCurrentUser() {
-  return useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      return user
-    },
-    staleTime: Infinity,
-  })
-}
 
 export default function Notifications() {
   const { t } = useTranslation()
@@ -107,7 +98,7 @@ export default function Notifications() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#151617' }}>
       {/* Header */}
       <View className="flex-row items-center px-5 pt-2 pb-4 gap-x-3">
         <TouchableOpacity onPress={() => router.back()} className="w-9 h-9 items-center justify-center">

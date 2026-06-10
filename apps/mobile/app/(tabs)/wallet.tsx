@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
+import { useCurrentUser } from '../../hooks/useAuth'
 import { useBenefits, useRedeemBenefit, type Benefit } from '../../hooks/useBenefits'
 import { useFeedPosts, type FeedPost } from '../../hooks/useFeedPosts'
 import { useMemberships } from '../../hooks/useMemberships'
@@ -90,17 +91,6 @@ function getCurrentTier(totalStamps: number, tiers: Tier[]): Tier | null {
     if (totalStamps >= t.min_stamps) current = t
   }
   return current
-}
-
-function useCurrentUser() {
-  return useQuery({
-    queryKey: ['me'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      return user
-    },
-    staleTime: Infinity,
-  })
 }
 
 function totalBalance(benefits: Benefit[]): string {
