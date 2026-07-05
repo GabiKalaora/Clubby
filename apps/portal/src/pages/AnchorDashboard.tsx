@@ -103,8 +103,8 @@ export function AnchorDashboard() {
         <>
           {/* Stat cards */}
           <div className="stats-grid">
-            <StatCard icon="🏢" label="Total Businesses" value={stats?.total_businesses ?? 0}      accent="#6366f1" />
-            <StatCard icon="👥" label="Total Members"    value={stats?.total_members ?? 0}          accent="#2ecc71" />
+            <StatCard icon="🏢" label="Total Businesses" value={stats?.total_businesses ?? 0}      accent="#a855f7" />
+            <StatCard icon="👥" label="Total Members"    value={stats?.total_members ?? 0}          accent="#ec4899" />
             <StatCard icon="🎁" label="Total Benefits"   value={stats?.total_benefits ?? 0}        accent="#f59e0b" />
             <StatCard icon="📈" label="Redemption Rate"
               value={stats && stats.total_benefits > 0
@@ -119,15 +119,15 @@ export function AnchorDashboard() {
               <p className="chart-title">New Users — last 30 days</p>
               <ResponsiveContainer width="100%" height={180}>
                 <LineChart data={growth} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={6} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
                   <Tooltip
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e2e8f0" }}
                     formatter={(v: number) => [v, 'New Users']}
                   />
                   <Line
-                    type="monotone" dataKey="new_users" stroke="#2ecc71"
+                    type="monotone" dataKey="new_users" stroke="#a855f7"
                     strokeWidth={2} dot={false} activeDot={{ r: 4 }}
                   />
                 </LineChart>
@@ -138,15 +138,15 @@ export function AnchorDashboard() {
               <p className="chart-title">New Memberships — last 30 days</p>
               <ResponsiveContainer width="100%" height={180}>
                 <LineChart data={growth} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={6} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
                   <Tooltip
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e2e8f0" }}
                     formatter={(v: number) => [v, 'New Memberships']}
                   />
                   <Line
-                    type="monotone" dataKey="new_memberships" stroke="#6366f1"
+                    type="monotone" dataKey="new_memberships" stroke="#ec4899"
                     strokeWidth={2} dot={false} activeDot={{ r: 4 }}
                   />
                 </LineChart>
@@ -171,7 +171,7 @@ export function AnchorDashboard() {
               <tbody>
                 {topBusinesses.map((biz, idx) => (
                   <tr key={biz.business_id}>
-                    <td style={{ fontWeight: 600, color: '#6366f1' }}>#{idx + 1}</td>
+                    <td style={{ fontWeight: 600, color: '#a855f7' }}>#{idx + 1}</td>
                     <td style={{ fontWeight: 500 }}>{biz.business_name}</td>
                     <td>{biz.category ?? '—'}</td>
                     <td>{biz.member_count.toLocaleString()}</td>
@@ -181,7 +181,7 @@ export function AnchorDashboard() {
                 ))}
                 {topBusinesses.length === 0 && (
                   <tr key="empty">
-                    <td colSpan={6} style={{ textAlign: 'center', color: '#94a3b8', padding: '24px 0' }}>
+                    <td colSpan={6} style={{ textAlign: 'center', color: '#64748b', padding: '24px 0' }}>
                       No data available yet.
                     </td>
                   </tr>

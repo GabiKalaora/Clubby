@@ -22,9 +22,9 @@ const TYPE_LABELS: Record<string, string> = {
   story: '📸 Story',
 }
 const TYPE_COLORS: Record<string, string> = {
-  promotion: '#2ecc71',
+  promotion: '#a855f7',
   offer: '#f59e0b',
-  announcement: '#6366f1',
+  announcement: '#ec4899',
   story: '#ec4899',
 }
 
@@ -122,8 +122,8 @@ export function FeedPosts({ business }: Props) {
         <button className="btn-primary btn-sm" onClick={openCreate}>+ New post</button>
       </div>
 
-      <div className="card" style={{ marginBottom: 16, padding: '12px 16px', background: '#eff6ff', border: '1px solid #bfdbfe' }}>
-        <p style={{ fontSize: 13, color: '#1e40af', margin: 0, lineHeight: 1.6 }}>
+      <div className="card" style={{ marginBottom: 16, padding: '12px 16px', background: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.2)' }}>
+        <p style={{ fontSize: 13, color: '#7c3aed', margin: 0, lineHeight: 1.6 }}>
           <strong>How it works:</strong> Posts appear in the "Updates" section of your members' wallet. They see posts only from businesses they've joined. Posts expire automatically on the date you set.
         </p>
       </div>
@@ -200,14 +200,14 @@ export function FeedPosts({ business }: Props) {
                   </td>
                   <td className="text-muted">{p.cta_text ?? '—'}</td>
                   <td className="text-muted">{p.expires_at ? p.expires_at.slice(0, 10) : '—'}</td>
-                  <td><span className={`badge ${p.active ? 'badge-green' : 'badge-gray'}`}>{p.active ? 'Active' : 'Paused'}</span></td>
+                  <td><span className={`badge ${p.active ? 'badge-active' : 'badge-inactive'}`}>{p.active ? 'Active' : 'Paused'}</span></td>
                   <td>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button className="btn-link" style={{ fontSize: 12 }} onClick={() => openEdit(p)}>Edit</button>
                       <button className="btn-link" style={{ fontSize: 12 }} onClick={() => toggleActive(p.id, !p.active)}>
                         {p.active ? 'Pause' : 'Activate'}
                       </button>
-                      <button className="btn-link" style={{ fontSize: 12, color: '#dc2626' }}
+                      <button className="btn-link" style={{ fontSize: 12, color: '#ef4444' }}
                         onClick={() => { if (confirm('Delete this post?')) deletePost(p.id) }}>Delete</button>
                     </div>
                   </td>

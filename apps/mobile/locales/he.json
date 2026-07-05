@@ -8,7 +8,8 @@
     "loading": "טוען…",
     "error": "משהו השתבש",
     "yes": "כן",
-    "no": "לא"
+    "no": "לא",
+    "ok": "אישור"
   },
   "tabs": {
     "wallet": "ארנק",
@@ -25,7 +26,10 @@
       "continue": "המשך",
       "sending": "שולח…",
       "ownBusiness": "יש לך עסק?",
-      "goToPortal": "עבור לפורטל לעסקים ←"
+      "goToPortal": "עבור לפורטל לעסקים ←",
+      "vp1": "מבצעים בלעדיים מחנויות מקומיות",
+      "vp2": "צבור רמות נאמנות ופרסים",
+      "vp3": "גלה מועדונים קרובים אליך"
     },
     "verify": {
       "title": "אמת את מספרך",
@@ -38,13 +42,48 @@
     },
     "register": {
       "title": "צור חשבון",
+      "subtitle": "כמעט סיימנו — רק השם שלך",
+      "firstNameLabel": "שם פרטי",
+      "firstNamePlaceholder": "ישראל",
+      "lastNameLabel": "שם משפחה",
+      "lastNamePlaceholder": "ישראלי",
       "namePlaceholder": "השם שלך",
+      "getStarted": "בוא נתחיל",
       "continue": "המשך",
-      "saving": "שומר…"
+      "saving": "שומר…",
+      "errors": {
+        "nameRequired": "אנא הכנס את שמך"
+      }
     }
+  },
+  "onboarding": {
+    "skip": "דלג",
+    "next": "הבא",
+    "getStarted": "בוא נתחיל ←",
+    "slides": [
+      {
+        "title": "גלה מועדונים מקומיים",
+        "body": "הצטרף לחנויות, בתי קפה ושירותים האהובים עליך בסריקה אחת"
+      },
+      {
+        "title": "סרוק כדי להצטרף",
+        "body": "כוון את המצלמה לכל קוד QR של Clubby — ומיד אתה חבר"
+      },
+      {
+        "title": "צבור פרסים",
+        "body": "אסוף חותמות, נקודות והטבות בלעדיות רק על הביקורים שלך"
+      },
+      {
+        "title": "עלה בדרגות",
+        "body": "ככל שתבקר יותר, כך תעלה גבוה יותר — ותפתח הטבות טובות יותר"
+      }
+    ]
   },
   "wallet": {
     "title": "הארנק שלי",
+    "yourBenefits": "ההטבות שלך",
+    "activeBenefits": "הטבות פעילות",
+    "creditBalance": "יתרת קרדיט",
     "totalBalance": "יתרה כוללת",
     "activeCredits_one": "קרדיט {{count}} פעיל",
     "activeCredits_other": "{{count}} קרדיטים פעילים",
@@ -54,6 +93,7 @@
     "feed": "עדכונים",
     "enterCoupon": "+ הכנס קופון ידנית",
     "empty": "אין הטבות עדיין — סרוק קוד QR כדי להצטרף למועדון!",
+    "emptyTab": "אין הטבות {{tab}} עדיין",
     "tabs": {
       "all": "הכל",
       "balance": "יתרה",
@@ -97,6 +137,10 @@
     "title": "גלה עסקים",
     "searchPlaceholder": "חפש עסקים…",
     "openNow": "פתוח עכשיו",
+    "nearMe": "📍 קרוב אלי",
+    "mapView": "מפה",
+    "listView": "רשימה",
+    "openInMaps": "פתח במפות",
     "categories": {
       "all": "הכל",
       "food": "אוכל",
@@ -134,6 +178,7 @@
     "unread": "לא נקרא",
     "emptyAll": "אין התראות עדיין",
     "emptyUnread": "אין התראות שלא נקראו",
+    "discoverStores": "גלה חנויות ←",
     "groups": {
       "today": "היום",
       "yesterday": "אתמול",
@@ -180,6 +225,8 @@
   },
   "enroll": {
     "youreIn": "נרשמת!",
+    "welcomeBack": "ברוך שובך! 👋",
+    "alreadyMemberHint": "אתה כבר חבר במועדון הזה.",
     "welcomeGift": "מתנת הצטרפות",
     "viewWallet": "צפה בארנק שלי",
     "joining": "מצטרף…",

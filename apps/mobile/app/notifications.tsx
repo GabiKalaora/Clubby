@@ -98,7 +98,7 @@ export default function Notifications() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#151617' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       {/* Header */}
       <View className="flex-row items-center px-5 pt-2 pb-4 gap-x-3">
         <TouchableOpacity onPress={() => router.back()} className="w-9 h-9 items-center justify-center">
@@ -114,7 +114,7 @@ export default function Notifications() {
             key={tabKey}
             onPress={() => setTab(tabKey)}
             className={`flex-1 rounded-full py-2 items-center ${
-              tab === tabKey ? 'bg-brand' : 'bg-white border border-gray-200'
+              tab === tabKey ? 'bg-primary' : 'bg-white border border-gray-200'
             }`}
           >
             <Text className={`text-xs font-semibold ${tab === tabKey ? 'text-white' : 'text-gray-500'}`}>
@@ -126,7 +126,7 @@ export default function Notifications() {
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color="#2ecc71" />
+          <ActivityIndicator color="#c084fc" />
         </View>
       ) : (
         <FlatList
@@ -135,7 +135,7 @@ export default function Notifications() {
             item.type === 'header' ? `h-${item.label}` : `n-${item.data.id}-${i}`
           }
           refreshControl={
-            <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#2ecc71" />
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#c084fc" />
           }
           renderItem={({ item }) => {
             if (item.type === 'header') {
@@ -150,7 +150,7 @@ export default function Notifications() {
             return (
               <TouchableOpacity
                 className={`mx-4 mb-2 rounded-2xl p-4 flex-row gap-x-3 items-start ${
-                  isUnread ? 'bg-white border border-brand/20' : 'bg-white'
+                  isUnread ? 'bg-white border border-primary/20' : 'bg-white'
                 }`}
                 style={{ shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, elevation: 1 }}
                 onPress={() => {
@@ -169,7 +169,7 @@ export default function Notifications() {
                   <Text className="text-xs text-gray-400 mt-1">{timeLabel(n.sent_at)}</Text>
                 </View>
                 {isUnread && (
-                  <View className="w-2 h-2 rounded-full bg-brand mt-1.5" />
+                  <View className="w-2 h-2 rounded-full bg-primary mt-1.5" />
                 )}
               </TouchableOpacity>
             )
@@ -180,6 +180,22 @@ export default function Notifications() {
               <Text className="text-gray-500 text-center text-base">
                 {tab === 'unread' ? t('notifications.emptyUnread') : t('notifications.emptyAll')}
               </Text>
+              {tab === 'all' && (
+                <TouchableOpacity
+                  onPress={() => router.replace('/(tabs)/discover' as never)}
+                  style={{
+                    marginTop: 20,
+                    backgroundColor: '#a855f7',
+                    borderRadius: 999,
+                    paddingHorizontal: 24,
+                    paddingVertical: 12,
+                  }}
+                >
+                  <Text style={{ color: '#fff', fontFamily: 'PlusJakartaSans_600SemiBold', fontSize: 14 }}>
+                    {t('notifications.discoverStores')}
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
           }
           ListFooterComponent={<View className="h-6" />}

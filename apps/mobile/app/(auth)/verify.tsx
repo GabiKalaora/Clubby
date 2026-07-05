@@ -1,10 +1,27 @@
 import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, StatusBar, ActivityIndicator, Image } from 'react-native'
+import {
+  View, Text, TextInput, TouchableOpacity,
+  KeyboardAvoidingView, Platform, StatusBar, ActivityIndicator, Image,
+} from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
-import { ErrorBanner } from '../../components/ErrorBanner'
 import { consumePendingToken } from '../enroll'
+import { ErrorBanner } from '../../components/ErrorBanner'
+
+const S = {
+  bg:         '#f8f9fa',
+  card:       '#ffffff',
+  border:     '#e2e8f0',
+  foreground: '#2d3748',
+  muted:      '#64748b',
+  primary:    '#a855f7',
+  disabled:   '#e2e8f0',
+  disabledTxt:'#94a3b8',
+}
+
+const isLocal = (process.env.EXPO_PUBLIC_SUPABASE_URL ?? '').includes('127.0.0.1')
 
 export default function Verify() {
   const params = useLocalSearchParams<{ phone: string }>()
@@ -15,19 +32,16 @@ export default function Verify() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  const canVerify = otp.length >= 6
+
   async function handleVerify() {
     setError('')
     setLoading(true)
     const { data, error: verifyErr } = await supabase.auth.verifyOtp({
-      phone: phone!,
-      token: otp,
-      type: 'sms',
+      phone: phone!, token: otp, type: 'sms',
     })
     setLoading(false)
-    if (verifyErr) {
-      setError(verifyErr.message)
-      return
-    }
+    if (verifyErr) { setError(verifyErr.message); return }
     if (data.session) {
       const pendingToken = consumePendingToken()
       if (pendingToken) {
@@ -35,95 +49,86 @@ export default function Verify() {
         return
       }
       const { data: profile } = await supabase
-        .from('profiles')
-        .select('display_name')
-        .eq('id', data.session.user.id)
-        .single()
-      if (!profile?.display_name) {
-        router.replace('/(auth)/register')
-      } else {
-        router.replace('/(tabs)/wallet')
-      }
+        .from('profiles').select('display_name').eq('id', data.session.user.id).single()
+      if (!profile?.display_name) router.replace('/(auth)/register')
+      else router.replace('/(tabs)/wallet')
     }
   }
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1, backgroundColor: '#151617' }}
+      style={{ flex: 1, backgroundColor: S.bg }}
     >
-      <StatusBar barStyle="light-content" backgroundColor="#151617" />
+      <StatusBar barStyle="dark-content" backgroundColor={S.bg} />
       <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 28 }}>
 
         {/* Wordmark */}
-        <View style={{ alignItems: 'center', marginBottom: 48 }}>
-          <Image
-            source={require('../../assets/wordmark.png')}
-            style={{ width: 180, height: 52 }}
-            resizeMode="contain"
-          />
+        <View style={{ alignItems: 'center', marginBottom: 44 }}>
+          <Image source={require('../../assets/wordmark.png')} style={{ width: 180, height: 52 }} resizeMode="contain" />
         </View>
 
-        <Text style={{ color: '#ffffff', fontSize: 28, fontFamily: 'Urbanist_700Bold', marginBottom: 6 }}>
+        <Text style={{ color: S.foreground, fontSize: 30, fontFamily: 'PlusJakartaSans_800ExtraBold', letterSpacing: -0.8, marginBottom: 6 }}>
           {t('auth.verify.title')}
         </Text>
-        <Text style={{ color: '#8e969f', fontSize: 15, fontFamily: 'Urbanist_400Regular', marginBottom: 8 }}>
+        <Text style={{ color: S.muted, fontSize: 15, fontFamily: 'PlusJakartaSans_400Regular', marginBottom: 6 }}>
           {t('auth.verify.subtitle', { phone })}
         </Text>
-        {(process.env.EXPO_PUBLIC_SUPABASE_URL ?? '').includes('127.0.0.1') ? (
-          <Text style={{ color: '#4a5260', fontSize: 13, fontFamily: 'Urbanist_400Regular', marginBottom: 32 }}>
-            Local dev: use <Text style={{ color: '#2ecc71', fontFamily: 'Urbanist_700Bold' }}>000000</Text>
+        {isLocal && (
+          <Text style={{ color: S.muted, fontSize: 13, fontFamily: 'PlusJakartaSans_400Regular', marginBottom: 28 }}>
+            Local dev: use <Text style={{ color: S.primary, fontFamily: 'PlusJakartaSans_700Bold' }}>000000</Text>
           </Text>
-        ) : <View style={{ height: 32 }} />}
+        )}
+        {!isLocal && <View style={{ height: 28 }} />}
 
         {/* OTP input */}
         <TextInput
           style={{
-            backgroundColor: '#1e2022',
-            borderWidth: 1,
-            borderColor: error ? '#ef444455' : '#2a2d2f',
-            borderRadius: 16,
-            paddingHorizontal: 16,
-            paddingVertical: Platform.OS === 'ios' ? 20 : 16,
-            color: '#ffffff',
-            fontSize: 32,
-            fontFamily: 'Urbanist_700Bold',
-            textAlign: 'center',
-            letterSpacing: 12,
-            marginBottom: 12,
+            backgroundColor: S.card, borderWidth: 1.5,
+            borderColor: error ? '#ef4444' : (otp.length > 0 ? S.primary : S.border),
+            borderRadius: 12, paddingHorizontal: 16,
+            paddingVertical: Platform.OS === 'ios' ? 18 : 14,
+            color: S.foreground, fontSize: 32, fontFamily: 'PlusJakartaSans_700Bold',
+            textAlign: 'center', letterSpacing: 12, marginBottom: 12,
+            shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
           }}
-          placeholder="------"
-          placeholderTextColor="#2a2d2f"
+          placeholder="——————"
+          placeholderTextColor={S.disabledTxt}
           keyboardType="number-pad"
           maxLength={6}
           value={otp}
           onChangeText={v => { setOtp(v); setError('') }}
         />
 
-        {/* Error */}
         <ErrorBanner message={error} />
-        {!error && <View style={{ height: 16 }} />}
+        {!error && <View style={{ height: 12 }} />}
 
         {/* CTA */}
-        <TouchableOpacity
-          onPress={handleVerify}
-          disabled={loading || otp.length < 6}
-          style={{
-            backgroundColor: otp.length >= 6 ? '#1a7a4a' : '#1e2022',
-            borderRadius: 16, paddingVertical: 18, alignItems: 'center', marginBottom: 20,
-            shadowColor: '#1a7a4a', shadowOpacity: otp.length >= 6 ? 0.4 : 0,
-            shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: otp.length >= 6 ? 6 : 0,
-          }}
-        >
-          {loading
-            ? <ActivityIndicator color="white" />
-            : <Text style={{ color: otp.length >= 6 ? '#ffffff' : '#4a5260', fontSize: 17, fontFamily: 'Urbanist_700Bold' }}>
+        <TouchableOpacity onPress={handleVerify} disabled={loading || !canVerify} activeOpacity={0.85}>
+          {canVerify && !loading ? (
+            <LinearGradient
+              colors={['#ec4899', '#a855f7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+              style={{ borderRadius: 999, paddingVertical: 16, alignItems: 'center', marginBottom: 20,
+                shadowColor: '#a855f7', shadowOpacity: 0.35, shadowRadius: 14, elevation: 6 }}
+            >
+              <Text style={{ color: '#fff', fontSize: 16, fontFamily: 'PlusJakartaSans_600SemiBold' }}>
                 {t('auth.verify.verify')}
-              </Text>}
+              </Text>
+            </LinearGradient>
+          ) : (
+            <View style={{ borderRadius: 999, paddingVertical: 16, alignItems: 'center', marginBottom: 20,
+              backgroundColor: loading ? '#a855f720' : S.disabled }}>
+              {loading
+                ? <ActivityIndicator color="#a855f7" />
+                : <Text style={{ color: S.disabledTxt, fontSize: 16, fontFamily: 'PlusJakartaSans_600SemiBold' }}>
+                    {t('auth.verify.verify')}
+                  </Text>}
+            </View>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity style={{ alignItems: 'center' }} onPress={() => router.back()}>
-          <Text style={{ color: '#4a5260', fontSize: 14, fontFamily: 'Urbanist_500Medium' }}>
+          <Text style={{ color: S.muted, fontSize: 14, fontFamily: 'PlusJakartaSans_500Medium' }}>
             {t('auth.verify.wrongNumber')}
           </Text>
         </TouchableOpacity>

@@ -5,6 +5,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../lib/supabase'
 
 type Business = {
@@ -63,6 +64,7 @@ async function callEnroll(token: string, accessToken: string): Promise<{ result?
 export default function EnrollScreen() {
   const { token } = useLocalSearchParams<{ token: string }>()
   const router = useRouter()
+  const { t } = useTranslation()
   const [status, setStatus] = useState<'loading' | 'needs-auth' | 'success' | 'error'>('loading')
   const [result, setResult] = useState<EnrollResult | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -85,7 +87,7 @@ export default function EnrollScreen() {
   if (status === 'loading') {
     return (
       <SafeAreaView className="flex-1 bg-gray-50 items-center justify-center">
-        <ActivityIndicator size="large" color="#2ecc71" />
+        <ActivityIndicator size="large" color="#c084fc" />
         <Text className="text-gray-500 mt-4 text-base">Joining club…</Text>
       </SafeAreaView>
     )
@@ -102,7 +104,7 @@ export default function EnrollScreen() {
           Sign in to claim your welcome benefit and join this store's loyalty club.
         </Text>
         <TouchableOpacity
-          className="bg-brand rounded-full py-4 items-center w-full"
+          className="bg-primary rounded-full py-4 items-center w-full"
           onPress={() => router.push('/(auth)/sign-in')}
         >
           <Text className="text-white font-bold text-base">Sign in to join</Text>
@@ -117,7 +119,7 @@ export default function EnrollScreen() {
         <Text className="text-4xl mb-4">😕</Text>
         <Text className="text-red-500 text-center mb-6">{error}</Text>
         <TouchableOpacity onPress={() => router.replace('/(tabs)/wallet')}>
-          <Text className="text-brand font-semibold text-base">Go to wallet</Text>
+          <Text className="text-primary font-semibold text-base">Go to wallet</Text>
         </TouchableOpacity>
       </SafeAreaView>
     )
@@ -125,7 +127,7 @@ export default function EnrollScreen() {
 
   // success
   if (!result) return null
-  const { business, welcomeBenefit } = result
+  const { business, welcomeBenefit, alreadyMember } = result
 
   function benefitLabel() {
     if (!welcomeBenefit) return null
@@ -152,27 +154,32 @@ export default function EnrollScreen() {
         </View>
 
         {/* Checkmark */}
-        <View className="w-16 h-16 rounded-full bg-brand items-center justify-center mb-4">
+        <View className="w-16 h-16 rounded-full bg-primary items-center justify-center mb-4">
           <Text className="text-white text-3xl">✓</Text>
         </View>
 
-        <Text className="text-2xl font-bold text-gray-900 text-center mb-1">You're in!</Text>
+        <Text className="text-2xl font-bold text-gray-900 text-center mb-1">
+          {alreadyMember ? t('enroll.welcomeBack') : t('enroll.youreIn')}
+        </Text>
         <Text className="text-base text-gray-500 text-center mb-8">
-          Welcome to <Text className="font-semibold text-gray-800">{business.name}</Text> Club
+          {alreadyMember
+            ? t('enroll.alreadyMemberHint')
+            : <>Welcome to <Text className="font-semibold text-gray-800">{business.name}</Text> Club</>
+          }
         </Text>
 
         {/* Welcome benefit */}
         {welcomeBenefit && (
           <View className="w-full bg-white rounded-2xl p-5 mb-5 shadow-sm border border-gray-100">
-            <Text className="text-xs font-semibold text-brand uppercase tracking-wider mb-1">
+            <Text className="text-xs font-semibold text-primary uppercase tracking-wider mb-1">
               Welcome Gift
             </Text>
             <Text className="text-lg font-bold text-gray-900">{welcomeBenefit.title}</Text>
             {welcomeBenefit.description && (
               <Text className="text-gray-500 text-sm mt-1">{welcomeBenefit.description}</Text>
             )}
-            <View className="mt-3 bg-brand/10 rounded-xl px-3 py-2 self-start">
-              <Text className="text-brand font-semibold text-sm">{benefitLabel()}</Text>
+            <View className="mt-3 bg-primary/10 rounded-xl px-3 py-2 self-start">
+              <Text className="text-primary font-semibold text-sm">{benefitLabel()}</Text>
             </View>
           </View>
         )}
@@ -190,7 +197,7 @@ export default function EnrollScreen() {
         )}
 
         <TouchableOpacity
-          className="bg-brand rounded-full px-10 py-4 w-full items-center"
+          className="bg-primary rounded-full px-10 py-4 w-full items-center"
           onPress={() => router.replace('/(tabs)/wallet')}
         >
           <Text className="text-white font-bold text-base">View my wallet</Text>

@@ -15,8 +15,8 @@ export function EmptyState({ icon = '🎁', message, actionLabel, onAction }: Pr
     }}>
       <Text style={{ fontSize: 40, marginBottom: 12 }}>{icon}</Text>
       <Text style={{
-        color: '#4a5260', textAlign: 'center',
-        fontSize: 15, fontFamily: 'Urbanist_500Medium',
+        color: '#64748b', textAlign: 'center',
+        fontSize: 15, fontFamily: 'PlusJakartaSans_500Medium',
         lineHeight: 22,
       }}>
         {message}
@@ -25,11 +25,11 @@ export function EmptyState({ icon = '🎁', message, actionLabel, onAction }: Pr
         <TouchableOpacity
           onPress={onAction}
           style={{
-            marginTop: 20, backgroundColor: '#1a7a4a',
+            marginTop: 20, backgroundColor: '#a855f7',
             borderRadius: 14, paddingVertical: 12, paddingHorizontal: 24,
           }}
         >
-          <Text style={{ color: '#ffffff', fontFamily: 'Urbanist_600SemiBold', fontSize: 14 }}>
+          <Text style={{ color: '#ffffff', fontFamily: 'PlusJakartaSans_600SemiBold', fontSize: 14 }}>
             {actionLabel}
           </Text>
         </TouchableOpacity>

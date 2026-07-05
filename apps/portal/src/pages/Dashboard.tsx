@@ -106,8 +106,8 @@ export function Dashboard({ business }: Props) {
         <>
           {/* Stat cards */}
           <div className="stats-grid">
-            <StatCard icon="👥" label={t('dashboard.totalMembers')}     value={stats?.member_count ?? 0}      accent="#2ecc71" />
-            <StatCard icon="🎁" label={t('dashboard.activePromotions')} value={stats?.active_promotions ?? 0} accent="#6366f1" />
+            <StatCard icon="👥" label={t('dashboard.totalMembers')}     value={stats?.member_count ?? 0}      accent="#a855f7" />
+            <StatCard icon="🎁" label={t('dashboard.activePromotions')} value={stats?.active_promotions ?? 0} accent="#ec4899" />
             <StatCard icon="🏷️" label={t('dashboard.benefitsIssued')}   value={stats?.total_benefits ?? 0}    accent="#f59e0b" />
             <StatCard icon="📈" label={t('dashboard.redemptionRate')}   value={`${redemptionRate}%`}           accent="#10b981" />
           </div>
@@ -118,15 +118,15 @@ export function Dashboard({ business }: Props) {
               <p className="chart-title">{t('dashboard.newMembersChart')}</p>
               <ResponsiveContainer width="100%" height={180}>
                 <LineChart data={growth} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={6} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
                   <Tooltip
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e2e8f0" }}
                     formatter={(v: number) => [v, t('dashboard.newMembers')]}
                   />
                   <Line
-                    type="monotone" dataKey="new_members" stroke="#2ecc71"
+                    type="monotone" dataKey="new_members" stroke="#a855f7"
                     strokeWidth={2} dot={false} activeDot={{ r: 4 }}
                   />
                 </LineChart>
@@ -137,14 +137,14 @@ export function Dashboard({ business }: Props) {
               <p className="chart-title">{t('dashboard.dailyRedemptionsChart')}</p>
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={trend} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={6} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
                   <Tooltip
-                    contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+                    contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e2e8f0" }}
                     formatter={(v: number) => [v, t('dashboard.redemptions')]}
                   />
-                  <Bar dataKey="redeemed" fill="#6366f1" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="redeemed" fill="#ec4899" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

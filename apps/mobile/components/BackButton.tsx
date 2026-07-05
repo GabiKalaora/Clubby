@@ -16,14 +16,14 @@ export function BackButton({ label, onPress }: Props) {
       onPress={onPress ?? (() => router.back())}
       style={{
         width: 36, height: 36, borderRadius: 18,
-        backgroundColor: '#1e2022',
+        backgroundColor: '#ffffff',
         alignItems: 'center', justifyContent: 'center',
         marginEnd: 12,
       }}
       accessibilityRole="button"
       accessibilityLabel={label ?? t('common.back')}
     >
-      <Text style={{ color: '#8e969f', fontSize: 18 }}>‹</Text>
+      <Text style={{ color: '#94a3b8', fontSize: 18 }}>‹</Text>
     </TouchableOpacity>
   )
 }

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clubby — siftt.ai Style Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f0e8ff; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; gap: 32px; padding: 48px; justify-content: center; flex-wrap: wrap; min-height: 100vh; }
+
+  /* ── Device frame ── */
+  .device { background: #1a1a1a; border-radius: 44px; padding: 12px; width: 390px; box-shadow: 0 32px 80px rgba(0,0,0,0.35); flex-shrink: 0; }
+  .screen { background: #f8f9fa; border-radius: 34px; overflow: hidden; height: 780px; position: relative; display: flex; flex-direction: column; }
+  .screen-label { color: #fff; text-align: center; font-size: 13px; font-weight: 600; margin-top: 12px; opacity: 0.7; letter-spacing: 0.5px; }
+
+  /* ── Status bar ── */
+  .status-bar { padding: 14px 20px 6px; display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; }
+  .time { font-size: 15px; font-weight: 700; color: #2d3748; }
+  .status-icons { font-size: 13px; color: #2d3748; }
+
+  /* ── Gradient ── */
+  .gradient { background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); }
+  .gradient-text { background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  /* ── Shared ── */
+  .screen-content { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  h1 { font-size: 28px; font-weight: 800; color: #2d3748; letter-spacing: -0.8px; }
+  h2 { font-size: 20px; font-weight: 700; color: #2d3748; }
+  .section-label { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; margin: 0 0 10px; }
+  .muted { color: #64748b; font-size: 14px; }
+  .card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05); }
+  .pill-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; cursor: pointer; }
+  .btn-primary { background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); color: #fff; padding: 15px 28px; font-size: 16px; width: 100%; box-shadow: 0 4px 14px rgba(168,85,247,0.35); }
+  .btn-outline { background: transparent; color: #a855f7; border: 1.5px solid #a855f7; padding: 13px 20px; font-size: 14px; }
+  input-field { display: block; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 15px 16px; font-size: 15px; width: 100%; color: #2d3748; }
+
+  /* ── Tab bar ── */
+  .tab-bar { background: #fff; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-around; padding: 10px 0 24px; }
+  .tab-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #94a3b8; }
+  .tab-item.active { color: #a855f7; }
+  .tab-icon { font-size: 22px; }
+  .fab { width: 56px; height: 56px; border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-top: -16px; box-shadow: 0 4px 16px rgba(168,85,247,0.45); }
+
+  /* ═══════════════════════════════════════ SCREEN 1 — SIGN IN */
+  .signin-screen { padding: 32px 28px; display: flex; flex-direction: column; justify-content: center; gap: 0; }
+  .signin-logo { font-size: 28px; font-weight: 800; margin-bottom: 40px; }
+  .signin-title { font-size: 30px; font-weight: 800; color: #2d3748; letter-spacing: -0.8px; margin-bottom: 6px; }
+  .signin-sub { color: #64748b; font-size: 15px; margin-bottom: 32px; }
+  .input-wrap { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 15px 16px; display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .input-wrap .icon { font-size: 18px; }
+  .input-wrap span { color: #94a3b8; font-size: 15px; }
+  .signin-portal { text-align: center; margin-top: 24px; font-size: 13px; color: #64748b; }
+  .signin-portal a { color: #a855f7; font-weight: 600; text-decoration: none; }
+
+  /* ═══════════════════════════════════════ SCREEN 2 — WALLET */
+  .wallet-screen { display: flex; flex-direction: column; }
+  .wallet-header { padding: 16px 20px 12px; display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; }
+  .wallet-header-title { font-size: 26px; font-weight: 800; color: #2d3748; letter-spacing: -0.5px; }
+  .header-actions { display: flex; gap: 10px; }
+  .header-btn { width: 38px; height: 38px; border-radius: 19px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .wallet-body { flex: 1; overflow: hidden; padding: 0 16px; display: flex; flex-direction: column; gap: 0; }
+
+  /* Balance card */
+  .balance-card { border-radius: 24px; padding: 22px; margin-bottom: 20px; position: relative; overflow: hidden; }
+  .balance-label { color: rgba(255,255,255,0.75); font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .balance-amount { color: #fff; font-size: 42px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
+  .balance-sub { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 8px; }
+  .balance-link { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; }
+  .balance-decoration { position: absolute; right: -30px; top: -30px; width: 130px; height: 130px; border-radius: 65px; background: rgba(255,255,255,0.08); }
+
+  /* My clubs */
+  .clubs-row { display: flex; gap: 12px; margin-bottom: 20px; }
+  .club-chip { background: #fff; border-radius: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 80px; }
+  .club-logo { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .club-name { font-size: 11px; font-weight: 600; color: #2d3748; text-align: center; }
+  .tier-badge { font-size: 10px; font-weight: 600; color: #9333ea; background: rgba(168,85,247,0.12); border-radius: 999px; padding: 2px 8px; }
+
+  /* Feed card */
+  .feed-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); padding: 14px; margin-bottom: 10px; }
+  .feed-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .feed-biz { font-size: 13px; font-weight: 600; color: #2d3748; }
+  .feed-type { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: rgba(168,85,247,0.1); color: #9333ea; }
+  .feed-title { font-size: 15px; font-weight: 700; color: #2d3748; margin-bottom: 4px; }
+  .feed-body { font-size: 13px; color: #64748b; margin-bottom: 12px; }
+  .feed-cta { display: inline-block; padding: 10px 20px; border-radius: 999px; font-size: 13px; font-weight: 600; color: #fff; }
+
+  /* Filter tabs */
+  .filter-tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; }
+  .filter-tab { padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; border: 1.5px solid #e2e8f0; color: #64748b; background: #fff; }
+  .filter-tab.active { background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; border-color: transparent; }
+
+  /* Benefit card */
+  .benefit-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); padding: 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; border: 1px solid #f0e8ff; }
+  .biz-logo { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; background: #f8f9fa; }
+  .benefit-info { flex: 1; }
+  .benefit-biz { font-size: 13px; font-weight: 600; color: #2d3748; margin-bottom: 2px; }
+  .benefit-title { font-size: 13px; color: #64748b; }
+  .benefit-value { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+  .use-btn { padding: 8px 16px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #fff; display: inline-block; }
+
+  /* ═══════════════════════════════════════ SCREEN 3 — DISCOVER */
+  .discover-screen { display: flex; flex-direction: column; }
+  .discover-header { padding: 16px 20px 12px; background: #f8f9fa; }
+  .discover-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .search-bar { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+  .search-bar span { color: #94a3b8; font-size: 15px; }
+  .cat-row { display: flex; gap: 12px; padding: 12px 20px; overflow-x: auto; }
+  .cat-sq { width: 72px; display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+  .cat-icon { width: 62px; height: 62px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+  .cat-label { font-size: 11px; font-weight: 600; color: #64748b; text-align: center; }
+  .open-now-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; margin: 0 20px 12px; border: 1.5px solid #e2e8f0; color: #64748b; background: #fff; }
+  .open-now-dot { width: 7px; height: 7px; border-radius: 999px; background: #10b981; }
+
+  /* Business card */
+  .biz-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); padding: 14px 16px; margin: 0 16px 10px; display: flex; align-items: center; gap: 12px; }
+  .biz-logo-sq { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; background: #f8f9fa; flex-shrink: 0; }
+  .biz-info { flex: 1; }
+  .biz-name { font-size: 15px; font-weight: 700; color: #2d3748; margin-bottom: 2px; }
+  .biz-cat { font-size: 12px; color: #94a3b8; font-weight: 500; }
+  .biz-promo { display: inline-flex; align-items: center; gap: 4px; background: rgba(168,85,247,0.1); border-radius: 8px; padding: 4px 8px; font-size: 11px; font-weight: 600; color: #9333ea; margin-top: 4px; }
+  .enroll-btn { width: 36px; height: 36px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; flex-shrink: 0; }
+
+  /* ═══════════════════════════════════════ SCREEN 4 — PORTAL */
+  .portal-wrap { background: #fff; border-radius: 16px; overflow: hidden; width: 960px; box-shadow: 0 8px 40px rgba(0,0,0,0.15); display: flex; height: 640px; flex-shrink: 0; }
+  .portal-label { color: #fff; text-align: center; font-size: 13px; font-weight: 600; margin-top: 12px; opacity: 0.7; letter-spacing: 0.5px; }
+  .sidebar { background: #2d2640; width: 220px; flex-shrink: 0; display: flex; flex-direction: column; padding: 24px 0; }
+  .sidebar-brand { padding: 0 20px 28px; font-size: 22px; font-weight: 800; color: #a855f7; letter-spacing: -0.5px; }
+  .sidebar-section { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); letter-spacing: 1px; text-transform: uppercase; padding: 0 20px; margin-bottom: 6px; margin-top: 16px; }
+  .nav-item { padding: 10px 20px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 10px; cursor: pointer; border-left: 3px solid transparent; }
+  .nav-item.active { background: rgba(168,85,247,0.15); color: #c084fc; border-left-color: #a855f7; }
+  .nav-item:hover { background: rgba(255,255,255,0.05); }
+  .portal-main { flex: 1; background: #f8f9fa; overflow-y: auto; }
+  .portal-header { background: #fff; border-bottom: 1px solid #e2e8f0; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; }
+  .portal-title { font-size: 22px; font-weight: 800; color: #2d3748; letter-spacing: -0.5px; }
+  .portal-sub { font-size: 14px; color: #64748b; margin-top: 2px; }
+  .portal-btn { padding: 10px 20px; border-radius: 999px; font-size: 14px; font-weight: 600; color: #fff; background: linear-gradient(135deg, #ec4899, #a855f7); box-shadow: 0 2px 8px rgba(168,85,247,0.3); }
+  .portal-content { padding: 24px 28px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: #fff; border-radius: 14px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-top: 3px solid; }
+  .stat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 12px; }
+  .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+  .stat-label { font-size: 12px; color: #64748b; font-weight: 500; margin-top: 2px; }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .chart-card { background: #fff; border-radius: 14px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .chart-title { font-size: 13px; font-weight: 700; color: #2d3748; letter-spacing: 0.3px; text-transform: uppercase; margin-bottom: 16px; }
+  .chart-placeholder { background: linear-gradient(to bottom, rgba(168,85,247,0.08), rgba(236,72,153,0.04)); border-radius: 8px; height: 120px; display: flex; align-items: flex-end; padding: 8px; gap: 6px; overflow: hidden; }
+  .chart-bar { border-radius: 4px 4px 0 0; flex: 1; }
+  .tip-card { background: rgba(168,85,247,0.06); border: 1px solid rgba(168,85,247,0.2); border-radius: 12px; padding: 12px 16px; margin-top: 16px; }
+  .tip-text { font-size: 13px; color: #7c3aed; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ SIGN IN ══ -->
+<div>
+  <div class="device">
+    <div class="screen">
+      <div class="status-bar"><span class="time">9:41</span><span class="status-icons">●●● 📶 🔋</span></div>
+      <div class="screen-content signin-screen">
+        <!-- Logo wordmark -->
+        <div class="signin-logo">
+          <span class="gradient-text">clubby.</span>
+        </div>
+
+        <div class="signin-title">Welcome back 👋</div>
+        <div class="signin-sub">Enter your phone number to get started</div>
+
+        <div class="input-wrap" style="margin-bottom:10px">
+          <span class="icon">📞</span>
+          <span>+1 555 000 0000</span>
+        </div>
+
+        <div style="height:6px"></div>
+        <button class="pill-btn btn-primary" style="margin-top:8px">Continue</button>
+
+        <div class="signin-portal">
+          Own a business? <a href="#">Go to Business Portal →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-label">Sign In</div>
+</div>
+
+<!-- ══════════════════════════════════════════ WALLET ══ -->
+<div>
+  <div class="device">
+    <div class="screen">
+      <div class="status-bar"><span class="time">9:41</span><span class="status-icons">●●● 📶 🔋</span></div>
+      <div class="wallet-header">
+        <div class="wallet-header-title">Your Wallet</div>
+        <div class="header-actions">
+          <div class="header-btn">🔔</div>
+          <div class="header-btn">👤</div>
+        </div>
+      </div>
+
+      <div class="wallet-body">
+        <!-- Balance hero -->
+        <div class="balance-card gradient">
+          <div class="balance-decoration"></div>
+          <div class="balance-label">Total balance</div>
+          <div class="balance-amount">₪0.00</div>
+          <div class="balance-sub">0 active credits</div>
+          <div class="balance-link">View history →</div>
+        </div>
+
+        <!-- My Clubs -->
+        <div class="section-label">My Clubs</div>
+        <div class="clubs-row" style="margin-bottom:16px">
+          <div class="club-chip">
+            <div class="club-logo" style="background:#f5f0ff">☕</div>
+            <div class="club-name">קפה</div>
+            <div class="tier-badge">🥇 Gold</div>
+          </div>
+          <div class="club-chip">
+            <div class="club-logo" style="background:#fff0f6">🍕</div>
+            <div class="club-name">Pizza</div>
+            <div class="tier-badge">🥈 Silver</div>
+          </div>
+        </div>
+
+        <!-- Updates feed -->
+        <div class="section-label">Updates</div>
+        <div class="feed-card">
+          <div class="feed-card-header">
+            <div class="feed-biz">☕ בית קפה</div>
+            <div class="feed-type">OFFER</div>
+          </div>
+          <div class="feed-title">🎁 Weekend Special — Free muffin!</div>
+          <div class="feed-body">Show this weekend, get a FREE muffin with any drink.</div>
+          <div class="feed-cta gradient">Claim free muffin</div>
+        </div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <div class="tab-item active"><div class="tab-icon">👛</div>Wallet</div>
+        <div class="tab-item"><div class="tab-icon">✏️</div>Manual</div>
+        <div class="tab-item"><div class="fab gradient">⊕</div></div>
+        <div class="tab-item"><div class="tab-icon">🏪</div>Discover</div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-label">Wallet</div>
+</div>
+
+<!-- ══════════════════════════════════════════ DISCOVER ══ -->
+<div>
+  <div class="device">
+    <div class="screen">
+      <div class="status-bar"><span class="time">9:41</span><span class="status-icons">●●● 📶 🔋</span></div>
+      <div class="discover-header">
+        <div class="discover-title-row">
+          <div style="font-size:26px;font-weight:800;color:#2d3748;letter-spacing:-0.5px">Discover <span style="font-size:13px;color:#a855f7;font-weight:600">📍 Near me</span></div>
+        </div>
+        <div class="search-bar">
+          <span>🔍</span>
+          <span>Search businesses…</span>
+        </div>
+      </div>
+
+      <!-- Category squares -->
+      <div class="cat-row">
+        <div class="cat-sq">
+          <div class="cat-icon" style="background:#a855f7;color:#fff">🌐</div>
+          <div class="cat-label" style="color:#a855f7;font-weight:700">All</div>
+        </div>
+        <div class="cat-sq">
+          <div class="cat-icon" style="background:#22a05f22">🍔</div>
+          <div class="cat-label">Food</div>
+        </div>
+        <div class="cat-sq">
+          <div class="cat-icon" style="background:#7c3aed22">👕</div>
+          <div class="cat-label">Clothing</div>
+        </div>
+        <div class="cat-sq">
+          <div class="cat-icon" style="background:#db277722">👟</div>
+          <div class="cat-label">Shoes</div>
+        </div>
+        <div class="cat-sq">
+          <div class="cat-icon" style="background:#0891b222">💊</div>
+          <div class="cat-label">Health</div>
+        </div>
+      </div>
+
+      <div class="open-now-pill"><div class="open-now-dot"></div>Open Now</div>
+
+      <!-- Business cards -->
+      <div class="biz-card">
+        <div class="biz-logo-sq">☕</div>
+        <div class="biz-info">
+          <div class="biz-name">בית קפה בדיקה</div>
+          <div class="biz-cat">Food • 📍 0.3km</div>
+          <div class="biz-promo">🎁 25% Welcome Discount</div>
+        </div>
+        <div class="enroll-btn gradient">+</div>
+      </div>
+
+      <div class="biz-card">
+        <div class="biz-logo-sq">🍕</div>
+        <div class="biz-info">
+          <div class="biz-name">פיצה רומא</div>
+          <div class="biz-cat">Food • 📍 0.8km</div>
+        </div>
+        <div class="enroll-btn gradient" style="background:rgba(168,85,247,0.12);color:#a855f7">✓</div>
+      </div>
+
+      <div class="biz-card">
+        <div class="biz-logo-sq">🥑</div>
+        <div class="biz-info">
+          <div class="biz-name">שכונתי — מרקט פרש</div>
+          <div class="biz-cat">Food • 📍 1.2km</div>
+          <div class="biz-promo">🎁 ₪20 Credit on first visit</div>
+        </div>
+        <div class="enroll-btn gradient">+</div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="tab-bar" style="margin-top:auto">
+        <div class="tab-item"><div class="tab-icon">👛</div>Wallet</div>
+        <div class="tab-item"><div class="tab-icon">✏️</div>Manual</div>
+        <div class="tab-item"><div class="fab gradient">⊕</div></div>
+        <div class="tab-item active"><div class="tab-icon">🏪</div>Discover</div>
+      </div>
+    </div>
+  </div>
+  <div class="screen-label">Discover</div>
+</div>
+
+<!-- ══════════════════════════════════════════ PORTAL ══ -->
+<div style="width:100%">
+  <div style="background:#1a1a1a;border-radius:12px;padding:10px;box-shadow:0 16px 48px rgba(0,0,0,0.4)">
+    <div class="portal-wrap">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-brand">clubby.</div>
+
+        <div style="padding:0 12px;margin-bottom:12px">
+          <select style="width:100%;background:#352f4a;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);padding:8px 12px;border-radius:8px;font-family:inherit;font-size:13px">
+            <option>בית קפה בדיקה</option>
+          </select>
+        </div>
+
+        <div class="nav-item" style="color:rgba(255,255,255,0.4);font-size:12px;padding:6px 20px;cursor:default">🏢 Platform View</div>
+        <div class="nav-item active">📊 Dashboard</div>
+        <div class="nav-item">🎁 Promotions</div>
+        <div class="nav-item">👥 Members</div>
+        <div class="sidebar-section">Loyalty</div>
+        <div class="nav-item">🥇 Stamp Cards</div>
+        <div class="nav-item">🏅 Tiers</div>
+        <div class="nav-item">⭐ Points</div>
+        <div class="nav-item">📣 Feed Posts</div>
+        <div class="sidebar-section">Config</div>
+        <div class="nav-item">⚙️ Settings</div>
+        <div class="nav-item">📱 QR Code</div>
+        <div style="flex:1"></div>
+        <div style="padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08);font-size:12px;color:rgba(255,255,255,0.4)">owner@test.com</div>
+      </div>
+
+      <!-- Main content -->
+      <div class="portal-main">
+        <div class="portal-header">
+          <div>
+            <div class="portal-title">Dashboard</div>
+            <div class="portal-sub">בית קפה בדיקה</div>
+          </div>
+          <button class="portal-btn">⬇️ Export Analytics</button>
+        </div>
+
+        <div class="portal-content">
+          <!-- Stat cards -->
+          <div class="stats-grid">
+            <div class="stat-card" style="border-top-color:#a855f7">
+              <div class="stat-icon" style="background:rgba(168,85,247,0.1)">👥</div>
+              <div class="stat-value" style="color:#a855f7">7</div>
+              <div class="stat-label">Total Members</div>
+            </div>
+            <div class="stat-card" style="border-top-color:#ec4899">
+              <div class="stat-icon" style="background:rgba(236,72,153,0.1)">🎁</div>
+              <div class="stat-value" style="color:#ec4899">1</div>
+              <div class="stat-label">Active Promotions</div>
+            </div>
+            <div class="stat-card" style="border-top-color:#f59e0b">
+              <div class="stat-icon" style="background:rgba(245,158,11,0.1)">🏷️</div>
+              <div class="stat-value" style="color:#f59e0b">15</div>
+              <div class="stat-label">Benefits Issued</div>
+            </div>
+            <div class="stat-card" style="border-top-color:#10b981">
+              <div class="stat-icon" style="background:rgba(16,185,129,0.1)">📈</div>
+              <div class="stat-value" style="color:#10b981">53%</div>
+              <div class="stat-label">Redemption Rate</div>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="chart-row">
+            <div class="chart-card">
+              <div class="chart-title">New Members — Last 30 days</div>
+              <div class="chart-placeholder">
+                <div class="chart-bar" style="height:20%;background:rgba(168,85,247,0.3)"></div>
+                <div class="chart-bar" style="height:35%;background:rgba(168,85,247,0.4)"></div>
+                <div class="chart-bar" style="height:25%;background:rgba(168,85,247,0.3)"></div>
+                <div class="chart-bar" style="height:60%;background:rgba(168,85,247,0.5)"></div>
+                <div class="chart-bar" style="height:45%;background:rgba(168,85,247,0.4)"></div>
+                <div class="chart-bar" style="height:80%;background:#a855f7"></div>
+                <div class="chart-bar" style="height:70%;background:#a855f7"></div>
+                <div class="chart-bar" style="height:55%;background:rgba(168,85,247,0.6)"></div>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Daily Redemptions — Last 30 days</div>
+              <div class="chart-placeholder">
+                <div class="chart-bar" style="height:15%;background:rgba(236,72,153,0.3)"></div>
+                <div class="chart-bar" style="height:50%;background:rgba(236,72,153,0.4)"></div>
+                <div class="chart-bar" style="height:30%;background:rgba(236,72,153,0.35)"></div>
+                <div class="chart-bar" style="height:75%;background:#ec4899"></div>
+                <div class="chart-bar" style="height:90%;background:#ec4899"></div>
+                <div class="chart-bar" style="height:60%;background:rgba(236,72,153,0.6)"></div>
+                <div class="chart-bar" style="height:40%;background:rgba(236,72,153,0.4)"></div>
+                <div class="chart-bar" style="height:25%;background:rgba(236,72,153,0.3)"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tip-card">
+            <div class="tip-text">🎉 Great! 7 members in your club. Post a feed update to keep them engaged.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="portal-label">Business Portal</div>
+</div>
+
+</body>
+</html>

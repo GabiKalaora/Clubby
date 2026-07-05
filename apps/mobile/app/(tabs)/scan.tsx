@@ -3,7 +3,10 @@ import {
   View, Text, TextInput, TouchableOpacity,
   ActivityIndicator, Image, Platform, ScrollView,
 } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import { supabase } from '../../lib/supabase'
 import { WebQRCamera } from '../../components/WebQRCamera'
@@ -33,6 +36,8 @@ type EnrollResult = {
 }
 
 export default function Scan() {
+  const { t } = useTranslation()
+  const router = useRouter()
   const [permission, requestPermission] = useCameraPermissions()
   const [manualToken, setManualToken] = useState('')
   const [loading, setLoading] = useState(false)
@@ -105,53 +110,67 @@ export default function Scan() {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-gray-900 items-center justify-center">
-        <ActivityIndicator size="large" color="#2ecc71" />
-        <Text className="text-white mt-4">Enrolling…</Text>
+        <ActivityIndicator size="large" color="#c084fc" />
+        <Text className="text-white mt-4">{t('enroll.joining')}</Text>
       </SafeAreaView>
     )
   }
 
-  // ── Web: camera + manual fallback ────────────────────────────────────────────
+  // ── Web: branded placeholder + prominent manual entry ────────────────────────
   if (Platform.OS === 'web') {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#111827' }}>
-        {/* Camera view takes most of the screen */}
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#1a0533' }}>
+        {/* Top: branded QR visual */}
         <View style={{ flex: 1 }}>
           <WebQRCamera onScan={(token) => { scannedRef.current = true; enroll(token) }} />
         </View>
 
-        {/* Manual entry strip at bottom */}
-        <View style={{ padding: 16, backgroundColor: '#111827' }}>
-          <Text style={{ color: '#6b7280', textAlign: 'center', fontSize: 12, marginBottom: 8 }}>
-            — or enter token manually —
+        {/* Bottom: manual entry — prominent, not an afterthought */}
+        <View style={{ backgroundColor: '#f8f9fa', borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 24, paddingBottom: 32 }}>
+          <Text style={{ color: '#2d3748', fontSize: 17, fontFamily: 'PlusJakartaSans_700Bold', textAlign: 'center', marginBottom: 4 }}>
+            {t('scan.enterManually')}
+          </Text>
+          <Text style={{ color: '#64748b', fontSize: 13, fontFamily: 'PlusJakartaSans_400Regular', textAlign: 'center', marginBottom: 16 }}>
+            {t('scan.tokenPlaceholder')}
           </Text>
           <TextInput
             style={{
-              backgroundColor: '#1f2937', color: 'white', borderRadius: 12,
-              paddingHorizontal: 16, paddingVertical: 12, marginBottom: 8,
-              fontSize: 14, textAlign: 'center',
+              backgroundColor: '#ffffff', color: '#2d3748', borderRadius: 14,
+              paddingHorizontal: 16, paddingVertical: 14, marginBottom: 12,
+              fontSize: 15, textAlign: 'center', fontFamily: 'PlusJakartaSans_500Medium',
+              borderWidth: 1.5, borderColor: manualToken.trim() ? '#a855f7' : '#e2e8f0',
+              shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
             }}
-            placeholder="Paste token here"
-            placeholderTextColor="#6b7280"
+            placeholder="e.g. pizza-roma-qr"
+            placeholderTextColor="#94a3b8"
             value={manualToken}
             onChangeText={setManualToken}
             autoCapitalize="none"
             autoCorrect={false}
           />
           {error && (
-            <Text style={{ color: '#f87171', textAlign: 'center', fontSize: 13, marginBottom: 8 }}>
+            <Text style={{ color: '#ef4444', textAlign: 'center', fontSize: 13, fontFamily: 'PlusJakartaSans_500Medium', marginBottom: 10 }}>
               {error}
             </Text>
           )}
           <TouchableOpacity
-            style={{
-              backgroundColor: manualToken.trim() ? '#2ecc71' : '#374151',
-              borderRadius: 12, paddingVertical: 12, alignItems: 'center',
-            }}
             onPress={() => enroll(manualToken)}
             disabled={!manualToken.trim()}
+            activeOpacity={0.85}
           >
-            <Text style={{ color: 'white', fontWeight: '600', fontSize: 14 }}>Enroll with token</Text>
+            {manualToken.trim() ? (
+              <LinearGradient
+                colors={['#ec4899', '#a855f7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                style={{ borderRadius: 999, paddingVertical: 15, alignItems: 'center',
+                  shadowColor: '#a855f7', shadowOpacity: 0.35, shadowRadius: 10, elevation: 5 }}
+              >
+                <Text style={{ color: 'white', fontSize: 15, fontFamily: 'PlusJakartaSans_600SemiBold' }}>{t('scan.join')}</Text>
+              </LinearGradient>
+            ) : (
+              <View style={{ borderRadius: 999, paddingVertical: 15, alignItems: 'center', backgroundColor: '#e2e8f0' }}>
+                <Text style={{ color: '#94a3b8', fontSize: 15, fontFamily: 'PlusJakartaSans_600SemiBold' }}>{t('scan.join')}</Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -162,7 +181,7 @@ export default function Scan() {
   if (!permission) {
     return (
       <SafeAreaView className="flex-1 bg-gray-900 items-center justify-center">
-        <ActivityIndicator color="#2ecc71" />
+        <ActivityIndicator color="#c084fc" />
       </SafeAreaView>
     )
   }
@@ -171,21 +190,21 @@ export default function Scan() {
     return (
       <SafeAreaView className="flex-1 bg-gray-900 items-center justify-center px-8">
         <Text className="text-white text-xl font-semibold mb-4 text-center">
-          Camera access needed
+          {t('scan.permissionTitle')}
         </Text>
         <Text className="text-gray-400 text-center mb-8">
-          Allow camera access to scan QR codes and join business clubs.
+          {t('scan.permissionSubtitle')}
         </Text>
         <TouchableOpacity
-          className="bg-brand rounded-full px-8 py-4"
+          className="bg-primary rounded-full px-8 py-4"
           onPress={requestPermission}
         >
-          <Text className="text-white font-bold">Allow Camera</Text>
+          <Text className="text-white font-bold">{t('scan.grantPermission')}</Text>
         </TouchableOpacity>
         <Text className="text-gray-500 mt-6 text-sm">or</Text>
         <TextInput
           className="w-full bg-gray-800 text-white rounded-xl px-4 py-3 mt-4 text-center"
-          placeholder="Enter token manually"
+          placeholder={t('scan.tokenPlaceholder')}
           placeholderTextColor="#6b7280"
           value={manualToken}
           onChangeText={setManualToken}
@@ -198,7 +217,7 @@ export default function Scan() {
           onPress={() => enroll(manualToken)}
           disabled={!manualToken.trim()}
         >
-          <Text className="text-white font-semibold">Enroll with token</Text>
+          <Text className="text-white font-semibold">{t('scan.join')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     )
@@ -215,12 +234,12 @@ export default function Scan() {
       />
       {/* Overlay */}
       <View className="absolute inset-0 items-center justify-center pointer-events-none">
-        <View className="w-64 h-64 border-2 border-brand rounded-2xl" />
+        <View className="w-64 h-64 border-2 border-primary rounded-2xl" />
       </View>
       {/* Bottom hint */}
       <SafeAreaView edges={['bottom']} className="absolute bottom-0 left-0 right-0 items-center pb-6">
         <Text className="text-white text-base font-medium">
-          Point at a Clubby QR code
+          {t('scan.pointCamera')}
         </Text>
         {error && (
           <Text className="text-red-400 mt-2 text-sm">{error}</Text>
@@ -232,7 +251,9 @@ export default function Scan() {
 
 // ── Confirmation card component ───────────────────────────────────────────────
 function ConfirmationCard({ result, onDone }: { result: EnrollResult; onDone: () => void }) {
-  const { business, welcomeBenefit } = result
+  const { t } = useTranslation()
+  const router = useRouter()
+  const { business, welcomeBenefit, alreadyMember } = result
 
   const benefitLabel = () => {
     if (!welcomeBenefit) return null
@@ -258,29 +279,31 @@ function ConfirmationCard({ result, onDone }: { result: EnrollResult; onDone: ()
         </View>
 
         {/* Checkmark */}
-        <View className="w-16 h-16 rounded-full bg-brand items-center justify-center mb-4">
+        <View className="w-16 h-16 rounded-full bg-primary items-center justify-center mb-4">
           <Text className="text-white text-3xl">✓</Text>
         </View>
 
         <Text className="text-2xl font-bold text-gray-900 text-center mb-1">
-          You're in!
+          {alreadyMember ? t('enroll.welcomeBack') : t('enroll.youreIn')}
         </Text>
         <Text className="text-base text-gray-500 text-center mb-6">
-          Welcome to <Text className="font-semibold text-gray-800">{business.name}</Text> Club
+          {alreadyMember
+            ? t('enroll.alreadyMemberHint')
+            : t('scan.welcomeAt', { name: business.name })}
         </Text>
 
         {/* Welcome benefit */}
         {welcomeBenefit && (
           <View className="w-full bg-white rounded-2xl p-5 mb-6 shadow-sm border border-gray-100">
-            <Text className="text-xs font-semibold text-brand uppercase tracking-wider mb-1">
-              Welcome Gift
+            <Text className="text-xs font-semibold text-primary uppercase tracking-wider mb-1">
+              {t('enroll.welcomeGift')}
             </Text>
             <Text className="text-lg font-bold text-gray-900">{welcomeBenefit.title}</Text>
             {welcomeBenefit.description && (
               <Text className="text-gray-500 text-sm mt-1">{welcomeBenefit.description}</Text>
             )}
-            <View className="mt-3 bg-brand/10 rounded-xl px-3 py-2 self-start">
-              <Text className="text-brand font-semibold text-sm">{benefitLabel()}</Text>
+            <View className="mt-3 bg-primary/10 rounded-xl px-3 py-2 self-start">
+              <Text className="text-primary font-semibold text-sm">{benefitLabel()}</Text>
             </View>
           </View>
         )}
@@ -296,10 +319,10 @@ function ConfirmationCard({ result, onDone }: { result: EnrollResult; onDone: ()
         </View>
 
         <TouchableOpacity
-          className="bg-brand rounded-full px-10 py-4 w-full items-center"
-          onPress={onDone}
+          className="bg-primary rounded-full px-10 py-4 w-full items-center"
+          onPress={() => { onDone(); router.replace('/(tabs)/wallet') }}
         >
-          <Text className="text-white font-bold text-base">View my wallet</Text>
+          <Text className="text-white font-bold text-base">{t('enroll.viewWallet')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

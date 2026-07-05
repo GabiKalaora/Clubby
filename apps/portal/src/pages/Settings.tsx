@@ -207,6 +207,7 @@ export function Settings({ business, onUpdated }: Props) {
   const [address, setAddress] = useState(business.address ?? '')
   const [phone, setPhone] = useState(business.phone ?? '')
   const [webhookUrl, setWebhookUrl] = useState(business.webhook_url ?? '')
+  const [geocoding, setGeocoding] = useState(false)
   const [webhookSecret, setWebhookSecret] = useState(business.webhook_secret ?? '')
   const [showSecret, setShowSecret] = useState(false)
   const [showGuide, setShowGuide] = useState(false)
@@ -304,18 +305,41 @@ export function Settings({ business, onUpdated }: Props) {
 
     const opening_hours = formToOpeningHours(hours)
 
+    // Auto-geocode address via Nominatim (OpenStreetMap) — free, no API key
+    let lat: number | null = business.lat ?? null
+    let lng: number | null = business.lng ?? null
+    const trimmedAddress = address.trim()
+    if (trimmedAddress && trimmedAddress !== business.address) {
+      try {
+        setGeocoding(true)
+        const query = encodeURIComponent(trimmedAddress)
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`,
+          { headers: { 'User-Agent': 'Clubby/1.0 (loyalty-platform)' } }
+        )
+        const results = await res.json()
+        if (results.length > 0) {
+          lat = parseFloat(results[0].lat)
+          lng = parseFloat(results[0].lon)
+        }
+      } catch { /* geocoding failure is non-fatal */ }
+      finally { setGeocoding(false) }
+    }
+
     const { error: updateError } = await supabase
       .from('businesses')
       .update({
         name: name.trim(),
         description: description.trim() || null,
-        address: address.trim() || null,
+        address: trimmedAddress || null,
         phone: phone.trim() || null,
         logo_url: logoUrl.trim() || null,
         cover_url: coverUrl.trim() || null,
         webhook_url: webhookUrl.trim() || null,
         webhook_secret: webhookSecret.trim() || null,
         opening_hours: Object.keys(opening_hours).length > 0 ? opening_hours : null,
+        lat,
+        lng,
       })
       .eq('id', business.id)
 
@@ -327,13 +351,15 @@ export function Settings({ business, onUpdated }: Props) {
         ...business,
         name: name.trim(),
         description: description.trim() || null,
-        address: address.trim() || null,
+        address: trimmedAddress || null,
         phone: phone.trim() || null,
         logo_url: logoUrl.trim() || null,
         cover_url: coverUrl.trim() || null,
         webhook_url: webhookUrl.trim() || null,
         webhook_secret: webhookSecret.trim() || null,
         opening_hours: Object.keys(opening_hours).length > 0 ? opening_hours : null,
+        lat,
+        lng,
       }
       onUpdated(updated)
       setMessage(t('settings.savedSuccess'))
@@ -631,14 +657,19 @@ export function Settings({ business, onUpdated }: Props) {
 
       {error && <p className="error">{error}</p>}
       {message && <p className="success-msg">{message}</p>}
+      {geocoding && (
+        <p style={{ fontSize: 13, color: 'var(--primary)', marginBottom: 8 }}>
+          📍 Looking up coordinates for this address…
+        </p>
+      )}
 
       <button
         type="button"
         className="btn-save"
         onClick={handleSave}
-        disabled={saving || !name.trim()}
+        disabled={saving || geocoding || !name.trim()}
       >
-        {saving ? 'Saving…' : t('settings.saveChanges')}
+        {geocoding ? '📍 Geocoding address…' : saving ? 'Saving…' : t('settings.saveChanges')}
       </button>
     </div>
   )

@@ -3,11 +3,10 @@ import {
   View, Text, TextInput, TouchableOpacity,
   ScrollView, ActivityIndicator, StatusBar,
 } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
-import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { supabase } from '../../lib/supabase'
 import { useCurrentUser } from '../../hooks/useAuth'
 import { useAddBenefit } from '../../hooks/useBenefits'
 
@@ -20,9 +19,9 @@ const TYPE_OPTIONS: { key: BenefitType; label: string; emoji: string }[] = [
 ]
 
 const TYPE_COLOR: Record<BenefitType, string> = {
-  credit:    '#1a7a4a',
-  discount:  '#2563eb',
-  free_item: '#9333ea',
+  credit:    '#a855f7',
+  discount:  '#ec4899',
+  free_item: '#c084fc',
 }
 
 export default function Manual() {
@@ -79,16 +78,16 @@ export default function Manual() {
   const accent = TYPE_COLOR[type]
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#151617' }}>
-      <StatusBar barStyle="light-content" backgroundColor="#151617" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f8f9fa" />
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 20 }}>
 
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 28 }}>
           <TouchableOpacity onPress={() => router.back()} style={{ marginEnd: 12 }}>
-            <Text style={{ color: '#8e969f', fontSize: 22 }}>←</Text>
+            <Text style={{ color: '#94a3b8', fontSize: 22 }}>←</Text>
           </TouchableOpacity>
-          <Text style={{ fontSize: 22, fontFamily: 'Urbanist_700Bold', color: '#ffffff' }}>
+          <Text style={{ fontSize: 22, fontFamily: 'PlusJakartaSans_700Bold', color: '#2d3748' }}>
             Add coupon manually
           </Text>
         </View>
@@ -97,7 +96,7 @@ export default function Manual() {
           <TextInput
             style={inputStyle}
             placeholder="e.g. Java House"
-            placeholderTextColor="#4a5260"
+            placeholderTextColor="#64748b"
             value={businessName}
             onChangeText={setBusinessName}
           />
@@ -107,7 +106,7 @@ export default function Manual() {
           <TextInput
             style={inputStyle}
             placeholder="e.g. Free coffee"
-            placeholderTextColor="#4a5260"
+            placeholderTextColor="#64748b"
             value={title}
             onChangeText={setTitle}
           />
@@ -125,12 +124,12 @@ export default function Manual() {
                   onPress={() => setType(opt.key)}
                   style={{
                     flex: 1, borderRadius: 14, paddingVertical: 12, alignItems: 'center',
-                    backgroundColor: active ? c : '#1e2022',
-                    borderWidth: 1, borderColor: active ? c : '#2a2d2f',
+                    backgroundColor: active ? c : '#ffffff',
+                    borderWidth: 1, borderColor: active ? c : '#e2e8f0',
                   }}
                 >
                   <Text style={{ fontSize: 18, marginBottom: 4 }}>{opt.emoji}</Text>
-                  <Text style={{ fontSize: 11, fontFamily: 'Urbanist_600SemiBold', color: active ? '#ffffff' : '#8e969f' }}>
+                  <Text style={{ fontSize: 11, fontFamily: 'PlusJakartaSans_600SemiBold', color: active ? '#ffffff' : '#94a3b8' }}>
                     {opt.label}
                   </Text>
                 </TouchableOpacity>
@@ -143,7 +142,7 @@ export default function Manual() {
           <TextInput
             style={inputStyle}
             placeholder={type === 'credit' ? '50' : type === 'discount' ? '20' : 'What is the free item?'}
-            placeholderTextColor="#4a5260"
+            placeholderTextColor="#64748b"
             value={value}
             onChangeText={setValue}
             keyboardType={type === 'free_item' ? 'default' : 'decimal-pad'}
@@ -154,7 +153,7 @@ export default function Manual() {
           <TextInput
             style={inputStyle}
             placeholder="YYYY-MM-DD"
-            placeholderTextColor="#4a5260"
+            placeholderTextColor="#64748b"
             value={expiryDate}
             onChangeText={setExpiryDate}
             keyboardType="numbers-and-punctuation"
@@ -163,26 +162,30 @@ export default function Manual() {
 
         {error ? (
           <View style={{ backgroundColor: '#ef444422', borderRadius: 12, padding: 12, marginBottom: 12 }}>
-            <Text style={{ color: '#ef4444', fontFamily: 'Urbanist_500Medium', fontSize: 13 }}>{error}</Text>
+            <Text style={{ color: '#ef4444', fontFamily: 'PlusJakartaSans_500Medium', fontSize: 13 }}>{error}</Text>
           </View>
         ) : null}
 
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={isPending}
-          style={{
-            backgroundColor: accent, borderRadius: 16, paddingVertical: 18,
-            alignItems: 'center', marginTop: 8,
-            shadowColor: accent, shadowOpacity: 0.35, shadowRadius: 12, shadowOffset: { width: 0, height: 5 },
-            elevation: 6,
-          }}
+          style={{ marginTop: 8 }}
         >
-          {isPending
-            ? <ActivityIndicator color="white" />
-            : <Text style={{ color: 'white', fontFamily: 'Urbanist_700Bold', fontSize: 16 }}>Save coupon</Text>}
+          <LinearGradient
+            colors={['#ec4899', '#a855f7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+            style={{
+              borderRadius: 999, paddingVertical: 18, alignItems: 'center',
+              shadowColor: '#a855f7', shadowOpacity: 0.35, shadowRadius: 12, shadowOffset: { width: 0, height: 5 },
+              elevation: 6,
+            }}
+          >
+            {isPending
+              ? <ActivityIndicator color="white" />
+              : <Text style={{ color: 'white', fontFamily: 'PlusJakartaSans_700Bold', fontSize: 16 }}>Save coupon</Text>}
+          </LinearGradient>
         </TouchableOpacity>
 
-        <Text style={{ textAlign: 'center', color: '#4a5260', fontSize: 12, fontFamily: 'Urbanist_400Regular', marginTop: 16 }}>
+        <Text style={{ textAlign: 'center', color: '#64748b', fontSize: 12, fontFamily: 'PlusJakartaSans_400Regular', marginTop: 16 }}>
           Manually added coupons show a "Manual" badge and are not verified by the store.
         </Text>
       </ScrollView>
@@ -191,21 +194,21 @@ export default function Manual() {
 }
 
 const inputStyle = {
-  backgroundColor: '#1e2022',
+  backgroundColor: '#ffffff',
   borderWidth: 1,
-  borderColor: '#2a2d2f',
+  borderColor: '#e2e8f0',
   borderRadius: 14,
   paddingHorizontal: 16,
   paddingVertical: 14,
-  color: '#ffffff',
+  color: '#2d3748',
   fontSize: 15,
-  fontFamily: 'Urbanist_500Medium',
+  fontFamily: 'PlusJakartaSans_500Medium',
 } as const
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <View style={{ marginBottom: 16 }}>
-      <Text style={{ fontSize: 13, fontFamily: 'Urbanist_600SemiBold', color: '#8e969f', marginBottom: 8 }}>
+      <Text style={{ fontSize: 13, fontFamily: 'PlusJakartaSans_600SemiBold', color: '#94a3b8', marginBottom: 8 }}>
         {label.toUpperCase()}
       </Text>
       {children}

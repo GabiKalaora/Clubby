@@ -28,6 +28,7 @@ export function Points({ business }: Props) {
   const [loading, setLoading] = useState(true)
   const [savingProgram, setSavingProgram] = useState(false)
   const [programForm, setProgramForm] = useState({ name: 'Points', points_per_scan: '10', active: true })
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   const [rewardForm, setRewardForm] = useState(EMPTY_REWARD)
   const [rewardMode, setRewardMode] = useState<'create' | 'edit' | null>(null)
@@ -212,7 +213,7 @@ export function Points({ business }: Props) {
                       <td>{r.name}</td>
                       <td className="capitalize">{r.reward_type.replace('_', ' ')}{r.reward_value ? ` (${r.reward_type === 'credit' ? '₪' : ''}${r.reward_value}${r.reward_type === 'discount' ? '%' : ''})` : ''}</td>
                       <td><strong>{r.points_cost}</strong> pts</td>
-                      <td><span className={`badge ${r.active ? 'badge-green' : 'badge-gray'}`}>{r.active ? 'Active' : 'Paused'}</span></td>
+                      <td><span className={`badge ${r.active ? 'badge-active' : 'badge-inactive'}`}>{r.active ? 'Active' : 'Paused'}</span></td>
                       <td>
                         <div style={{ display: 'flex', gap: 8 }}>
                           <button className="btn-link" style={{ fontSize: 12 }}
@@ -224,7 +225,16 @@ export function Points({ business }: Props) {
                             {r.active ? 'Pause' : 'Activate'}
                           </button>
                           <button className="btn-link" style={{ fontSize: 12, color: '#dc2626' }}
-                            onClick={() => { if (confirm('Delete?')) deleteReward(r.id) }}>Delete</button>
+                            onClick={() => setConfirmDeleteId(r.id)}>Delete</button>
+                          {confirmDeleteId === r.id && (
+                            <div style={{ display: 'flex', gap: 6, alignItems: 'center', background: '#fff5f5', border: '1px solid #fca5a5', borderRadius: 6, padding: '4px 8px', marginTop: 4 }}>
+                              <span style={{ fontSize: 12, color: '#dc2626' }}>Delete this reward?</span>
+                              <button style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: 4, padding: '2px 8px', cursor: 'pointer', fontSize: 11 }}
+                                onClick={() => { setConfirmDeleteId(null); deleteReward(r.id) }}>Yes</button>
+                              <button style={{ background: 'transparent', color: '#64748b', border: 'none', cursor: 'pointer', fontSize: 11 }}
+                                onClick={() => setConfirmDeleteId(null)}>No</button>
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>

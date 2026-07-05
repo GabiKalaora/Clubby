@@ -311,7 +311,7 @@ export function StampCards({ business }: Props) {
                       <td>{c.required_stamps}</td>
                       <td>{rewardLabel(c)}</td>
                       <td>
-                        <span className={`badge ${c.active ? 'badge-green' : 'badge-gray'}`}>
+                        <span className={`badge ${c.active ? 'badge-active' : 'badge-inactive'}`}>
                           {c.active ? 'Active' : 'Inactive'}
                         </span>
                       </td>
@@ -425,7 +425,7 @@ export function StampCards({ business }: Props) {
                           </div>
                         </td>
                         <td>
-                          <span className={`badge ${p.completed ? 'badge-green' : 'badge-gray'}`}>
+                          <span className={`badge ${p.completed ? 'badge-active' : 'badge-inactive'}`}>
                             {p.completed ? 'Complete' : 'In progress'}
                           </span>
                         </td>

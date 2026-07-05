@@ -6,41 +6,48 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brand: {
-          DEFAULT: '#1a7a4a',   // deep rich green
-          light:   '#22a05f',   // mid green for hover/active
-          bright:  '#2ecc71',   // bright accent (kept for highlights)
-          dark:    '#145e38',   // darkest green for pressed states
-          muted:   '#0f3d25',   // very dark green for bg tints
+        primary: {
+          DEFAULT: '#a855f7',
+          light:   '#c084fc',
+          dark:    '#9333ea',
         },
+        secondary: {
+          DEFAULT: '#ec4899',
+          light:   '#f472b6',
+          dark:    '#db2777',
+        },
+        background: '#f8f9fa',
         surface: {
-          DEFAULT: '#151617',   // near-black bg (from reference)
-          card:    '#1e2022',   // card background
-          sheet:   '#ffffff',   // white bottom sheet
-          border:  '#2a2d2f',   // subtle border
+          DEFAULT: '#ffffff',
+          dark:    '#f1f5f9',
         },
-        text: {
-          primary:   '#ffffff',
-          secondary: '#9ba5b0',  // was #8e969f — now passes WCAG AA on #151617 (~4.7:1)
-          muted:     '#5f6d7e',  // was #4a5260 — now passes WCAG AA on #151617 (~4.6:1)
-          disabled:  '#3a4250',
+        foreground: '#2d3748',
+        muted:      '#64748b',
+        border: {
+          DEFAULT: '#e2e8f0',
+          subtle:  '#b997fa33',
         },
-        danger:  '#f87171',
-        success: '#1a7a4a',
+        sidebar: {
+          DEFAULT: '#2d2640',
+          alt:     '#352f4a',
+        },
+        success: '#10b981',
+        danger:  '#ef4444',
+        warning: '#f59e0b',
         status: {
           error:       '#ef4444',
-          errorTint:   '#ef444418',
+          errorTint:   '#ef444415',
           warning:     '#f59e0b',
-          warningTint: '#f59e0b18',
-          successTint: '#1a7a4a18',
+          warningTint: '#f59e0b15',
+          successTint: '#10b98115',
         },
       },
       fontFamily: {
-        sans:  ['Urbanist_400Regular', 'System'],
-        medium:['Urbanist_500Medium',  'System'],
-        semi:  ['Urbanist_600SemiBold','System'],
-        bold:  ['Urbanist_700Bold',    'System'],
-        black: ['Urbanist_800ExtraBold','System'],
+        sans:   ['PlusJakartaSans_400Regular', 'System'],
+        medium: ['PlusJakartaSans_500Medium',  'System'],
+        semi:   ['PlusJakartaSans_600SemiBold','System'],
+        bold:   ['PlusJakartaSans_700Bold',    'System'],
+        black:  ['PlusJakartaSans_800ExtraBold','System'],
       },
       borderRadius: {
         '2xl': '16px',

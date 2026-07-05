@@ -30,7 +30,7 @@ function BenefitRow({ benefit }: { benefit: Benefit }) {
   const isRedeemed = benefit.redeemed
 
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#151617', borderBottomWidth: 1, borderBottomColor: '#2a2d2f' }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#f8f9fa', borderBottomWidth: 1, borderBottomColor: '#e2e8f0' }}>
       {/* Logo */}
       <View className="w-10 h-10 rounded-xl bg-gray-100 items-center justify-center overflow-hidden ms-3 flex-shrink-0">
         {biz?.logo_url ? (
@@ -48,10 +48,10 @@ function BenefitRow({ benefit }: { benefit: Benefit }) {
 
       {/* Value + status */}
       <View className="items-end me-2 flex-shrink-0" style={{ maxWidth: 100 }}>
-        <Text className={`text-sm font-bold ${isRedeemed ? 'text-gray-400' : 'text-brand'}`}
+        <Text className={`text-sm font-bold ${isRedeemed ? 'text-gray-400' : 'text-primary'}`}
           numberOfLines={1}>{valueLabel(benefit)}</Text>
-        <View className={`mt-0.5 px-2 py-0.5 rounded-full ${isRedeemed ? 'bg-gray-100' : 'bg-green-100'}`}>
-          <Text className={`text-[10px] font-semibold ${isRedeemed ? 'text-gray-400' : 'text-brand'}`}>
+        <View className={`mt-0.5 px-2 py-0.5 rounded-full ${isRedeemed ? 'bg-gray-100' : 'bg-purple-100'}`}>
+          <Text className={`text-[10px] font-semibold ${isRedeemed ? 'text-gray-400' : 'text-primary'}`}>
             {isRedeemed ? t('benefit.used') : t('benefit.active')}
           </Text>
         </View>
@@ -70,7 +70,7 @@ export default function HistoryScreen() {
   const redeemedCount = benefits.filter(b => b.redeemed).length
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#151617' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       {/* Header */}
       <View className="flex-row items-center px-5 pt-2 pb-4">
         <TouchableOpacity
@@ -84,7 +84,7 @@ export default function HistoryScreen() {
 
       {/* Summary card */}
       {benefits.length > 0 && (
-        <View className="mx-4 mb-4 bg-brand rounded-2xl p-5">
+        <View style={{ marginHorizontal: 16, marginBottom: 16, borderRadius: 16, padding: 20, backgroundColor: '#a855f7' }}>
           <Text className="text-white/80 text-sm mb-3">{t('history.yourBenefits')}</Text>
           <View className="flex-row flex-wrap gap-y-3">
             {[
@@ -104,7 +104,7 @@ export default function HistoryScreen() {
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color="#2ecc71" />
+          <ActivityIndicator color="#c084fc" />
         </View>
       ) : benefits.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">

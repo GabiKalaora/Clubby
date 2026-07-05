@@ -3,6 +3,7 @@ import {
   View, Text, TouchableOpacity, TextInput,
   ActivityIndicator, Alert, Switch, ScrollView, Platform, Image,
 } from 'react-native'
+import * as Clipboard from 'expo-clipboard'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
@@ -31,7 +32,7 @@ function Avatar({
     : (phone ?? '?')[0]
   return (
     <TouchableOpacity onPress={onPress} className="items-center mb-3" disabled={uploading}>
-      <View className="w-20 h-20 rounded-full bg-brand items-center justify-center overflow-hidden">
+      <View className="w-20 h-20 rounded-full bg-primary items-center justify-center overflow-hidden">
         {avatarUrl ? (
           <Image source={{ uri: avatarUrl }} className="w-full h-full" resizeMode="cover" />
         ) : (
@@ -43,7 +44,7 @@ function Avatar({
           </View>
         )}
       </View>
-      <Text className="text-xs text-brand mt-1">📷 Change photo</Text>
+      <Text className="text-xs text-primary mt-1">📷 Change photo</Text>
     </TouchableOpacity>
   )
 }
@@ -177,7 +178,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#151617' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       {/* Header */}
       <View className="flex-row items-center px-5 pt-2 pb-4">
         <TouchableOpacity
@@ -191,7 +192,7 @@ export default function ProfileScreen() {
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color="#2ecc71" />
+          <ActivityIndicator color="#c084fc" />
         </View>
       ) : (
         <ScrollView className="flex-1 px-5" showsVerticalScrollIndicator={false}>
@@ -219,7 +220,7 @@ export default function ProfileScreen() {
                   returnKeyType="done"
                   onSubmitEditing={saveEdit}
                 />
-                <TouchableOpacity className="bg-brand rounded-xl px-4 py-2" onPress={saveEdit} disabled={saving}>
+                <TouchableOpacity className="bg-primary rounded-xl px-4 py-2" onPress={saveEdit} disabled={saving}>
                   <Text className="text-white font-semibold text-sm">{saving ? '…' : t('common.save')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity className="rounded-xl px-3 py-2" onPress={() => setEditing(false)}>
@@ -237,15 +238,22 @@ export default function ProfileScreen() {
           </View>
 
           {/* Info rows */}
-          <View style={{ backgroundColor: '#1e2022', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2a2d2f' }}>
+          <View style={{ backgroundColor: '#ffffff', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' }}>
             <InfoRow label={t('profile.phone')} value={profile?.phone ?? user?.phone ?? '—'} />
-            <InfoRow label={t('profile.email')} value={user?.email ?? '—'} last />
+            <EmailRow email={user?.email ?? null} label={t('profile.email')} />
           </View>
 
           {/* Birthday */}
-          <View style={{ backgroundColor: '#1e2022', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2a2d2f' }}>
+          <View style={{ backgroundColor: '#ffffff', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' }}>
             <View className="flex-row justify-between items-center px-5 py-4">
-              <Text className="text-gray-500 text-sm">{t('profile.dateOfBirth')}</Text>
+              <View>
+                <Text className="text-gray-500 text-sm">{t('profile.dateOfBirth')}</Text>
+                {!profile?.date_of_birth && (
+                  <Text style={{ fontSize: 11, color: '#a855f7', fontFamily: 'PlusJakartaSans_400Regular', marginTop: 2 }}>
+                    🎂 Set for a birthday reward
+                  </Text>
+                )}
+              </View>
               {editingDob ? (
                 <View className="flex-row items-center gap-x-2">
                   <TextInput
@@ -258,7 +266,7 @@ export default function ProfileScreen() {
                     returnKeyType="done"
                     onSubmitEditing={saveDob}
                   />
-                  <TouchableOpacity className="bg-brand rounded-xl px-3 py-1.5" onPress={saveDob} disabled={saving}>
+                  <TouchableOpacity className="bg-primary rounded-xl px-3 py-1.5" onPress={saveDob} disabled={saving}>
                     <Text className="text-white text-xs font-semibold">{saving ? '…' : t('common.save')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => { setEditingDob(false); setDobError('') }}>
@@ -281,7 +289,7 @@ export default function ProfileScreen() {
           </View>
 
           {/* Language */}
-          <View style={{ backgroundColor: '#1e2022', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2a2d2f' }}>
+          <View style={{ backgroundColor: '#ffffff', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' }}>
             <View className="px-5 pt-4 pb-2">
               <Text className="text-sm font-semibold text-gray-900">{t('profile.language')}</Text>
               <Text className="text-xs text-gray-400 mt-0.5">{t('profile.languageSubtitle')}</Text>
@@ -296,7 +304,7 @@ export default function ProfileScreen() {
                   {lang === 'en' ? t('language.english') : t('language.hebrew')}
                 </Text>
                 {i18n.language === lang && (
-                  <View className="w-5 h-5 rounded-full bg-brand items-center justify-center">
+                  <View className="w-5 h-5 rounded-full bg-primary items-center justify-center">
                     <Text className="text-white text-xs font-bold">✓</Text>
                   </View>
                 )}
@@ -305,7 +313,7 @@ export default function ProfileScreen() {
           </View>
 
           {/* Theme */}
-          <View style={{ backgroundColor: '#1e2022', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2a2d2f' }}>
+          <View style={{ backgroundColor: '#ffffff', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' }}>
             <View className="px-5 pt-4 pb-2">
               <Text className="text-sm font-semibold text-gray-900 dark:text-white">🌙 Theme</Text>
               <Text className="text-xs text-gray-400 mt-0.5">Choose your preferred display theme</Text>
@@ -324,7 +332,7 @@ export default function ProfileScreen() {
                 >
                   <Text className="text-sm text-gray-900 dark:text-white">{labels[th]}</Text>
                   {isSelected && (
-                    <View className="w-5 h-5 rounded-full bg-brand items-center justify-center">
+                    <View className="w-5 h-5 rounded-full bg-primary items-center justify-center">
                       <Text className="text-white text-xs font-bold">✓</Text>
                     </View>
                   )}
@@ -334,7 +342,7 @@ export default function ProfileScreen() {
           </View>
 
           {/* Notification preferences */}
-          <View style={{ backgroundColor: '#1e2022', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2a2d2f' }}>
+          <View style={{ backgroundColor: '#ffffff', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' }}>
             <View className="px-5 pt-4 pb-2">
               <Text className="text-sm font-semibold text-gray-900">{t('profile.notificationPrefs')}</Text>
               <Text className="text-xs text-gray-400 mt-0.5">{t('profile.notificationPrefsSubtitle')}</Text>
@@ -358,7 +366,7 @@ export default function ProfileScreen() {
                       const updated: NotificationPrefs = { ...(profile?.notification_prefs ?? {}), [key]: val }
                       updateProfile({ userId: user.id, notification_prefs: updated })
                     }}
-                    trackColor={{ false: '#e5e7eb', true: '#2ecc71' }}
+                    trackColor={{ false: '#e5e7eb', true: '#c084fc' }}
                     thumbColor="white"
                   />
                 </View>
@@ -384,6 +392,29 @@ function InfoRow({ label, value, last = false }: { label: string; value: string;
     <View className={`flex-row justify-between px-5 py-4 ${!last ? 'border-b border-gray-100' : ''}`}>
       <Text className="text-gray-500 text-sm">{label}</Text>
       <Text className="text-gray-900 text-sm font-medium">{value}</Text>
+    </View>
+  )
+}
+
+function EmailRow({ label, email }: { label: string; email: string | null }) {
+  const [copied, setCopied] = useState(false)
+  async function handleCopy() {
+    if (!email) return
+    await Clipboard.setStringAsync(email)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16 }}>
+      <Text style={{ color: '#64748b', fontSize: 13 }}>{label}</Text>
+      {email ? (
+        <TouchableOpacity onPress={handleCopy} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, maxWidth: '65%' }}>
+          <Text style={{ color: '#2d3748', fontSize: 13, fontWeight: '500' }} numberOfLines={1}>{email}</Text>
+          <Text style={{ fontSize: 13 }}>{copied ? '✓' : '📋'}</Text>
+        </TouchableOpacity>
+      ) : (
+        <Text style={{ color: '#94a3b8', fontSize: 13 }}>Not set</Text>
+      )}
     </View>
   )
 }

@@ -3,6 +3,7 @@ import {
   View, Text, FlatList, TouchableOpacity,
   ActivityIndicator, RefreshControl, ScrollView, Image,
 } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
@@ -25,35 +26,35 @@ function FeedCard({ post }: { post: FeedPost }) {
   const router = useRouter()
   const biz = post.businesses
   const TYPE_COLOR: Record<string, string> = {
-    promotion: '#2ecc71',
+    promotion: '#c084fc',
     offer: '#f59e0b',
-    announcement: '#6366f1',
+    announcement: '#ec4899',
     story: '#ec4899',
   }
-  const color = TYPE_COLOR[post.type] ?? '#2ecc71'
+  const color = TYPE_COLOR[post.type] ?? '#c084fc'
   return (
-    <View style={{ backgroundColor: '#1e2022', borderRadius: 20, marginHorizontal: 16, marginBottom: 10, overflow: 'hidden', borderWidth: 1, borderColor: '#2a2d2f' }}>
+    <View style={{ backgroundColor: '#ffffff', borderRadius: 20, marginHorizontal: 16, marginBottom: 10, overflow: 'hidden', borderWidth: 1, borderColor: '#e2e8f0' }}>
       {post.image_url && (
         <Image source={{ uri: post.image_url }} style={{ width: '100%', height: 160 }} resizeMode="cover" />
       )}
       <View style={{ padding: 14 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 8 }}>
-          <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: '#2a2d2f', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: '#e2e8f0', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
             {biz?.logo_url ? <Image source={{ uri: biz.logo_url }} style={{ width: 28, height: 28 }} /> : <Text style={{ fontSize: 14 }}>🏪</Text>}
           </View>
-          <Text style={{ fontSize: 12, fontFamily: 'Urbanist_600SemiBold', color: '#8e969f', flex: 1 }} numberOfLines={1}>{biz?.name}</Text>
+          <Text style={{ fontSize: 12, fontFamily: 'PlusJakartaSans_600SemiBold', color: '#94a3b8', flex: 1 }} numberOfLines={1}>{biz?.name}</Text>
           <View style={{ borderRadius: 10, paddingHorizontal: 8, paddingVertical: 3, backgroundColor: color + '25' }}>
-            <Text style={{ fontSize: 10, fontFamily: 'Urbanist_700Bold', color }}>{post.type.toUpperCase()}</Text>
+            <Text style={{ fontSize: 10, fontFamily: 'PlusJakartaSans_700Bold', color }}>{post.type.toUpperCase()}</Text>
           </View>
         </View>
-        <Text style={{ fontSize: 14, fontFamily: 'Urbanist_700Bold', color: '#ffffff', marginBottom: 4 }}>{post.title}</Text>
-        {post.body && <Text style={{ fontSize: 12, color: '#8e969f', fontFamily: 'Urbanist_400Regular', lineHeight: 18 }} numberOfLines={3}>{post.body}</Text>}
+        <Text style={{ fontSize: 14, fontFamily: 'PlusJakartaSans_700Bold', color: '#2d3748', marginBottom: 4 }}>{post.title}</Text>
+        {post.body && <Text style={{ fontSize: 12, color: '#94a3b8', fontFamily: 'PlusJakartaSans_400Regular', lineHeight: 18 }} numberOfLines={3}>{post.body}</Text>}
         {post.cta_text && (
           <TouchableOpacity
             onPress={() => router.push({ pathname: '/store/[id]', params: { id: post.business_id } } as never)}
             style={{ marginTop: 12, borderRadius: 14, paddingVertical: 10, alignItems: 'center', backgroundColor: color }}
           >
-            <Text style={{ color: 'white', fontSize: 12, fontFamily: 'Urbanist_700Bold' }}>{post.cta_text}</Text>
+            <Text style={{ color: 'white', fontSize: 12, fontFamily: 'PlusJakartaSans_700Bold' }}>{post.cta_text}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -130,27 +131,31 @@ export default function Wallet() {
   const activeCredits = benefits.filter(
     (b) => b.type === 'credit' && b.amount_cents != null,
   )
+  const activeBenefits = benefits.filter(
+    (b) => !b.redeemed && (!b.expires_at || new Date(b.expires_at) > new Date()),
+  )
+  const creditTotal = activeCredits.reduce((s, b) => s + (b.amount_cents ?? 0), 0)
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#151617' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 8, paddingBottom: 16 }}>
-        <Text style={{ fontSize: 26, fontFamily: 'Urbanist_700Bold', color: '#ffffff' }}>{t('wallet.title')}</Text>
+        <Text style={{ fontSize: 26, fontFamily: 'PlusJakartaSans_700Bold', color: '#2d3748' }}>{t('wallet.title')}</Text>
         <View style={{ flexDirection: 'row', gap: 10 }}>
           <TouchableOpacity
             onPress={() => router.push('/notifications' as never)}
-            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#1e2022', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}
           >
             <Text style={{ fontSize: 16 }}>🔔</Text>
             {unreadCount > 0 && (
               <View style={{ position: 'absolute', top: 0, right: 0, width: 16, height: 16, borderRadius: 8, backgroundColor: '#ef4444', alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ color: 'white', fontSize: 9, fontFamily: 'Urbanist_700Bold' }}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
+                <Text style={{ color: 'white', fontSize: 9, fontFamily: 'PlusJakartaSans_700Bold' }}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
               </View>
             )}
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => router.push('/profile' as never)}
-            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#1e2022', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}
           >
             <Text style={{ fontSize: 16 }}>👤</Text>
           </TouchableOpacity>
@@ -173,167 +178,184 @@ export default function Wallet() {
                 onPress={() => router.push({ pathname: '/story/[id]', params: { id: story.business_id, businessId: story.business_id, startIndex: String(i) } } as never)}
                 style={{ alignItems: 'center', width: 64 }}
               >
-                <View style={{ width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderColor: '#1a7a4a', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: '#1e2022' }}>
+                <View style={{ width: 56, height: 56, borderRadius: 28, borderWidth: 2, borderColor: '#a855f7', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: '#ffffff' }}>
                   {logo ? <Image source={{ uri: logo }} style={{ width: '100%', height: '100%' }} resizeMode="cover" /> : <Text style={{ fontSize: 22 }}>{name[0] ?? '🏪'}</Text>}
                 </View>
-                <Text style={{ fontSize: 10, color: '#8e969f', marginTop: 4, textAlign: 'center', fontFamily: 'Urbanist_500Medium' }} numberOfLines={1}>{name}</Text>
+                <Text style={{ fontSize: 10, color: '#94a3b8', marginTop: 4, textAlign: 'center', fontFamily: 'PlusJakartaSans_500Medium' }} numberOfLines={1}>{name}</Text>
               </TouchableOpacity>
             )
           })}
         </ScrollView>
       )}
 
-      {/* Balance card — deep green */}
+      {/* Balance card — gradient hero */}
       <TouchableOpacity
         onPress={() => router.push('/history' as never)}
         activeOpacity={0.88}
-        style={{
-          marginHorizontal: 16, marginBottom: 20,
-          backgroundColor: '#1a7a4a',
-          borderRadius: 24, padding: 22,
-          shadowColor: '#1a7a4a', shadowOpacity: 0.4, shadowRadius: 16, shadowOffset: { width: 0, height: 8 },
-          elevation: 10,
-        }}
+        style={{ marginHorizontal: 16, marginBottom: 16 }}
       >
-        <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, fontFamily: 'Urbanist_500Medium', marginBottom: 4 }}>{t('wallet.totalBalance')}</Text>
-        <Text style={{ color: '#ffffff', fontSize: 42, fontFamily: 'Urbanist_800ExtraBold', letterSpacing: -1 }}>{totalBalance(benefits)}</Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, fontFamily: 'Urbanist_500Medium' }}>
-            {t('wallet.activeCredits', { count: activeCredits.length })}
-          </Text>
-          <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'Urbanist_500Medium' }}>{t('wallet.viewHistory')} →</Text>
-        </View>
+        <LinearGradient
+          colors={['#ec4899', '#a855f7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+          style={{
+            borderRadius: 24, padding: 22,
+            shadowColor: '#a855f7', shadowOpacity: 0.4, shadowRadius: 16, shadowOffset: { width: 0, height: 8 },
+            elevation: 10,
+          }}
+        >
+          <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, fontFamily: 'PlusJakartaSans_500Medium', marginBottom: 12 }}>{t('wallet.yourBenefits')}</Text>
+          <View style={{ flexDirection: 'row', gap: 24 }}>
+            <View>
+              <Text style={{ color: '#ffffff', fontSize: 36, fontFamily: 'PlusJakartaSans_800ExtraBold', letterSpacing: -1 }}>{activeBenefits.length}</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12, fontFamily: 'PlusJakartaSans_500Medium', marginTop: 2 }}>{t('wallet.activeBenefits')}</Text>
+            </View>
+            {creditTotal > 0 && (
+              <View style={{ borderLeftWidth: 1, borderLeftColor: 'rgba(255,255,255,0.2)', paddingLeft: 24 }}>
+                <Text style={{ color: '#ffffff', fontSize: 36, fontFamily: 'PlusJakartaSans_800ExtraBold', letterSpacing: -1 }}>₪{(creditTotal / 100).toFixed(0)}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12, fontFamily: 'PlusJakartaSans_500Medium', marginTop: 2 }}>{t('wallet.creditBalance')}</Text>
+              </View>
+            )}
+          </View>
+          <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'PlusJakartaSans_500Medium', marginTop: 12 }}>{t('wallet.viewHistory')} →</Text>
+        </LinearGradient>
       </TouchableOpacity>
 
-      {/* My Clubs */}
-      {memberships.length > 0 && (
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 11, fontFamily: 'Urbanist_700Bold', color: '#4a5260', letterSpacing: 1.2, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 10 }}>
-            {t('wallet.myClubs')}
-          </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
-            {memberships.map((m) => {
-              const biz = m.businesses
-              const bizBenefits = benefits.filter((b) => b.business_id === m.business_id && !b.redeemed)
-              const tier = getCurrentTier(m.total_stamps ?? 0, allTiers[m.business_id] ?? [])
-              return (
-                <TouchableOpacity
-                  key={m.id}
-                  onPress={() => router.push({ pathname: '/store/[id]', params: { id: m.business_id } } as never)}
-                  style={{ alignItems: 'center', backgroundColor: '#1e2022', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 12, minWidth: 84, borderWidth: 1, borderColor: '#2a2d2f' }}
-                >
-                  <View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: '#2a2d2f', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginBottom: 6 }}>
-                    {biz.logo_url ? <Image source={{ uri: biz.logo_url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" /> : <Text style={{ fontSize: 22 }}>🏪</Text>}
-                  </View>
-                  <Text style={{ fontSize: 11, fontFamily: 'Urbanist_600SemiBold', color: '#ffffff', textAlign: 'center' }} numberOfLines={1}>{biz.name}</Text>
-                  {tier && (
-                    <View style={{ marginTop: 4, borderRadius: 10, paddingHorizontal: 6, paddingVertical: 2, backgroundColor: tier.color + '25' }}>
-                      <Text style={{ fontSize: 9, fontFamily: 'Urbanist_700Bold', color: tier.color }}>{tier.icon} {tier.name}</Text>
-                    </View>
-                  )}
-                  {bizBenefits.length > 0 && (
-                    <View style={{ marginTop: 4, backgroundColor: '#1a7a4a', borderRadius: 10, paddingHorizontal: 6, paddingVertical: 2 }}>
-                      <Text style={{ color: 'white', fontSize: 9, fontFamily: 'Urbanist_700Bold' }}>{bizBenefits.length}</Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              )
-            })}
-          </ScrollView>
-        </View>
-      )}
-
-      {/* Feed posts */}
-      {feedPosts.length > 0 && (
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 11, fontFamily: 'Urbanist_700Bold', color: '#4a5260', letterSpacing: 1.2, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 10 }}>
-            {t('wallet.feed')}
-          </Text>
-          {feedPosts.map(post => <FeedCard key={post.id} post={post} />)}
-        </View>
-      )}
-
-      {/* Stamp cards */}
-      {stampCards.length > 0 && (
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 11, fontFamily: 'Urbanist_700Bold', color: '#4a5260', letterSpacing: 1.2, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 10 }}>
-            {t('wallet.stampCards')}
-          </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
-            {stampCards.map((card) => <StampCardWidget key={card.id} card={card} />)}
-          </ScrollView>
-        </View>
-      )}
-
-      {/* Points */}
-      {pointsBalances.length > 0 && (
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 11, fontFamily: 'Urbanist_700Bold', color: '#4a5260', letterSpacing: 1.2, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 10 }}>
-            Points
-          </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
-            {pointsBalances.map((pb) => (
-              <TouchableOpacity key={pb.id}
-                onPress={() => router.push({ pathname: '/store/[id]', params: { id: pb.business_id } } as never)}
-                style={{ backgroundColor: '#1e2022', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 12, alignItems: 'center', minWidth: 110, borderWidth: 1, borderColor: '#2a2d2f' }}
-              >
-                <Text style={{ color: '#2ecc71', fontSize: 26, fontFamily: 'Urbanist_800ExtraBold' }}>{pb.balance}</Text>
-                <Text style={{ fontSize: 11, color: '#8e969f', marginTop: 2, fontFamily: 'Urbanist_500Medium' }} numberOfLines={1}>{pb.program?.name ?? 'Points'}</Text>
-                <Text style={{ fontSize: 9, color: '#4a5260', marginTop: 2, fontFamily: 'Urbanist_400Regular' }}>pts available</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
-
-      {/* Filter tabs */}
-      <View style={{ flexDirection: 'row', paddingHorizontal: 16, marginBottom: 8, gap: 8 }}>
+      {/* Filter tabs — immediately after balance card */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+        style={{ marginBottom: 8 }}
+      >
         {TABS.map((tab) => (
           <TouchableOpacity
             key={tab.key}
             onPress={() => setActiveTab(tab.key)}
             style={{
-              flex: 1, borderRadius: 20, paddingVertical: 9, alignItems: 'center',
-              backgroundColor: activeTab === tab.key ? '#1a7a4a' : '#1e2022',
-              borderWidth: 1, borderColor: activeTab === tab.key ? '#1a7a4a' : '#2a2d2f',
+              borderRadius: 20, paddingVertical: 9, paddingHorizontal: 14, alignItems: 'center',
+              backgroundColor: activeTab === tab.key ? '#a855f7' : '#ffffff',
+              borderWidth: 1, borderColor: activeTab === tab.key ? '#a855f7' : '#e2e8f0',
             }}
           >
-            <Text style={{ fontSize: 12, fontFamily: 'Urbanist_600SemiBold', color: activeTab === tab.key ? '#ffffff' : '#8e969f' }}>{tab.label}</Text>
+            <Text style={{ fontSize: 12, fontFamily: 'PlusJakartaSans_600SemiBold', color: activeTab === tab.key ? '#ffffff' : '#94a3b8' }}>{tab.label}</Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
       {/* Coupon shortcut */}
       <TouchableOpacity
         onPress={() => router.push('/manual' as never)}
-        style={{ marginHorizontal: 16, marginBottom: 10, borderWidth: 1, borderStyle: 'dashed', borderColor: '#1a7a4a', borderRadius: 20, paddingVertical: 11, alignItems: 'center' }}
+        style={{ marginHorizontal: 16, marginBottom: 10, borderWidth: 1, borderStyle: 'dashed', borderColor: '#a855f7', borderRadius: 20, paddingVertical: 11, alignItems: 'center' }}
       >
-        <Text style={{ color: '#2ecc71', fontSize: 12, fontFamily: 'Urbanist_600SemiBold' }}>{t('wallet.enterCoupon')}</Text>
+        <Text style={{ color: '#c084fc', fontSize: 12, fontFamily: 'PlusJakartaSans_600SemiBold' }}>{t('wallet.enterCoupon')}</Text>
       </TouchableOpacity>
 
-      {/* Benefit list */}
+      {/* Benefit list — first visible content */}
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator color="#2ecc71" />
+          <ActivityIndicator color="#c084fc" />
         </View>
       ) : (
         <FlatList
           data={filtered}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <BenefitCard benefit={item} onRedeem={() => {}} />}
-          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#2ecc71" />}
+          renderItem={({ item }) => <BenefitCard benefit={item} onRedeem={(id) => router.push({ pathname: '/redeem/[id]', params: { id } } as never)} />}
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#c084fc" />}
           ListEmptyComponent={
-            <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 64, paddingHorizontal: 32 }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 40, paddingHorizontal: 32 }}>
               <Text style={{ fontSize: 40, marginBottom: 12 }}>🎁</Text>
-              <Text style={{ color: '#4a5260', textAlign: 'center', fontSize: 15, fontFamily: 'Urbanist_500Medium' }}>
-                {activeTab === 'all' ? t('wallet.empty') : `No ${activeTab.replace('_', ' ')} benefits`}
+              <Text style={{ color: '#64748b', textAlign: 'center', fontSize: 15, fontFamily: 'PlusJakartaSans_500Medium' }}>
+                {activeTab === 'all' ? t('wallet.empty') : t('wallet.emptyTab', { tab: activeTab.replace('_', ' ') })}
               </Text>
             </View>
           }
-          ListFooterComponent={<View style={{ height: 16 }} />}
+          ListFooterComponent={
+            <>
+              {/* My Clubs */}
+              {memberships.length > 0 && (
+                <View style={{ marginTop: 8, marginBottom: 20 }}>
+                  <Text style={{ fontSize: 11, fontFamily: 'PlusJakartaSans_700Bold', color: '#64748b', letterSpacing: 1.2, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 10 }}>
+                    {t('wallet.myClubs')}
+                  </Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
+                    {memberships.map((m) => {
+                      const biz = m.businesses
+                      const bizBenefits = benefits.filter((b) => b.business_id === m.business_id && !b.redeemed)
+                      const tier = getCurrentTier(m.total_stamps ?? 0, allTiers[m.business_id] ?? [])
+                      return (
+                        <TouchableOpacity
+                          key={m.id}
+                          onPress={() => router.push({ pathname: '/store/[id]', params: { id: m.business_id } } as never)}
+                          style={{ alignItems: 'center', backgroundColor: '#ffffff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 12, minWidth: 84, borderWidth: 1, borderColor: '#e2e8f0' }}
+                        >
+                          <View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: '#e2e8f0', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginBottom: 6 }}>
+                            {biz.logo_url ? <Image source={{ uri: biz.logo_url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" /> : <Text style={{ fontSize: 22 }}>🏪</Text>}
+                          </View>
+                          <Text style={{ fontSize: 11, fontFamily: 'PlusJakartaSans_600SemiBold', color: '#2d3748', textAlign: 'center' }} numberOfLines={1}>{biz.name}</Text>
+                          {tier && (
+                            <View style={{ marginTop: 4, borderRadius: 10, paddingHorizontal: 6, paddingVertical: 2, backgroundColor: tier.color + '25' }}>
+                              <Text style={{ fontSize: 9, fontFamily: 'PlusJakartaSans_700Bold', color: tier.color }}>{tier.icon} {tier.name}</Text>
+                            </View>
+                          )}
+                          {bizBenefits.length > 0 && (
+                            <View style={{ marginTop: 4, backgroundColor: '#a855f7', borderRadius: 10, paddingHorizontal: 6, paddingVertical: 2 }}>
+                              <Text style={{ color: 'white', fontSize: 9, fontFamily: 'PlusJakartaSans_700Bold' }}>{bizBenefits.length}</Text>
+                            </View>
+                          )}
+                        </TouchableOpacity>
+                      )
+                    })}
+                  </ScrollView>
+                </View>
+              )}
+
+              {/* Stamp cards */}
+              {stampCards.length > 0 && (
+                <View style={{ marginBottom: 20 }}>
+                  <Text style={{ fontSize: 11, fontFamily: 'PlusJakartaSans_700Bold', color: '#64748b', letterSpacing: 1.2, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 10 }}>
+                    {t('wallet.stampCards')}
+                  </Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
+                    {stampCards.map((card) => <StampCardWidget key={card.id} card={card} />)}
+                  </ScrollView>
+                </View>
+              )}
+
+              {/* Points */}
+              {pointsBalances.length > 0 && (
+                <View style={{ marginBottom: 20 }}>
+                  <Text style={{ fontSize: 11, fontFamily: 'PlusJakartaSans_700Bold', color: '#64748b', letterSpacing: 1.2, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 10 }}>
+                    Points
+                  </Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
+                    {pointsBalances.map((pb) => (
+                      <TouchableOpacity key={pb.id}
+                        onPress={() => router.push({ pathname: '/store/[id]', params: { id: pb.business_id } } as never)}
+                        style={{ backgroundColor: '#ffffff', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 12, alignItems: 'center', minWidth: 110, borderWidth: 1, borderColor: '#e2e8f0' }}
+                      >
+                        <Text style={{ color: '#c084fc', fontSize: 26, fontFamily: 'PlusJakartaSans_800ExtraBold' }}>{pb.balance}</Text>
+                        <Text style={{ fontSize: 11, color: '#94a3b8', marginTop: 2, fontFamily: 'PlusJakartaSans_500Medium' }} numberOfLines={1}>{pb.program?.name ?? 'Points'}</Text>
+                        <Text style={{ fontSize: 9, color: '#64748b', marginTop: 2, fontFamily: 'PlusJakartaSans_400Regular' }}>pts available</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+
+              {/* Updates feed */}
+              {feedPosts.length > 0 && (
+                <View style={{ marginBottom: 20 }}>
+                  <Text style={{ fontSize: 11, fontFamily: 'PlusJakartaSans_700Bold', color: '#64748b', letterSpacing: 1.2, textTransform: 'uppercase', paddingHorizontal: 20, marginBottom: 10 }}>
+                    {t('wallet.feed')}
+                  </Text>
+                  {feedPosts.map(post => <FeedCard key={post.id} post={post} />)}
+                </View>
+              )}
+              <View style={{ height: 24 }} />
+            </>
+          }
         />
       )}
     </SafeAreaView>
@@ -346,24 +368,24 @@ function StampCardWidget({ card }: { card: StampCard }) {
   const cols = Math.min(card.required_stamps, 5)
 
   return (
-    <View style={{ backgroundColor: '#1e2022', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 12, minWidth: 160, maxWidth: 200, borderWidth: 1, borderColor: '#2a2d2f' }}>
-      <Text style={{ fontSize: 12, fontFamily: 'Urbanist_700Bold', color: '#ffffff', marginBottom: 8 }} numberOfLines={1}>{card.name}</Text>
+    <View style={{ backgroundColor: '#ffffff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 12, minWidth: 160, maxWidth: 200, borderWidth: 1, borderColor: '#e2e8f0' }}>
+      <Text style={{ fontSize: 12, fontFamily: 'PlusJakartaSans_700Bold', color: '#2d3748', marginBottom: 8 }} numberOfLines={1}>{card.name}</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginBottom: 8, maxWidth: cols * 20 }}>
         {dots.map((filled, i) => (
           <View key={i} style={{
             width: 14, height: 14, borderRadius: 7,
-            backgroundColor: filled ? '#1a7a4a' : '#2a2d2f',
+            backgroundColor: filled ? '#a855f7' : '#e2e8f0',
             borderWidth: filled ? 0 : 1, borderColor: '#3a3d3f',
           }} />
         ))}
       </View>
-      <Text style={{ fontSize: 11, color: '#8e969f', fontFamily: 'Urbanist_500Medium' }}>
+      <Text style={{ fontSize: 11, color: '#94a3b8', fontFamily: 'PlusJakartaSans_500Medium' }}>
         {card.completed ? t('stampCard.rewardEarned') : t('stampCard.stamps', { current: card.current_stamps, required: card.required_stamps })}
       </Text>
       {!card.completed && (
         <>
-          <Text style={{ fontSize: 11, color: '#2ecc71', marginTop: 2, fontFamily: 'Urbanist_500Medium' }} numberOfLines={1}>🎁 {card.reward_title}</Text>
-          <Text style={{ fontSize: 10, color: '#4a5260', marginTop: 2, fontFamily: 'Urbanist_400Regular' }} numberOfLines={1}>
+          <Text style={{ fontSize: 11, color: '#c084fc', marginTop: 2, fontFamily: 'PlusJakartaSans_500Medium' }} numberOfLines={1}>🎁 {card.reward_title}</Text>
+          <Text style={{ fontSize: 10, color: '#64748b', marginTop: 2, fontFamily: 'PlusJakartaSans_400Regular' }} numberOfLines={1}>
             {t('stampCard.moreToEarn', { count: card.required_stamps - card.current_stamps })}
           </Text>
         </>

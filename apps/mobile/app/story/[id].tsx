@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingTop: 10 },
   bizRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logo: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, borderColor: 'white' },
-  logoPlaceholder: { backgroundColor: '#2ecc71', alignItems: 'center', justifyContent: 'center' },
+  logoPlaceholder: { backgroundColor: '#c084fc', alignItems: 'center', justifyContent: 'center' },
   bizName: { color: 'white', fontWeight: '600', fontSize: 14 },
   closeBtn: { padding: 6 },
   closeText: { color: 'white', fontSize: 18, fontWeight: '700' },

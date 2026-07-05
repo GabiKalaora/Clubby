@@ -304,6 +304,31 @@ account_sid = "ACtest00000000000000000000000000"
 message_service_sid = "MGtest0000000000000000000000000"
 auth_token = "test_auth_token_local_dev_only"
 
+# ── VONAGE (production SMS OTP) ────────────────────────────────────────────────
+# Free trial at https://www.vonage.com/communications-apis/
+# No credit card required for trial (~€2 free credit ≈ 20 SMS)
+# Steps to activate:
+#   1. Sign up at dashboard.nexmo.com (now vonage.com)
+#   2. Copy "API key" and "API secret" from the dashboard home
+#   3. Comment out [auth.sms.twilio] above
+#   4. Uncomment the section below and fill in your credentials
+#   5. Run: supabase stop && supabase start
+#
+# [auth.sms.vonage]
+# enabled = true
+# api_key = "your_vonage_api_key_here"        # e.g. "a1b2c3d4"
+# api_secret = "your_vonage_api_secret_here"  # e.g. "AbCdEfGhIjKlMnOp"
+# from = "Clubby"                              # sender name (max 11 chars, alphanumeric)
+#
+# ── AFRICA'S TALKING (alternative — generous free tier) ────────────────────────
+# Free sandbox at https://africastalking.com (no card, Israeli numbers may need upgrade)
+# Steps:
+#   1. Sign up at account.africastalking.com
+#   2. Get API key from the dashboard
+#   3. Use the messagebird provider format (Africa's Talking is compatible)
+#   NOTE: For Israeli numbers (+972), Vonage has better coverage
+# ──────────────────────────────────────────────────────────────────────────────
+
 # Multi-factor-authentication is available to Supabase Pro plan.
 [auth.mfa]
 # Control how many MFA factors can be enrolled at once per user.

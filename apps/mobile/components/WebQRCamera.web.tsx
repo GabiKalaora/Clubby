@@ -70,33 +70,52 @@ export function WebQRCamera({ onScan }: Props) {
 
   const base: React.CSSProperties = {
     position: 'relative', width: '100%', height: '100%',
-    background: '#000', overflow: 'hidden', display: 'flex',
+    background: 'linear-gradient(160deg, #1a0533 0%, #2d1050 50%, #1a0533 100%)',
+    overflow: 'hidden', display: 'flex',
     alignItems: 'center', justifyContent: 'center',
   }
 
-  if (status === 'denied') {
-    const isHttpIssue = !hasMediaDevices && !isHttps
+  // Branded placeholder — shown while requesting OR when camera denied on HTTP
+  if (status === 'denied' || status === 'requesting') {
+    const httpIssue = !hasMediaDevices && !isHttps
     return (
       <div style={base}>
-        <div style={{ textAlign: 'center', padding: 32 }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>{isHttpIssue ? '🔒' : '🚫'}</div>
-          <p style={{ color: 'white', fontSize: 17, fontWeight: 600, marginBottom: 6 }}>
-            {isHttpIssue ? 'HTTPS required for camera' : 'Camera access denied'}
+        {/* Ambient glow */}
+        <div style={{ position:'absolute', width:300, height:300, borderRadius:'50%', background:'rgba(168,85,247,0.08)', top:-60, right:-60, pointerEvents:'none' }} />
+        <div style={{ position:'absolute', width:200, height:200, borderRadius:'50%', background:'rgba(236,72,153,0.06)', bottom:40, left:-40, pointerEvents:'none' }} />
+
+        <div style={{ textAlign:'center', padding:32, position:'relative', zIndex:1 }}>
+          {/* QR frame icon */}
+          <div style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:120, height:120, borderRadius:24, border:'2px solid rgba(192,132,252,0.4)', marginBottom:24, position:'relative', background:'rgba(168,85,247,0.08)' }}>
+            {/* Corner marks */}
+            {([
+              { top:8, left:8 } as React.CSSProperties,
+              { top:8, right:8 } as React.CSSProperties,
+              { bottom:8, left:8 } as React.CSSProperties,
+              { bottom:8, right:8 } as React.CSSProperties,
+            ]).map((pos, i) => (
+              <div key={i} style={{
+                position:'absolute', width:16, height:16, ...pos,
+                borderTop: (pos.top !== undefined) ? '2.5px solid #c084fc' : 'none',
+                borderBottom: (pos.bottom !== undefined) ? '2.5px solid #c084fc' : 'none',
+                borderLeft: (pos.left !== undefined) ? '2.5px solid #c084fc' : 'none',
+                borderRight: (pos.right !== undefined) ? '2.5px solid #c084fc' : 'none',
+              }} />
+            ))}
+            <span style={{ fontSize:40 }}>🏪</span>
+          </div>
+
+          <p style={{ color:'#ffffff', fontSize:20, fontWeight:700, margin:'0 0 8px', letterSpacing:-0.3 }}>
+            Scan Store QR
           </p>
-          <p style={{ color: '#9ca3af', fontSize: 13 }}>
-            {isHttpIssue
-              ? 'Safari blocks camera access over HTTP. Open this page over HTTPS, or scan on desktop Chrome.'
-              : 'Allow camera in browser settings and reload.'}
+          <p style={{ color:'rgba(255,255,255,0.5)', fontSize:13, margin:0, lineHeight:1.5, maxWidth:220 }}>
+            {httpIssue
+              ? 'Camera needs HTTPS. Enter the store code below instead.'
+              : status === 'requesting'
+              ? 'Point your camera at any Clubby QR code to join instantly.'
+              : 'Camera unavailable. Enter the store code below instead.'}
           </p>
         </div>
-      </div>
-    )
-  }
-
-  if (status === 'requesting') {
-    return (
-      <div style={base}>
-        <p style={{ color: '#9ca3af', fontSize: 15 }}>Starting camera…</p>
       </div>
     )
   }
@@ -118,11 +137,10 @@ export function WebQRCamera({ onScan }: Props) {
       }}>
         <div style={{
           width: 220, height: 220,
-          border: '2px solid #2ecc71', borderRadius: 12,
+          border: '2px solid #c084fc', borderRadius: 12,
           boxShadow: '0 0 0 4000px rgba(0,0,0,0.45)',
         }} />
       </div>
-      {/* Hint */}
       <div style={{
         position: 'absolute', bottom: 28, left: 0, right: 0,
         textAlign: 'center', color: 'white', fontSize: 14,

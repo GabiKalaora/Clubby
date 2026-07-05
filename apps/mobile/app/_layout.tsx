@@ -7,12 +7,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   useFonts,
-  Urbanist_400Regular,
-  Urbanist_500Medium,
-  Urbanist_600SemiBold,
-  Urbanist_700Bold,
-  Urbanist_800ExtraBold,
-} from '@expo-google-fonts/urbanist'
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+  PlusJakartaSans_700Bold,
+  PlusJakartaSans_800ExtraBold,
+} from '@expo-google-fonts/plus-jakarta-sans'
 import { supabase } from '../lib/supabase'
 import { initI18n, isHebrew } from '../lib/i18n'
 
@@ -60,11 +60,11 @@ export default function RootLayout() {
   const [themePreference, setThemePreference] = useState<ThemePreference>('auto')
 
   const [fontsLoaded] = useFonts({
-    Urbanist_400Regular,
-    Urbanist_500Medium,
-    Urbanist_600SemiBold,
-    Urbanist_700Bold,
-    Urbanist_800ExtraBold,
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
+    PlusJakartaSans_800ExtraBold,
   })
 
   const isDark = themePreference === 'dark' || (themePreference === 'auto' && systemScheme === 'dark')

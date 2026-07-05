@@ -250,7 +250,7 @@ export function Members({ business }: Props) {
             </div>
 
             {totalSavings > 0 && (
-              <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 10, padding: '10px 16px', marginBottom: 16, fontSize: 13, color: '#16a34a', fontWeight: 600 }}>
+              <div style={{ background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.25)', borderRadius: 10, padding: '10px 16px', marginBottom: 16, fontSize: 13, color: '#a855f7', fontWeight: 600 }}>
                 {t('members.detail.totalCredit', { amount: totalSavings.toFixed(0) })}
               </div>
             )}
@@ -284,14 +284,14 @@ export function Members({ business }: Props) {
                         <td className="text-muted">{new Date(b.created_at).toLocaleDateString()}</td>
                         <td>
                           {b.redeemed
-                            ? <span className="badge badge-gray">{t('members.detail.used')}</span>
-                            : <span className="badge badge-green">{t('members.detail.active')}</span>}
+                            ? <span className="badge badge-inactive">{t('members.detail.used')}</span>
+                            : <span className="badge badge-active">{t('members.detail.active')}</span>}
                         </td>
                         <td>
                           {!b.redeemed && (
                             <button
                               className="btn-link"
-                              style={{ fontSize: 12, color: '#2ecc71', fontWeight: 600 }}
+                              style={{ fontSize: 12, color: 'var(--primary)', fontWeight: 600 }}
                               disabled={redeemingId === b.id}
                               onClick={() => markRedeemed(b.id)}
                             >

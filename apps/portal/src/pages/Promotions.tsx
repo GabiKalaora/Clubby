@@ -117,7 +117,8 @@ export function Promotions({ business }: Props) {
 
   function openDuplicate(p: Promotion) {
     const f = promoToForm(p)
-    setForm({ ...f, title: `${f.title} (copy)` })
+    // Clear dates — a copy should start fresh, not inherit past validity windows
+    setForm({ ...f, title: `${f.title} (copy)`, valid_from: '', valid_until: '' })
     setEditingId(null)
     setFormMode('create')
     setError('')
@@ -296,7 +297,7 @@ export function Promotions({ business }: Props) {
                   <td>{p.redemption_count}{p.max_redemptions ? ` / ${p.max_redemptions}` : ''}</td>
                   <td>{p.valid_until ? p.valid_until.slice(0, 10) : '—'}</td>
                   <td>
-                    <span className={`badge ${p.active ? 'badge-green' : 'badge-gray'}`}>
+                    <span className={`badge ${p.active ? 'badge-active' : 'badge-inactive'}`}>
                       {p.active ? 'Active' : 'Inactive'}
                     </span>
                   </td>

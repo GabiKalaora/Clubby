@@ -12,21 +12,42 @@ interface Props {
   onSignOut: () => void
 }
 
+type NavItem = { key: View; label: string; sub?: boolean }
+type NavGroup = { section?: string; items: NavItem[] }
+
 export function Sidebar({ view, onNavigate, businesses, selected, onSelectBusiness, email, onAddBusiness, onSignOut }: Props) {
   const { t } = useTranslation()
 
-  const NAV: { key: View; label: string; icon: string }[] = [
-    { key: 'anchor',      label: '🏢 Platform View', icon: '' },
-    { key: 'dashboard',   label: t('nav.dashboard'),  icon: '📊' },
-    { key: 'promotions',  label: t('nav.promotions'),  icon: '🎁' },
-    { key: 'members',     label: t('nav.members'),     icon: '👥' },
-    { key: 'stamp_cards', label: t('nav.stampCards'),  icon: '🥇' },
-    { key: 'tiers',       label: '🏅 Tiers',           icon: '' },
-    { key: 'points',      label: '⭐ Points',           icon: '' },
-    { key: 'stories',     label: t('nav.stories'),     icon: '📖' },
-    { key: 'feed',        label: '📣 Feed Posts',       icon: '' },
-    { key: 'settings',    label: t('nav.settings'),    icon: '⚙️' },
-    { key: 'qr',          label: t('nav.qrCode'),      icon: '📱' },
+  const NAV_GROUPS: NavGroup[] = [
+    {
+      items: [
+        { key: 'anchor',    label: '🏢 Platform View' },
+        { key: 'dashboard', label: t('nav.dashboard') },
+      ],
+    },
+    {
+      section: 'LOYALTY',
+      items: [
+        { key: 'promotions',  label: t('nav.promotions') },
+        { key: 'members',     label: t('nav.members') },
+        { key: 'stamp_cards', label: t('nav.stampCards') },
+        { key: 'tiers',       label: '🏅 Tiers',  sub: true },
+        { key: 'points',      label: '⭐ Points',  sub: true },
+      ],
+    },
+    {
+      section: 'CONTENT',
+      items: [
+        { key: 'stories', label: t('nav.stories') },
+        { key: 'feed',    label: '📣 Feed Posts' },
+      ],
+    },
+    {
+      items: [
+        { key: 'settings', label: t('nav.settings') },
+        { key: 'qr',       label: t('nav.qrCode') },
+      ],
+    },
   ]
 
   return (
@@ -57,15 +78,21 @@ export function Sidebar({ view, onNavigate, businesses, selected, onSelectBusine
 
       {/* Navigation */}
       <nav className="sidebar-nav">
-        {NAV.map(item => (
-          <button
-            key={item.key}
-            className={`nav-item ${view === item.key ? 'active' : ''}`}
-            onClick={() => onNavigate(item.key)}
-          >
-            <span className="nav-icon">{item.icon}</span>
-            {item.label}
-          </button>
+        {NAV_GROUPS.map((group, gi) => (
+          <div key={gi}>
+            {group.section && (
+              <p className="nav-section-label">{group.section}</p>
+            )}
+            {group.items.map(item => (
+              <button
+                key={item.key}
+                className={`nav-item${item.sub ? ' nav-item-sub' : ''} ${view === item.key ? 'active' : ''}`}
+                onClick={() => onNavigate(item.key)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
         ))}
       </nav>
 
@@ -77,3 +104,4 @@ export function Sidebar({ view, onNavigate, businesses, selected, onSelectBusine
     </aside>
   )
 }
+

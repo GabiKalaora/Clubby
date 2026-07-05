@@ -16,7 +16,7 @@ export function ErrorBanner({ message }: Props) {
       <Text style={{
         color: '#ef4444',
         fontSize: 13,
-        fontFamily: 'Urbanist_500Medium',
+        fontFamily: 'PlusJakartaSans_500Medium',
       }}>
         {message}
       </Text>

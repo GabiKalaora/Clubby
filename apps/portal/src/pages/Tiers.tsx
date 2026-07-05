@@ -29,6 +29,7 @@ export function Tiers({ business }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState({ name: '', min_stamps: '', color: '#cd7f32', icon: '🥉' })
   const [formMode, setFormMode] = useState<'create' | 'edit' | null>(null)
+  const [confirmReset, setConfirmReset] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -111,8 +112,18 @@ export function Tiers({ business }: Props) {
           <h2 className="page-title">🏅 Loyalty Tiers</h2>
           <p className="page-subtitle">{business.name} — reward customers based on stamps earned</p>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn-secondary btn-sm" onClick={resetDefaults}>Reset to defaults</button>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {confirmReset ? (
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', background: '#fff5f5', border: '1px solid #fca5a5', borderRadius: 8, padding: '6px 12px' }}>
+              <span style={{ fontSize: 13, color: '#dc2626' }}>Reset all custom tiers?</span>
+              <button className="btn-sm" style={{ background: '#dc2626', color: 'white', border: 'none', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', fontSize: 12 }}
+                onClick={() => { setConfirmReset(false); resetDefaults() }}>Yes, reset</button>
+              <button className="btn-sm" style={{ background: 'transparent', color: '#64748b', border: 'none', cursor: 'pointer', fontSize: 12 }}
+                onClick={() => setConfirmReset(false)}>Cancel</button>
+            </div>
+          ) : (
+            <button className="btn-secondary btn-sm" onClick={() => setConfirmReset(true)}>Reset to defaults</button>
+          )}
           <button className="btn-primary btn-sm" onClick={openCreate}>+ Add tier</button>
         </div>
       </div>

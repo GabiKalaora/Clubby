@@ -30,6 +30,8 @@ export type Business = {
   webhook_url: string | null
   webhook_secret: string | null
   opening_hours: OpeningHours | null
+  lat: number | null
+  lng: number | null
 }
 
 export type View = 'anchor' | 'dashboard' | 'promotions' | 'members' | 'qr' | 'stories' | 'stamp_cards' | 'tiers' | 'points' | 'feed' | 'settings'
@@ -49,7 +51,7 @@ export function Portal({ userId, email }: Props) {
   useEffect(() => {
     supabase
       .from('businesses')
-      .select('id, name, category, description, address, phone, logo_url, cover_url, qr_code_token, webhook_url, webhook_secret, opening_hours')
+      .select('id, name, category, description, address, phone, logo_url, cover_url, qr_code_token, webhook_url, webhook_secret, opening_hours, lat, lng')
       .eq('owner_id', userId)
       .order('created_at', { ascending: true })
       .then(({ data }) => {

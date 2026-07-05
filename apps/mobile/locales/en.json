@@ -8,7 +8,8 @@
     "loading": "Loading…",
     "error": "Something went wrong",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "ok": "OK"
   },
   "tabs": {
     "wallet": "Wallet",
@@ -25,7 +26,10 @@
       "continue": "Continue",
       "sending": "Sending…",
       "ownBusiness": "Own a business?",
-      "goToPortal": "Go to Business Portal →"
+      "goToPortal": "Go to Business Portal →",
+      "vp1": "Exclusive offers from local stores",
+      "vp2": "Earn loyalty tiers & rewards",
+      "vp3": "Discover clubs near you"
     },
     "verify": {
       "title": "Verify your number",
@@ -38,13 +42,48 @@
     },
     "register": {
       "title": "Create your account",
+      "subtitle": "Almost there — just your name",
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "Jane",
+      "lastNameLabel": "Last name",
+      "lastNamePlaceholder": "Smith",
       "namePlaceholder": "Your name",
+      "getStarted": "Get started",
       "continue": "Continue",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "errors": {
+        "nameRequired": "Please enter your name"
+      }
     }
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "next": "Next",
+    "getStarted": "Get started →",
+    "slides": [
+      {
+        "title": "Discover local clubs",
+        "body": "Join your favourite shops, cafés, and services with one scan"
+      },
+      {
+        "title": "Scan to join",
+        "body": "Point your camera at any Clubby QR code — you're instantly a member"
+      },
+      {
+        "title": "Earn rewards",
+        "body": "Collect stamps, points, and exclusive benefits just for visiting"
+      },
+      {
+        "title": "Rise through the tiers",
+        "body": "The more you visit, the higher your loyalty tier — unlock better perks"
+      }
+    ]
   },
   "wallet": {
     "title": "Your Wallet",
+    "yourBenefits": "Your Benefits",
+    "activeBenefits": "active benefits",
+    "creditBalance": "credit balance",
     "totalBalance": "Total balance",
     "activeCredits_one": "{{count}} active credit",
     "activeCredits_other": "{{count}} active credits",
@@ -54,6 +93,7 @@
     "feed": "Updates",
     "enterCoupon": "+ Enter coupon manually",
     "empty": "No benefits yet — scan a QR code to join a club!",
+    "emptyTab": "No {{tab}} benefits yet",
     "tabs": {
       "all": "All",
       "balance": "Balance",
@@ -97,6 +137,10 @@
     "title": "Discover",
     "searchPlaceholder": "Search businesses…",
     "openNow": "Open Now",
+    "nearMe": "📍 Near me",
+    "mapView": "Map",
+    "listView": "List",
+    "openInMaps": "Open in Maps",
     "categories": {
       "all": "All",
       "food": "Food",
@@ -134,6 +178,7 @@
     "unread": "Unread",
     "emptyAll": "No notifications yet",
     "emptyUnread": "No unread notifications",
+    "discoverStores": "Discover stores →",
     "groups": {
       "today": "Today",
       "yesterday": "Yesterday",
@@ -180,6 +225,8 @@
   },
   "enroll": {
     "youreIn": "You're in!",
+    "welcomeBack": "Welcome back! 👋",
+    "alreadyMemberHint": "You're already a member of this club.",
     "welcomeGift": "Welcome Gift",
     "viewWallet": "View my wallet",
     "joining": "Joining…",

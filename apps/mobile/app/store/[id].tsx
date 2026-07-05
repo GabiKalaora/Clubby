@@ -44,18 +44,18 @@ export default function StoreProfile() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#151617', alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator color="#2ecc71" />
+      <View style={{ flex: 1, backgroundColor: '#f8f9fa', alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color="#c084fc" />
       </View>
     )
   }
 
   if (!business) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#151617', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
-        <Text style={{ color: '#8e969f', textAlign: 'center', fontFamily: 'Urbanist_500Medium' }}>{t('store.notFound')}</Text>
+      <View style={{ flex: 1, backgroundColor: '#f8f9fa', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
+        <Text style={{ color: '#94a3b8', textAlign: 'center', fontFamily: 'PlusJakartaSans_500Medium' }}>{t('store.notFound')}</Text>
         <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 16 }}>
-          <Text style={{ color: '#2ecc71', fontFamily: 'Urbanist_600SemiBold' }}>{t('store.goBack')}</Text>
+          <Text style={{ color: '#c084fc', fontFamily: 'PlusJakartaSans_600SemiBold' }}>{t('store.goBack')}</Text>
         </TouchableOpacity>
       </View>
     )
@@ -65,10 +65,10 @@ export default function StoreProfile() {
   const activePromos = business.promotions ?? []
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#151617' }}>
+    <View style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Cover — full bleed dark hero */}
-        <View style={{ height: 240, backgroundColor: '#0f3d25', position: 'relative' }}>
+        <View style={{ height: 240, backgroundColor: '#2d2640', position: 'relative' }}>
           {business.cover_url ? (
             <Image source={{ uri: business.cover_url }} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} resizeMode="cover" />
           ) : business.logo_url ? (
@@ -83,24 +83,24 @@ export default function StoreProfile() {
             onPress={() => router.back()}
             style={{ position: 'absolute', top: 52, left: 16, backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 4 }}
           >
-            <Text style={{ color: '#ffffff', fontSize: 14, fontFamily: 'Urbanist_600SemiBold' }}>← {t('common.back')}</Text>
+            <Text style={{ color: '#ffffff', fontSize: 14, fontFamily: 'PlusJakartaSans_600SemiBold' }}>← {t('common.back')}</Text>
           </TouchableOpacity>
         </View>
 
         {/* White bottom sheet style content */}
-        <View style={{ backgroundColor: '#1e2022', borderTopLeftRadius: 28, borderTopRightRadius: 28, marginTop: -28, paddingTop: 24, paddingHorizontal: 20, paddingBottom: 40 }}>
+        <View style={{ backgroundColor: '#ffffff', borderTopLeftRadius: 28, borderTopRightRadius: 28, marginTop: -28, paddingTop: 24, paddingHorizontal: 20, paddingBottom: 40 }}>
           {/* Logo + name row */}
           <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 }}>
-            <View style={{ width: 72, height: 72, borderRadius: 22, backgroundColor: '#2a2d2f', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginEnd: 14, borderWidth: 3, borderColor: '#151617', flexShrink: 0 }}>
+            <View style={{ width: 72, height: 72, borderRadius: 22, backgroundColor: '#e2e8f0', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginEnd: 14, borderWidth: 3, borderColor: '#f8f9fa', flexShrink: 0 }}>
               {business.logo_url
                 ? <Image source={{ uri: business.logo_url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
                 : <Text style={{ fontSize: 32 }}>🏪</Text>}
             </View>
 
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 22, fontFamily: 'Urbanist_800ExtraBold', color: '#ffffff', marginBottom: 2 }}>{business.name}</Text>
+              <Text style={{ fontSize: 22, fontFamily: 'PlusJakartaSans_800ExtraBold', color: '#2d3748', marginBottom: 2 }}>{business.name}</Text>
               {business.category && (
-                <Text style={{ color: '#8e969f', fontSize: 13, fontFamily: 'Urbanist_500Medium', textTransform: 'capitalize' }}>{business.category}</Text>
+                <Text style={{ color: '#94a3b8', fontSize: 13, fontFamily: 'PlusJakartaSans_500Medium', textTransform: 'capitalize' }}>{business.category}</Text>
               )}
             </View>
           </View>
@@ -112,56 +112,56 @@ export default function StoreProfile() {
               disabled={enrolling || isMember}
               style={{
                 flex: 1, borderRadius: 16, paddingVertical: 14, alignItems: 'center',
-                backgroundColor: isMember ? '#2a2d2f' : '#1a7a4a',
-                shadowColor: isMember ? 'transparent' : '#1a7a4a',
+                backgroundColor: isMember ? '#e2e8f0' : '#a855f7',
+                shadowColor: isMember ? 'transparent' : '#a855f7',
                 shadowOpacity: 0.4, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 6,
               }}
             >
               {enrolling
                 ? <ActivityIndicator size="small" color="white" />
-                : <Text style={{ fontFamily: 'Urbanist_700Bold', fontSize: 15, color: isMember ? '#8e969f' : '#ffffff' }}>
+                : <Text style={{ fontFamily: 'PlusJakartaSans_700Bold', fontSize: 15, color: isMember ? '#94a3b8' : '#ffffff' }}>
                     {isMember ? `✓ ${t('store.joined')}` : t('store.joinClub')}
                   </Text>}
             </TouchableOpacity>
             {isMember && (
               <TouchableOpacity
                 onPress={handleInvite}
-                style={{ flex: 1, borderRadius: 16, paddingVertical: 14, alignItems: 'center', backgroundColor: '#1a7a4a22', borderWidth: 1.5, borderColor: '#1a7a4a' }}
+                style={{ flex: 1, borderRadius: 16, paddingVertical: 14, alignItems: 'center', backgroundColor: '#a855f722', borderWidth: 1.5, borderColor: '#a855f7' }}
               >
-                <Text style={{ fontFamily: 'Urbanist_700Bold', fontSize: 15, color: '#2ecc71' }}>{t('store.inviteFriends')}</Text>
+                <Text style={{ fontFamily: 'PlusJakartaSans_700Bold', fontSize: 15, color: '#c084fc' }}>{t('store.inviteFriends')}</Text>
               </TouchableOpacity>
             )}
           </View>
 
           {/* Address + phone */}
           {(business.address || business.phone) && (
-            <View style={{ backgroundColor: '#151617', borderRadius: 16, padding: 14, marginBottom: 16, gap: 8 }}>
+            <View style={{ backgroundColor: '#f8f9fa', borderRadius: 16, padding: 14, marginBottom: 16, gap: 8 }}>
               {business.address && (
-                <Text style={{ color: '#8e969f', fontSize: 13, fontFamily: 'Urbanist_500Medium' }}>📍 {business.address}</Text>
+                <Text style={{ color: '#94a3b8', fontSize: 13, fontFamily: 'PlusJakartaSans_500Medium' }}>📍 {business.address}</Text>
               )}
               {business.phone && (
-                <Text style={{ color: '#8e969f', fontSize: 13, fontFamily: 'Urbanist_500Medium' }}>📞 {business.phone}</Text>
+                <Text style={{ color: '#94a3b8', fontSize: 13, fontFamily: 'PlusJakartaSans_500Medium' }}>📞 {business.phone}</Text>
               )}
             </View>
           )}
 
           {/* About */}
           {business.description && (
-            <View style={{ backgroundColor: '#151617', borderRadius: 16, padding: 16, marginBottom: 16 }}>
-              <Text style={{ fontFamily: 'Urbanist_700Bold', color: '#ffffff', fontSize: 15, marginBottom: 8 }}>{t('store.about')}</Text>
-              <Text style={{ color: '#8e969f', fontSize: 14, fontFamily: 'Urbanist_400Regular', lineHeight: 22 }}>{business.description}</Text>
+            <View style={{ backgroundColor: '#f8f9fa', borderRadius: 16, padding: 16, marginBottom: 16 }}>
+              <Text style={{ fontFamily: 'PlusJakartaSans_700Bold', color: '#2d3748', fontSize: 15, marginBottom: 8 }}>{t('store.about')}</Text>
+              <Text style={{ color: '#94a3b8', fontSize: 14, fontFamily: 'PlusJakartaSans_400Regular', lineHeight: 22 }}>{business.description}</Text>
             </View>
           )}
 
           {/* Active promotions */}
           {activePromos.length > 0 && (
             <View style={{ marginBottom: 16 }}>
-              <Text style={{ fontFamily: 'Urbanist_700Bold', color: '#ffffff', fontSize: 15, marginBottom: 10 }}>{t('store.currentOffers')}</Text>
+              <Text style={{ fontFamily: 'PlusJakartaSans_700Bold', color: '#2d3748', fontSize: 15, marginBottom: 10 }}>{t('store.currentOffers')}</Text>
               {activePromos.map((promo, i) => (
-                <View key={i} style={{ backgroundColor: '#1a7a4a22', borderWidth: 1, borderColor: '#1a7a4a44', borderRadius: 16, padding: 14, marginBottom: 8, borderLeftWidth: 4, borderLeftColor: '#1a7a4a' }}>
-                  <Text style={{ color: '#2ecc71', fontFamily: 'Urbanist_700Bold', fontSize: 14 }}>🎁 {promo.title}</Text>
+                <View key={i} style={{ backgroundColor: '#a855f722', borderWidth: 1, borderColor: '#a855f744', borderRadius: 16, padding: 14, marginBottom: 8, borderLeftWidth: 4, borderLeftColor: '#a855f7' }}>
+                  <Text style={{ color: '#c084fc', fontFamily: 'PlusJakartaSans_700Bold', fontSize: 14 }}>🎁 {promo.title}</Text>
                   {promo.benefit_value != null && (
-                    <Text style={{ color: '#2ecc71', fontSize: 12, marginTop: 4, fontFamily: 'Urbanist_500Medium' }}>
+                    <Text style={{ color: '#c084fc', fontSize: 12, marginTop: 4, fontFamily: 'PlusJakartaSans_500Medium' }}>
                       {promo.benefit_type === 'credit' ? `₪${(promo.benefit_value / 100).toFixed(0)} credit`
                         : promo.benefit_type === 'discount' ? `${promo.benefit_value}% off`
                         : 'Free item'}
@@ -174,12 +174,12 @@ export default function StoreProfile() {
 
           {/* Opening hours */}
           {hours && Object.keys(hours).length > 0 && (
-            <View style={{ backgroundColor: '#151617', borderRadius: 16, padding: 16 }}>
-              <Text style={{ fontFamily: 'Urbanist_700Bold', color: '#ffffff', fontSize: 15, marginBottom: 12 }}>{t('store.openingHours')}</Text>
+            <View style={{ backgroundColor: '#f8f9fa', borderRadius: 16, padding: 16 }}>
+              <Text style={{ fontFamily: 'PlusJakartaSans_700Bold', color: '#2d3748', fontSize: 15, marginBottom: 12 }}>{t('store.openingHours')}</Text>
               {DAY_ORDER.filter((d) => hours[d]).map((day, i, arr) => (
-                <View key={day} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: i < arr.length - 1 ? 1 : 0, borderBottomColor: '#2a2d2f' }}>
-                  <Text style={{ color: '#8e969f', fontSize: 14, fontFamily: 'Urbanist_500Medium' }}>{DAY_LABELS[day]}</Text>
-                  <Text style={{ color: '#ffffff', fontSize: 14, fontFamily: 'Urbanist_600SemiBold' }}>{hours[day].open} – {hours[day].close}</Text>
+                <View key={day} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: i < arr.length - 1 ? 1 : 0, borderBottomColor: '#e2e8f0' }}>
+                  <Text style={{ color: '#94a3b8', fontSize: 14, fontFamily: 'PlusJakartaSans_500Medium' }}>{DAY_LABELS[day]}</Text>
+                  <Text style={{ color: '#ffffff', fontSize: 14, fontFamily: 'PlusJakartaSans_600SemiBold' }}>{hours[day].open} – {hours[day].close}</Text>
                 </View>
               ))}
             </View>
