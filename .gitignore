@@ -23,6 +23,10 @@ Thumbs.db
 *.jpg
 *.jpeg
 
+# Exception: dated test run screenshots (committed intentionally)
+!screenshots/2026-*/
+!screenshots/2026-*/*.png
+
 # Playwright test artifacts
 .playwright-mcp/
 
