@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { CustomerQRScanner } from '../components/CustomerQRScanner'
 import type { Business } from '../Portal'
 
 type RewardType = 'free_item' | 'credit' | 'discount'
@@ -63,6 +64,43 @@ export function StampCards({ business }: Props) {
   const [stampUserId, setStampUserId] = useState('')
   const [stampResult, setStampResult] = useState<{ msg: string; ok: boolean } | null>(null)
   const [stamping, setStamping] = useState(false)
+  const [showScanner, setShowScanner] = useState(false)
+  const [scanError, setScanError] = useState('')
+
+  // Member search for stamping
+  const [memberSearch, setMemberSearch] = useState('')
+  const [memberSearchResults, setMemberSearchResults] = useState<{ user_id: string; display_name: string | null; phone: string | null }[]>([])
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [selectedSearchMember, setSelectedSearchMember] = useState<{ user_id: string; display_name: string | null; phone: string | null } | null>(null)
+
+  async function searchMembers(query: string) {
+    if (!query.trim()) { setMemberSearchResults([]); return }
+    setSearchLoading(true)
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, display_name, phone')
+      .or(`display_name.ilike.%${query}%,phone.ilike.%${query}%`)
+      .limit(8)
+    setMemberSearchResults((data ?? []).map(d => ({ user_id: d.id, display_name: d.display_name, phone: d.phone })))
+    setSearchLoading(false)
+  }
+
+  function selectMember(m: { user_id: string; display_name: string | null; phone: string | null }) {
+    setSelectedSearchMember(m)
+    setStampUserId(m.user_id)
+    setMemberSearch(m.display_name ?? m.phone ?? m.user_id)
+    setMemberSearchResults([])
+  }
+
+  function handleQRScan(raw: string) {
+    setScanError('')
+    setShowScanner(false)
+    if (!/^[0-9a-f-]{36}$/i.test(raw.trim())) {
+      setScanError('Invalid QR — not a Clubby customer code')
+      return
+    }
+    selectMember({ user_id: raw.trim(), display_name: 'QR scan ✓', phone: null })
+  }
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -94,6 +132,9 @@ export function StampCards({ business }: Props) {
     setProgressLoading(true)
     setStampResult(null)
     setStampUserId('')
+    setMemberSearch('')
+    setSelectedSearchMember(null)
+    setMemberSearchResults([])
     const { data } = await supabase.rpc('get_stamp_progress', { p_stamp_card_id: card.id })
     setProgress((data ?? []) as StampProgress[])
     setProgressLoading(false)
@@ -362,17 +403,76 @@ export function StampCards({ business }: Props) {
           <div>
             <div className="card" style={{ marginBottom: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1a1a2e' }}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>
                   {selectedCard.name} — Add stamp
                 </h3>
-                <button className="btn-link" onClick={() => setSelectedCard(null)} style={{ fontSize: 13 }}>✕ Close</button>
+                <button className="btn-link" onClick={() => { setSelectedCard(null); setSelectedSearchMember(null); setMemberSearch(''); setStampUserId('') }} style={{ fontSize: 13 }}>✕ Close</button>
               </div>
-              <label style={{ marginTop: 0 }}>Customer user ID</label>
-              <input
-                placeholder="Paste customer UUID from Members list"
-                value={stampUserId}
-                onChange={e => setStampUserId(e.target.value)}
-              />
+
+              {/* Member search */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <label style={{ marginTop: 0, marginBottom: 0 }}>Search customer by name or phone</label>
+                <button
+                  type="button"
+                  className="btn-secondary btn-sm"
+                  onClick={() => { setScanError(''); setShowScanner(true) }}
+                  style={{ fontSize: 12, whiteSpace: 'nowrap' }}
+                >
+                  📷 Scan QR
+                </button>
+              </div>
+              {scanError && (
+                <p style={{ color: '#dc2626', fontSize: 12, margin: '4px 0 8px' }}>{scanError}</p>
+              )}
+              <div style={{ position: 'relative' }}>
+                <input
+                  placeholder="e.g. Dana or +972521000001"
+                  value={memberSearch}
+                  onChange={e => {
+                    setMemberSearch(e.target.value)
+                    setSelectedSearchMember(null)
+                    setStampUserId('')
+                    searchMembers(e.target.value)
+                  }}
+                  style={{ paddingRight: selectedSearchMember ? 32 : undefined }}
+                  autoComplete="off"
+                />
+                {selectedSearchMember && (
+                  <span style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', color:'#16a34a', fontSize:16 }}>✓</span>
+                )}
+                {/* Dropdown */}
+                {memberSearchResults.length > 0 && (
+                  <div style={{
+                    position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+                    background: 'var(--surface)', borderRadius: 10,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                    border: '1px solid var(--border)',
+                    maxHeight: 200, overflowY: 'auto',
+                  }}>
+                    {searchLoading
+                      ? <div style={{ padding: '10px 16px', color: '#64748b', fontSize: 13 }}>Searching…</div>
+                      : memberSearchResults.map(m => (
+                        <button
+                          key={m.user_id}
+                          onClick={() => selectMember(m)}
+                          style={{
+                            display: 'block', width: '100%', textAlign: 'left',
+                            padding: '10px 16px', background: 'none', border: 'none',
+                            cursor: 'pointer', borderBottom: '1px solid var(--border)',
+                            fontSize: 14, color: 'var(--text)',
+                          }}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                        >
+                          <div style={{ fontWeight: 600 }}>{m.display_name ?? '—'}</div>
+                          <div style={{ fontSize: 12, color: '#64748b' }}>{m.phone ?? ''}</div>
+                        </button>
+                      ))
+                    }
+                  </div>
+                )}
+              </div>
+
               {stampResult && (
                 <p style={{ marginTop: 10, fontSize: 13, fontWeight: 600, color: stampResult.ok ? '#16a34a' : '#dc2626' }}>
                   {stampResult.msg}
@@ -438,6 +538,27 @@ export function StampCards({ business }: Props) {
           </div>
         )}
       </div>
+
+      {/* Customer QR Scanner Modal */}
+      {showScanner && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 }}
+          onClick={e => { if (e.target === e.currentTarget) setShowScanner(false) }}
+        >
+          <div style={{ background: '#1a0533', borderRadius: 16, overflow: 'hidden', width: 360, height: 420, position: 'relative', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+            <div style={{ padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.3)' }}>
+              <p style={{ color: 'white', fontWeight: 700, fontSize: 15, margin: 0 }}>📷 Scan customer QR</p>
+              <button
+                onClick={() => setShowScanner(false)}
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 22, cursor: 'pointer', padding: 0, width: 'auto', margin: 0, lineHeight: 1 }}
+              >✕</button>
+            </div>
+            <div style={{ width: '100%', height: 'calc(100% - 52px)' }}>
+              <CustomerQRScanner onScan={handleQRScan} onClose={() => setShowScanner(false)} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

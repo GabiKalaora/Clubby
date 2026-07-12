@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as ImagePicker from 'expo-image-picker'
+import QRCode from 'react-native-qrcode-svg'
 import { supabase } from '../lib/supabase'
 import { useCurrentUser } from '../hooks/useAuth'
 import { useProfile, useUpdateProfile, type NotificationPrefs } from '../hooks/useProfile'
@@ -242,6 +243,21 @@ export default function ProfileScreen() {
             <InfoRow label={t('profile.phone')} value={profile?.phone ?? user?.phone ?? '—'} />
             <EmailRow email={user?.email ?? null} label={t('profile.email')} />
           </View>
+
+          {/* My QR Code — shown to cashier for stamp */}
+          {user?.id && (
+            <View style={{ backgroundColor: '#ffffff', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0', padding: 20, alignItems: 'center' }}>
+              <Text style={{ fontSize: 11, fontFamily: 'PlusJakartaSans_700Bold', color: '#64748b', letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 14 }}>
+                {t('profile.myQrCode')}
+              </Text>
+              <View style={{ padding: 12, backgroundColor: '#ffffff', borderRadius: 12, borderWidth: 1, borderColor: '#e2e8f0' }}>
+                <QRCode value={user.id} size={160} color="#2d3748" backgroundColor="white" />
+              </View>
+              <Text style={{ color: '#94a3b8', fontSize: 12, fontFamily: 'PlusJakartaSans_400Regular', marginTop: 10, textAlign: 'center' }}>
+                {t('profile.showToCashier')}
+              </Text>
+            </View>
+          )}
 
           {/* Birthday */}
           <View style={{ backgroundColor: '#ffffff', borderRadius: 16, marginBottom: 16, borderWidth: 1, borderColor: '#e2e8f0' }}>

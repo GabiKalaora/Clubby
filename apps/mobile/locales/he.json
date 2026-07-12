@@ -193,6 +193,8 @@
     "dateOfBirth": "תאריך לידה",
     "notSet": "לא הוגדר",
     "dobPlaceholder": "YYYY-MM-DD",
+    "myQrCode": "קוד ה-QR שלי",
+    "showToCashier": "הראה זאת לקופאי להוספת חותמת",
     "dobError": {
       "format": "השתמש בפורמט YYYY-MM-DD",
       "future": "התאריך לא יכול להיות בעתיד",

@@ -193,6 +193,8 @@
     "dateOfBirth": "Date of birth",
     "notSet": "Not set",
     "dobPlaceholder": "YYYY-MM-DD",
+    "myQrCode": "My QR Code",
+    "showToCashier": "Show this to the cashier to earn stamps",
     "dobError": {
       "format": "Use format YYYY-MM-DD",
       "future": "Date cannot be in the future",
