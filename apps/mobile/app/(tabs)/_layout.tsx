@@ -1,43 +1,45 @@
 import { Tabs } from 'expo-router'
-import { View, Platform } from 'react-native'
+import { Platform } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Ionicons } from '@expo/vector-icons'
 import { useTranslation } from 'react-i18next'
+import { brand, useTheme } from '../../lib/theme'
 
+/**
+ * Instagram-style bottom bar: minimal, icon-only.
+ * Home hosts the 3-page swipe experience (feed ← home → wallet);
+ * wallet & manual stay as hidden routes for deep links.
+ */
 export default function TabsLayout() {
   const { t } = useTranslation()
+  const { colors, isDark } = useTheme()
 
   return (
     <Tabs
+      initialRouteName="home"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#a855f7',
-        tabBarInactiveTintColor: '#94a3b8',
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: colors.text,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopColor: '#e2e8f0',
-          borderTopWidth: 1,
-          height: Platform.OS === 'ios' ? 84 : 64,
-          paddingBottom: Platform.OS === 'ios' ? 24 : 8,
-          paddingTop: 8,
-          shadowColor: '#000',
-          shadowOpacity: 0.06,
-          shadowRadius: 8,
-          elevation: 8,
-        },
-        tabBarLabelStyle: {
-          fontFamily: 'PlusJakartaSans_600SemiBold',
-          fontSize: 11,
-          marginTop: 2,
+          backgroundColor: colors.background,
+          borderTopColor: colors.border,
+          borderTopWidth: 0.5,
+          height: Platform.OS === 'ios' ? 80 : 60,
+          paddingBottom: Platform.OS === 'ios' ? 24 : 6,
+          paddingTop: 6,
+          elevation: 0,
+          shadowOpacity: 0,
         },
       }}
     >
       <Tabs.Screen
-        name="wallet"
+        name="home"
         options={{
-          title: t('tabs.wallet'),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="wallet-outline" size={size} color={color} />
+          title: t('pager.home'),
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={26} color={color} />
           ),
         }}
       />
@@ -45,49 +47,26 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="scan"
         options={{
-          title: '',
-          tabBarLabel: () => null,
-          tabBarItemStyle: { maxWidth: 72 },
+          title: t('tabs.scan'),
           tabBarIcon: () => (
             <LinearGradient
-              colors={['#ec4899', '#a855f7']}
+              colors={brand.gradient}
               start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
               style={{
-                width: 56, height: 56,
-                borderRadius: 28,
+                width: 52, height: 52,
+                borderRadius: 26,
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: Platform.OS === 'ios' ? 16 : 8,
-                shadowColor: '#a855f7',
-                shadowOpacity: 0.45,
-                shadowRadius: 14,
+                marginBottom: Platform.OS === 'ios' ? 14 : 6,
+                shadowColor: brand.purple,
+                shadowOpacity: isDark ? 0.6 : 0.4,
+                shadowRadius: 12,
                 shadowOffset: { width: 0, height: 4 },
                 elevation: 8,
               }}
             >
-              <Ionicons name="qr-code-outline" size={24} color="white" />
+              <Ionicons name="qr-code-outline" size={22} color="white" />
             </LinearGradient>
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="manual"
-        options={{
-          title: t('tabs.manual'),
-          tabBarItemStyle: { maxWidth: 72 },
-          tabBarIcon: ({ focused }) => (
-            <View style={{
-              width: 36, height: 36,
-              borderRadius: 10,
-              backgroundColor: focused ? 'rgba(168,85,247,0.1)' : 'transparent',
-              borderWidth: focused ? 0 : 1.5,
-              borderColor: focused ? 'transparent' : '#e2e8f0',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <Ionicons name="ticket-outline" size={18} color={focused ? '#a855f7' : '#94a3b8'} />
-            </View>
           ),
         }}
       />
@@ -96,11 +75,15 @@ export default function TabsLayout() {
         name="discover"
         options={{
           title: t('tabs.discover'),
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="storefront-outline" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'search' : 'search-outline'} size={26} color={color} />
           ),
         }}
       />
+
+      {/* Hidden routes — reachable by link, not from the bar */}
+      <Tabs.Screen name="wallet" options={{ href: null }} />
+      <Tabs.Screen name="manual" options={{ href: null }} />
     </Tabs>
   )
 }

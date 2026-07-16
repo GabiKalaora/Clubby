@@ -30,17 +30,23 @@ Clubby/
 │   ├── mobile/                   # Expo React Native — customer app
 │   │   ├── app/
 │   │   │   ├── (auth)/           # sign-in, verify, register, onboarding
-│   │   │   ├── (tabs)/           # wallet, scan, discover
+│   │   │   ├── (tabs)/           # home (3-page pager), scan, discover
+│   │   │   │                     # wallet + manual kept as hidden deep-link routes
 │   │   │   ├── history.tsx
 │   │   │   ├── notifications.tsx
 │   │   │   ├── profile.tsx
 │   │   │   ├── redeem/[id].tsx   # verifiable redemption screen
 │   │   │   └── store/[id].tsx    # store profile
 │   │   ├── components/
-│   │   │   └── BenefitCard.tsx
+│   │   │   ├── BenefitCard.tsx
+│   │   │   ├── GradientButton.tsx
+│   │   │   └── StoryRing.tsx     # Instagram-style gradient story ring
+│   │   ├── screens/              # pager pages: DiscoveryFeed, Home, Wallet
+│   │   ├── lib/theme.ts          # design tokens (light/dark) + useTheme
 │   │   ├── hooks/
 │   │   │   ├── useBenefits.ts
 │   │   │   ├── useBusinesses.ts  # + useNearbyBusinesses (GPS/Haversine)
+│   │   │   ├── useDiscoveryFeed.ts # all-business posts, location-first
 │   │   │   ├── useFeedPosts.ts
 │   │   │   ├── useMemberships.ts
 │   │   │   ├── useNotifications.ts
@@ -181,8 +187,11 @@ npm run dev             # http://localhost:5174
 |---|---|
 | Phone OTP auth (no password) | ✅ |
 | Onboarding flow (4 screens) | ✅ |
-| Wallet — balance, My Clubs, stamp cards, points, feed | ✅ |
-| WhatsApp-style feed posts from joined businesses | ✅ |
+| **3-screen swipe navigation** — Feed ← Home → Wallet (horizontal pager) / ניווט בהחלקה: פיד ← בית → ארנק | ✅ |
+| **TikTok-style discovery feed** — full-screen posts from ALL nearby businesses (location-first), one-tap club join / פיד גילוי בסטייל טיקטוק — פרסומי כל העסקים לפי מיקום, הצטרפות למועדון בלחיצה | ✅ |
+| **Instagram-style home** — gradient story rings + clean post cards from joined clubs only / מסך בית בסטייל אינסטגרם — סטוריז ופוסטים מהמועדונים שלך | ✅ |
+| Wallet — balance, My Clubs, stamp cards, points | ✅ |
+| Design tokens + dark palette (`lib/theme.ts`) | ✅ |
 | QR enrollment → welcome benefit (if store configured one) | ✅ |
 | Discover — GPS-sorted (Haversine), "Open Now", search, category filter | ✅ |
 | Store profile — cover photo, logo, promotions, hours, stamp progress, tier | ✅ |

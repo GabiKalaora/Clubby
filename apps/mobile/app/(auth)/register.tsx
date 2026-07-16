@@ -51,7 +51,7 @@ export default function Register() {
     }
     const onboarded = await AsyncStorage.getItem(ONBOARDED_KEY)
     if (!onboarded) router.replace('/(auth)/onboarding' as never)
-    else router.replace('/(tabs)/wallet')
+    else router.replace('/(tabs)/home')
   }
 
   const inputStyle = {

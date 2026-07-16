@@ -20,7 +20,7 @@ export default function Index() {
       if (!profile?.display_name) {
         router.replace('/(auth)/register')
       } else {
-        router.replace('/(tabs)/wallet')
+        router.replace('/(tabs)/home')
       }
     })
   }, [])
