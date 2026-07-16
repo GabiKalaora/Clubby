@@ -29,7 +29,7 @@ export default function Onboarding() {
 
   async function finish() {
     await AsyncStorage.setItem(ONBOARDED_KEY, 'true')
-    router.replace('/(tabs)/wallet')
+    router.replace('/(tabs)/home')
   }
 
   function goNext() {

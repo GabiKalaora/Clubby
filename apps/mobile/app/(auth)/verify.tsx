@@ -51,7 +51,7 @@ export default function Verify() {
       const { data: profile } = await supabase
         .from('profiles').select('display_name').eq('id', data.session.user.id).single()
       if (!profile?.display_name) router.replace('/(auth)/register')
-      else router.replace('/(tabs)/wallet')
+      else router.replace('/(tabs)/home')
     }
   }
 

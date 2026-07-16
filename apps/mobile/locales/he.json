@@ -99,7 +99,8 @@
       "balance": "יתרה",
       "discounts": "הנחות",
       "freeItems": "פריטים חינמיים"
-    }
+    },
+    "points": "נקודות"
   },
   "stampCard": {
     "stamps": "{{current}} / {{required}} חותמות",
@@ -278,5 +279,25 @@
     "confirmTitle": "נרשמת!",
     "welcomeAt": "ברוך הבא ל-{{name}}!",
     "noPermission": "הרשאת מצלמה נדחתה"
+  },
+  "pager": {
+    "feed": "פיד",
+    "home": "בית",
+    "wallet": "ארנק"
+  },
+  "feed": {
+    "join": "הצטרף",
+    "member": "חבר מועדון",
+    "empty": "אין עדיין פרסומים באזורך — נסו שוב בקרוב!",
+    "km": "ק\"מ",
+    "meters": "מ'",
+    "kmAway": "{{km}} מכאן"
+  },
+  "home": {
+    "minutesAgo": "לפני {{count}} דק'",
+    "hoursAgo": "לפני {{count}} שע'",
+    "daysAgo": "לפני {{count}} ימים",
+    "emptyTitle": "ברוכים הבאים ל-Clubby",
+    "emptyHint": "החליקו לפיד כדי לגלות עסקים באזורכם, או סרקו קוד QR בחנות כדי להצטרף למועדון הראשון שלכם."
   }
 }

@@ -99,7 +99,8 @@
       "balance": "Balance",
       "discounts": "Discounts",
       "freeItems": "Free Items"
-    }
+    },
+    "points": "Points"
   },
   "stampCard": {
     "stamps": "{{current}} / {{required}} stamps",
@@ -278,5 +279,25 @@
     "confirmTitle": "You're in!",
     "welcomeAt": "Welcome to {{name}}!",
     "noPermission": "Camera permission denied"
+  },
+  "pager": {
+    "feed": "Feed",
+    "home": "Home",
+    "wallet": "Wallet"
+  },
+  "feed": {
+    "join": "Join",
+    "member": "Member",
+    "empty": "No posts nearby yet — check back soon!",
+    "km": "km",
+    "meters": "m",
+    "kmAway": "{{km}} away"
+  },
+  "home": {
+    "minutesAgo": "{{count}}m",
+    "hoursAgo": "{{count}}h",
+    "daysAgo": "{{count}}d",
+    "emptyTitle": "Welcome to Clubby",
+    "emptyHint": "Swipe to the Feed to discover businesses near you, or scan a store's QR code to join your first club."
   }
 }
