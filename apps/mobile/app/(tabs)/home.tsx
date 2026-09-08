@@ -21,30 +21,58 @@ const HOME_INDEX = 1
  */
 export default function MainPager() {
   const { t } = useTranslation()
-  const { width } = useWindowDimensions()
+  const { width: windowWidth } = useWindowDimensions()
   const { colors, isDark } = useTheme()
   const listRef = useRef<FlatList<PageKey>>(null)
   const [pageIndex, setPageIndex] = useState(HOME_INDEX)
+  // Measured pager viewport. We page by this, not by useWindowDimensions():
+  //  • width — the window width and the actual list viewport disagree on web
+  //    (scrollbars, dev tools), which left the pager stuck between pages.
+  //  • height — each page needs an explicit pixel height, because the discovery
+  //    feed's vertical FlatList is nested inside this horizontal one and on web
+  //    a `flex: 1` child gives it no bounded height, so its container blows up
+  //    to ~16.7M px and the feed renders off-screen.
+  const [pager, setPager] = useState({ width: 0, height: 0 })
+  const pageWidth = pager.width || windowWidth
 
   const onFeedPage = PAGES[pageIndex] === 'feed'
 
   const handleScrollEnd = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const idx = Math.round(e.nativeEvent.contentOffset.x / width)
+    const idx = Math.round(e.nativeEvent.contentOffset.x / pageWidth)
     if (idx >= 0 && idx < PAGES.length) setPageIndex(idx)
-  }, [width])
+  }, [pageWidth])
 
   const goToPage = useCallback((idx: number) => {
-    listRef.current?.scrollToIndex({ index: idx, animated: true })
+    const offset = pageWidth * idx
+    // On web, scrollToOffset doesn't reliably reach the scroll-snap container;
+    // scroll the underlying DOM node directly. Native keeps scrollToOffset.
+    const node = (listRef.current as unknown as { getScrollableNode?: () => { scrollTo?: (o: { left: number; behavior: string }) => void } } | null)?.getScrollableNode?.()
+    if (node?.scrollTo) node.scrollTo({ left: offset, behavior: 'smooth' })
+    else listRef.current?.scrollToOffset({ offset, animated: true })
     setPageIndex(idx)
+  }, [pageWidth])
+
+  const handleLayout = useCallback((e: { nativeEvent: { layout: { width: number; height: number } } }) => {
+    const { width: w, height: h } = e.nativeEvent.layout
+    setPager((prev) => {
+      // On the first real measurement, land on the initial page (Home) using the
+      // true viewport width — before this, getItemLayout ran with the wrong width.
+      if (prev.width === 0 && w > 0) {
+        requestAnimationFrame(() =>
+          listRef.current?.scrollToOffset({ offset: w * HOME_INDEX, animated: false }),
+        )
+      }
+      return w === prev.width && h === prev.height ? prev : { width: w, height: h }
+    })
   }, [])
 
   const renderPage = useCallback(({ item }: { item: PageKey }) => (
-    <View style={{ width, flex: 1 }}>
-      {item === 'feed' && <DiscoveryFeedScreen />}
+    <View style={pager.height ? { width: pageWidth, height: pager.height } : { width: pageWidth, flex: 1 }}>
+      {item === 'feed' && <DiscoveryFeedScreen height={pager.height || undefined} />}
       {item === 'home' && <HomeScreen colors={colors} />}
       {item === 'wallet' && <WalletScreen colors={colors} />}
     </View>
-  ), [width, colors])
+  ), [pageWidth, pager.height, colors])
 
   // On the immersive feed page the pills sit on dark media; elsewhere on the surface
   const pillTextColor = (active: boolean) => {
@@ -66,8 +94,10 @@ export default function MainPager() {
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          initialScrollIndex={HOME_INDEX}
-          getItemLayout={(_, index) => ({ length: width, offset: width * index, index })}
+          // Measure the scroll viewport itself — a wrapping View's width can
+          // differ from the list's on web (scrollbars), desyncing the paging.
+          onLayout={handleLayout}
+          getItemLayout={(_, index) => ({ length: pageWidth, offset: pageWidth * index, index })}
           onMomentumScrollEnd={handleScrollEnd}
           // Vertical feed list scrolls inside; directions are orthogonal so both work
           nestedScrollEnabled
