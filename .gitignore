@@ -27,6 +27,10 @@ Thumbs.db
 !screenshots/2026-*/
 !screenshots/2026-*/*.png
 
+# Exception: app assets the mobile build requires (icon, adaptive-icon, favicon, wordmark)
+!apps/mobile/assets/
+!apps/mobile/assets/**
+
 # Playwright test artifacts
 .playwright-mcp/
 
