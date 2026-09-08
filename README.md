@@ -102,8 +102,12 @@ npm install
 ### Start Supabase
 ```bash
 supabase start       # starts local DB + Auth + Studio
-supabase db reset    # applies all 19 migrations + seeds demo data
+supabase db reset    # applies all migrations + loads supabase/seed.sql (demo data)
 ```
+
+`supabase/seed.sql` creates 5 businesses (with Tel Aviv-area coordinates), 2 customers,
+memberships, feed posts, stories, promotions, stamp cards and wallet benefits — enough
+to exercise the home feed, discovery feed and wallet end to end.
 
 | Service | URL |
 |---|---|
@@ -126,10 +130,11 @@ npm run dev             # http://localhost:5174
 ### Local dev credentials
 | | |
 |---|---|
-| Customer phone | `+972501111111` (Alice) |
+| Customer phone | `+972501111111` (Alice — member of פיצה רומא + Urban Threads) |
+| | `+972501234567` (Bob — member of שכונתי) |
 | Customer OTP | `000000` |
-| Portal email | `owner@test.com` / `ownerpass123` |
-| Demo businesses | פיצה רומא, שכונתי — מרקט פרש |
+| Portal email | `owner@test.com` / `ownerpass123` (also `owner2@test.com`) |
+| Demo businesses | פיצה רומא · שכונתי — מרקט פרש · Urban Threads · GadgetHub · פינת הבריאות |
 
 ---
 
